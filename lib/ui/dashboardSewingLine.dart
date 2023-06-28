@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:intl/intl.dart';
-import 'package:tivnqn/ui/footer.dart';
 import 'package:tivnqn/ui/lastDays.dart';
 import 'package:tivnqn/ui/today.dart';
-import 'package:tivnqn/ui/topPanel.dart';
 import 'package:tivnqn/global.dart';
 
 class DashboardSewingLine extends StatefulWidget {
@@ -19,35 +15,58 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          actions: [Icon(Icons.settings)],
-          leading: Container(
-            child: Text(DateFormat("hh :mm").format(DateTime.now()).toString()),
+        appBar: AppBar(
+          actions: [
+            Row(
+              children: [
+                Container(
+                  child: Text(
+                      DateFormat("hh :mm").format(DateTime.now()).toString()),
+                ),
+                Icon(Icons.settings),
+              ],
+            )
+          ],
+          leading: CircleAvatar(
+            backgroundColor: Colors.blueAccent,
+            child: Text(g.currentLine.toString(),
+                style:
+                    const TextStyle(fontSize: 27, fontWeight: FontWeight.bold)),
+          ),
+          title: Row(
+            children: [
+              Text('MO : ${g.currentMO} * Style : ${g.currentStyle}'),
+            ],
           ),
           toolbarHeight: g.appBarH,
           centerTitle: true,
-          title: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
-            child: Text(g.currentLine.toString(),
-                style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold)),
-          )),
-      body: LayoutGrid(
-        areas: '''
-          today lastdays 
-          footer footer  
-        ''',
-        columnSizes: [1.fr, 1.fr],
-        rowSizes: [
-          auto,
-          40.px,
-        ],
-        children: [
-          // gridArea('topPanel').containing(TopPanel()),
-          gridArea('today').containing(Today()),
-          gridArea('lastdays').containing(LastDays()),
-          gridArea('footer').containing(Footer()),
-        ],
-      ),
-    );
+        ),
+        body: Row(
+          children: [
+            SizedBox(
+                width: g.screenWidthPixel / 2,
+                height: 500,
+                child: const Today()),
+            // const LastDays()
+          ],
+        )
+        // LayoutGrid(
+        //   areas: '''
+        //       today lastdays
+        //       footer footer
+        //     ''',
+        //   columnSizes: [1.fr, 1.fr],
+        //   rowSizes: [
+        //     auto,
+        //     40.px,
+        //   ],
+        //   children: [
+        //     // gridArea('topPanel').containing(TopPanel()),
+        //     gridArea('today').containing(Today()),
+        //     gridArea('lastdays').containing(LastDays()),
+        //     gridArea('footer').containing(Footer()),
+        //   ],
+        // ),
+        );
   }
 }

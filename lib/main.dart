@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:tivnqn/ui/dashboardSewingLine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/ui/startPage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,10 +24,10 @@ Future<void> detectDeviceInfo() async {
   g.screenHeightPixel = androidInfo.displayMetrics.heightPx;
   g.screenWidthInch = androidInfo.displayMetrics.widthInches;
   g.screenHeightInch = androidInfo.displayMetrics.heightInches;
-  print('screenWidthPixel : ' + g.screenWidthPixel.toString());
-  print('screenHeightPixel : ' + g.screenHeightPixel.toString());
-  print('screenWidthInch : ' + g.screenWidthInch.toString());
-  print('screenHeightInch : ' + g.screenHeightInch.toString());
+  print('screenWidthPixel : ${g.screenWidthPixel}');
+  print('screenHeightPixel : ${g.screenHeightPixel}');
+  print('screenWidthInch : ${g.screenWidthInch}');
+  print('screenHeightInch : ${g.screenHeightInch}');
 
   final ip = await NetworkInfo().getWifiIP();
   if (ip == '192.168.1.69' || ip == '192.168.1.70') {
@@ -39,16 +38,18 @@ Future<void> detectDeviceInfo() async {
 
 getsharedPreferences() async {
   g.sharedPreferences = await SharedPreferences.getInstance();
-  if (g.sharedPreferences.getInt("currentLine") == null) {
-    g.sharedPreferences.setInt('currentLine', 1);
-    g.currentLine = 1;
-  } else
-    g.currentLine = g.sharedPreferences.getInt("currentLine")!;
+  // if (g.sharedPreferences.getInt("currentLine") == null) {
+  //   g.sharedPreferences.setInt('currentLine', 1);
+  //   g.currentLine = 1;
+  // } else {
+  //   g.currentLine = g.sharedPreferences.getInt("currentLine")!;
+  // }
   if (g.sharedPreferences.getInt("rangeTime") == null) {
     g.sharedPreferences.setInt('rangeTime', 6);
     g.rangeTime = 6;
-  } else
+  } else {
     g.rangeTime = g.sharedPreferences.getInt("rangeTime")!;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: DashboardSewingLine(),
+      home: const StartPage(),
     );
   }
 }

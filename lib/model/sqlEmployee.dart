@@ -4,6 +4,13 @@ import 'dart:convert';
 class SqlEmployee {
   String empId;
   String empName;
+  get getEmpId => this.empId;
+
+  set setEmpId(empId) => this.empId = empId;
+
+  get getEmpName => this.empName;
+
+  set setEmpName(empName) => this.empName = empName;
   SqlEmployee({
     required this.empId,
     required this.empName,

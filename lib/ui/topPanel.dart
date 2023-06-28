@@ -12,7 +12,7 @@ class _TopPanelState extends State<TopPanel> {
   Widget build(BuildContext context) {
     return Container(
       // color: Colors.blue[300],
-      child: Row(
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircleAvatar(
