@@ -3,9 +3,9 @@ import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.da
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tivnqn/global.dart';
-import 'package:tivnqn/model/DailySumQty.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMk026.dart';
+import 'package:tivnqn/model/sqlMoInfo.dart';
 import 'package:tivnqn/model/sqlSumQty.dart';
 
 class MySql {
@@ -85,6 +85,38 @@ ORDER BY CODE ASC''';
                   {
                     result.add(SqlEmployee(
                         empId: element['CODE'], empName: element['NAME'])),
+                  }
+              }
+          });
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return result;
+  }
+
+  Future<List<SqlMoInfo>> getMoInfo() async {
+    String query = '''SELECT line, mo, style, qty
+FROM A_MoInfo
+ORDER BY line''';
+    List<SqlMoInfo> result = [];
+
+    var tempResult;
+    print('getMoInfo : $query');
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    result.add(SqlMoInfo(
+                        line: element['line'],
+                        mo: element['mo'],
+                        style: element['style'],
+                        qty: element['qty'])),
                   }
               }
           });

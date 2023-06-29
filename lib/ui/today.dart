@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/workSummary.dart';
-import 'package:tivnqn/ui/listViewData.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class Today extends StatefulWidget {
   const Today({super.key});
@@ -29,7 +29,7 @@ class _TodayState extends State<Today> {
       List<ProcessDetailQty> processDetailQtys = element.getProcessDetailQtys;
       processDetailQtys.forEach((element) {
         detail +=
-            '''${element.getGxNo} - ${element.getGxName} - - ${element.getQty}\n''';
+            '''${element.getGxNo} - ${element.getGxName} - ${element.getQty}\n''';
       });
       qtyDetail.add(detail);
     });
@@ -44,46 +44,62 @@ class _TodayState extends State<Today> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          // Text('ETS * MO : ${g.currentMO} * Style : ${g.currentStyle}'),
-          Divider(
-            color: Colors.teal.shade100,
-            thickness: 2.0,
-          ),
-          Expanded(
-            child: ListView.builder(
-                // controller: _scrollController,
-                // reverse: false,
-                // shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    width: 20,
-                    child: Card(
-                      child: ListTile(
-                          titleTextStyle: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 20,
-                              color: Colors.black),
-                          leadingAndTrailingTextStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30,
-                              color: Colors.black),
-                          trailing: Text(
-                              g.workSummary[index].getShortName.toString()),
-                          // trailing: SizedBox(
-                          //     width: 80,
-                          //     child:
-                          //         Text(g.sqlSumQty[index].getSumQty.toString())),
-                          title: Text(qtyDetail[index])),
-                    ),
-                  );
-                },
-                itemCount: (g.workSummary.length)),
-          ),
-        ],
-      ),
+    return MasonryGridView.count(
+      padding: EdgeInsets.all(2),
+      itemCount: g.workSummary.length,
+      crossAxisCount: 5,
+      itemBuilder: (context, index) {
+        List<ProcessDetailQty> process =
+            g.workSummary[index].getProcessDetailQtys;
+        return Card(
+          color: Colors.teal[50],
+          margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+          child: ListTile(
+              dense: true,
+              visualDensity: VisualDensity(vertical: -4),
+              contentPadding: EdgeInsets.fromLTRB(2, 2, 2, 0),
+              title: SizedBox(
+                height: process.length * 22,
+                child: MasonryGridView.count(
+                  crossAxisCount: 1,
+                  itemCount: process.length,
+                  itemBuilder: (context, index2) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              child: Text(
+                                '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Text(
+                              '''${process[index2].getQty}''',
+                              style: TextStyle(
+                                  color: process[index2].getQty < 40
+                                      ? Colors.red
+                                      : Colors.green),
+                            )
+                          ],
+                        ),
+                        Divider(height: 1),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              subtitle: Text(
+                g.workSummary[index].getShortName.toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              )),
+        );
+      },
     );
   }
 }

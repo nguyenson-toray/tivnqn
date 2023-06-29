@@ -1,8 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tivnqn/connection/mySqI.dart';
-import 'package:tivnqn/model/dailySumQty.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMk026.dart';
+import 'package:tivnqn/model/sqlMoInfo.dart';
 import 'package:tivnqn/model/sqlSumQty.dart';
 import 'package:tivnqn/model/workSummary.dart';
 
@@ -26,10 +26,13 @@ class g {
   static bool isMySqlConnected = false;
 
   static List<SqlEmployee> sqlEmployees = [];
+  static List<SqlMoInfo> sqlMoInfo = [];
   static List<SqlMK026> sqlMK026 = [];
   static List<SqlSumQty> sqlSumQty = [];
   static List<WorkSummary> workSummary = [];
   static List<SqlEmployee> lineEmployeesScaned = [];
   static List<String> idEmpScaneds = [];
   List<Map<int, String>> defectCodeNames = [];
+
+  static bool showETS = true;
 }

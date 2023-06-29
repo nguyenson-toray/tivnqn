@@ -14,7 +14,7 @@ class MyFuntions {
       final String currentName = g.sqlEmployees
           .firstWhere((emp) => emp.getEmpId == idEmpScaned)
           .getEmpName;
-      final String currentEmpShortName = currentName.split(' ').last;
+      final String currentEmpShortName = currentName;
       late WorkSummary workSummary;
       List<ProcessDetailQty> processDetailQtys = [];
       for (int i = 0; i < g.sqlSumQty.length; i++) {

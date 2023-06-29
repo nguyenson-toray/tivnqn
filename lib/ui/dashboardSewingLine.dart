@@ -16,14 +16,15 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.blueGrey[200],
           actions: [
             Row(
               children: [
+                Icon(Icons.settings),
                 Container(
                   child: Text(
                       DateFormat("hh :mm").format(DateTime.now()).toString()),
                 ),
-                Icon(Icons.settings),
               ],
             )
           ],
@@ -31,11 +32,28 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
             backgroundColor: Colors.blueAccent,
             child: Text(g.currentLine.toString(),
                 style:
-                    const TextStyle(fontSize: 27, fontWeight: FontWeight.bold)),
+                    const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           ),
           title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('MO : ${g.currentMO} * Style : ${g.currentStyle}'),
+              SizedBox(
+                  width: 700,
+                  child: Text(
+                      'MO : ' + g.currentMO + '- Style : ' + g.currentStyle)),
+              Row(
+                children: [
+                  Text("ETS"),
+                  Switch(
+                    value: g.showETS,
+                    onChanged: (value) {
+                      setState(() {
+                        g.showETS = value;
+                      });
+                    },
+                  ),
+                ],
+              )
             ],
           ),
           toolbarHeight: g.appBarH,
@@ -49,24 +67,6 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                 child: const Today()),
             // const LastDays()
           ],
-        )
-        // LayoutGrid(
-        //   areas: '''
-        //       today lastdays
-        //       footer footer
-        //     ''',
-        //   columnSizes: [1.fr, 1.fr],
-        //   rowSizes: [
-        //     auto,
-        //     40.px,
-        //   ],
-        //   children: [
-        //     // gridArea('topPanel').containing(TopPanel()),
-        //     gridArea('today').containing(Today()),
-        //     gridArea('lastdays').containing(LastDays()),
-        //     gridArea('footer').containing(Footer()),
-        //   ],
-        // ),
-        );
+        ));
   }
 }

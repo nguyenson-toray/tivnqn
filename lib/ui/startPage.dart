@@ -53,6 +53,13 @@ class _StartPageState extends State<StartPage> {
       g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
       g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
       g.sqlEmployees = await g.mySql.getEmployees();
+      g.sqlMoInfo = await g.mySql.getMoInfo();
+      g.currentMO = g.sqlMoInfo
+          .firstWhere((element) => element.getLine == g.currentLine)
+          .getMo;
+      g.currentStyle = g.sqlMoInfo
+          .firstWhere((element) => element.getLine == g.currentLine)
+          .getStyle;
     }
     g.workSummary = MyFuntions.summaryData();
     if (g.sqlSumQty.isNotEmpty) {
