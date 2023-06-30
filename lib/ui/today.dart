@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:tivnqn/myFuntions.dart';
 
 class Today extends StatefulWidget {
   const Today({super.key});
@@ -21,9 +22,6 @@ class _TodayState extends State<Today> {
 // Initializing
   @override
   void initState() {
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
-
     g.workSummary.forEach((element) {
       String detail = '';
       List<ProcessDetailQty> processDetailQtys = element.getProcessDetailQtys;
@@ -36,23 +34,25 @@ class _TodayState extends State<Today> {
     super.initState();
   }
 
-  void _scrollListener() {
-    setState(() {
-      var index = (_scrollController.offset / itemSize).round() + 1;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return MasonryGridView.count(
       padding: EdgeInsets.all(2),
       itemCount: g.workSummary.length,
-      crossAxisCount: 5,
+      crossAxisCount: 6,
       itemBuilder: (context, index) {
         List<ProcessDetailQty> process =
             g.workSummary[index].getProcessDetailQtys;
         return Card(
-          color: Colors.teal[50],
+          // shape: RoundedRectangleBorder(
+          //   side: BorderSide(
+          //       color: MyFuntions.getColorByQty(
+          //           process[0].getQty, g.sqlMoInfo.getTargetDay),
+          //       width: 1),
+          //   borderRadius: BorderRadius.circular(5),
+          // ),
+          surfaceTintColor: Colors.pink,
+          color: Colors.cyan[50],
           margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
           child: ListTile(
               dense: true,
@@ -72,7 +72,7 @@ class _TodayState extends State<Today> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SizedBox(
-                              width: 150,
+                              width: 130,
                               child: Text(
                                 '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
                                 overflow: TextOverflow.ellipsis,
@@ -80,10 +80,6 @@ class _TodayState extends State<Today> {
                             ),
                             Text(
                               '''${process[index2].getQty}''',
-                              style: TextStyle(
-                                  color: process[index2].getQty < 40
-                                      ? Colors.red
-                                      : Colors.green),
                             )
                           ],
                         ),
@@ -93,11 +89,13 @@ class _TodayState extends State<Today> {
                   },
                 ),
               ),
-              subtitle: Text(
-                g.workSummary[index].getShortName.toString(),
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              )),
+              subtitle: Text(g.workSummary[index].getShortName.toString(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: MyFuntions.getColorByQty(
+                          process[0].getQty, g.sqlMoInfo.getTargetDay)))),
         );
       },
     );

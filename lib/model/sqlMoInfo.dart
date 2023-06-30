@@ -4,6 +4,7 @@ class SqlMoInfo {
   String mo;
   String style;
   int qty;
+  int targetDay;
   get getLine => this.line;
 
   set setLine(line) => this.line = line;
@@ -19,15 +20,20 @@ class SqlMoInfo {
   get getQty => this.qty;
 
   set setQty(qty) => this.qty = qty;
+
+  get getTargetDay => this.targetDay;
+
+  set setTargetDay(targetDay) => this.targetDay = targetDay;
   SqlMoInfo({
     required this.line,
     required this.mo,
     required this.style,
     required this.qty,
+    required this.targetDay,
   });
 
   @override
   String toString() {
-    return 'SqlMoInfo(line: $line, mo: $mo, style: $style, qty: $qty)';
+    return 'SqlMoInfo(line: $line, mo: $mo, style: $style, qty: $qty, dateTarget: $targetDay)';
   }
 }

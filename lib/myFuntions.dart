@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
@@ -35,6 +36,35 @@ class MyFuntions {
       }
       result.add(workSummary);
     });
+    return result;
+  }
+
+  Future<bool> initDataStarUp() async {
+    g.isMySqlConnected = await g.mySql.initConnection();
+    if (g.isMySqlConnected) {
+      g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
+      g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
+      g.sqlEmployees = await g.mySql.getEmployees();
+      g.sqlMoInfo = await g.mySql.getMoInfo(g.currentLine);
+      g.currentMO = g.sqlMoInfo.getMo;
+      g.currentStyle = g.sqlMoInfo.getStyle;
+    }
+    g.workSummary = MyFuntions.summaryData();
+
+    return (g.sqlSumQty.isNotEmpty);
+  }
+
+  static Color getColorByQty(int qty, int target) {
+    Color result = Colors.yellow;
+    int ration = (qty / target * 100).round();
+    if (ration <= 25)
+      result = Colors.red;
+    else if (ration <= 50)
+      result = Colors.orange;
+    else if (ration <= 75)
+      result = Colors.yellow;
+    else
+      result = Colors.green;
     return result;
   }
 }

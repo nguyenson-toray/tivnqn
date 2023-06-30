@@ -28,7 +28,6 @@ Future<void> detectDeviceInfo() async {
   print('screenHeightPixel : ${g.screenHeightPixel}');
   print('screenWidthInch : ${g.screenWidthInch}');
   print('screenHeightInch : ${g.screenHeightInch}');
-
   final ip = await NetworkInfo().getWifiIP();
   if (ip == '192.168.1.69' || ip == '192.168.1.70') {
     g.isTVLine = false;
@@ -38,17 +37,11 @@ Future<void> detectDeviceInfo() async {
 
 getsharedPreferences() async {
   g.sharedPreferences = await SharedPreferences.getInstance();
-  // if (g.sharedPreferences.getInt("currentLine") == null) {
-  //   g.sharedPreferences.setInt('currentLine', 1);
-  //   g.currentLine = 1;
-  // } else {
-  //   g.currentLine = g.sharedPreferences.getInt("currentLine")!;
-  // }
-  if (g.sharedPreferences.getInt("rangeTime") == null) {
-    g.sharedPreferences.setInt('rangeTime', 6);
-    g.rangeTime = 6;
+  if (g.sharedPreferences.getInt("CurrentLine") == null) {
+    g.sharedPreferences.setInt('CurrentLine', 8);
+    g.currentLine = 8;
   } else {
-    g.rangeTime = g.sharedPreferences.getInt("rangeTime")!;
+    g.currentLine = g.sharedPreferences.getInt("CurrentLine")!;
   }
 }
 

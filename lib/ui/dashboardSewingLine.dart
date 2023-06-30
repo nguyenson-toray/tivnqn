@@ -12,28 +12,57 @@ class DashboardSewingLine extends StatefulWidget {
 }
 
 class _DashboardSewingLineState extends State<DashboardSewingLine> {
+  final lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.blueGrey[200],
+          backgroundColor: Colors.lightBlue[700],
           actions: [
+            // Text(DateFormat("hh :mm").format(DateTime.now()).toString()),
+            Text('LINE : '),
+            DropdownButton<String>(
+              value: g.currentLine.toString(),
+              items: lines.map<DropdownMenuItem<String>>((int value) {
+                return DropdownMenuItem<String>(
+                  value: value.toString(),
+                  child: Text(
+                    value.toString(),
+                    // style: TextStyle(fontSize: 18),
+                  ),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  g.currentLine = int.parse(newValue!);
+                  // changeSetting();
+                });
+              },
+            ),
+            // InkWell(
+            //   child: Icon(Icons.settings),
+            //   onTap: () {},
+            // ),
             Row(
               children: [
-                Icon(Icons.settings),
-                Container(
-                  child: Text(
-                      DateFormat("hh :mm").format(DateTime.now()).toString()),
+                Text("ETS"),
+                Switch(
+                  value: g.showETS,
+                  onChanged: (value) {
+                    setState(() {
+                      g.showETS = value;
+                    });
+                  },
                 ),
               ],
-            )
+            ),
           ],
-          leading: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
-            child: Text(g.currentLine.toString(),
-                style:
-                    const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-          ),
+          // leading: CircleAvatar(
+          //   backgroundColor: Colors.white,
+          //   child: Text(g.currentLine.toString(),
+          //       style:
+          //           const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          // ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -41,19 +70,6 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                   width: 700,
                   child: Text(
                       'MO : ' + g.currentMO + '- Style : ' + g.currentStyle)),
-              Row(
-                children: [
-                  Text("ETS"),
-                  Switch(
-                    value: g.showETS,
-                    onChanged: (value) {
-                      setState(() {
-                        g.showETS = value;
-                      });
-                    },
-                  ),
-                ],
-              )
             ],
           ),
           toolbarHeight: g.appBarH,
@@ -64,7 +80,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
             SizedBox(
                 width: g.screenWidthPixel / 2,
                 height: 500,
-                child: const Today()),
+                child: g.showETS ? Today() : LastDays()),
             // const LastDays()
           ],
         ));

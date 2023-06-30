@@ -95,11 +95,12 @@ ORDER BY CODE ASC''';
     return result;
   }
 
-  Future<List<SqlMoInfo>> getMoInfo() async {
-    String query = '''SELECT line, mo, style, qty
+  Future<SqlMoInfo> getMoInfo(int line) async {
+    String query = '''SELECT line, mo, style, qty, TargetDay
 FROM A_MoInfo
-ORDER BY line''';
-    List<SqlMoInfo> result = [];
+WHERE line = ${line}''';
+    late SqlMoInfo result =
+        SqlMoInfo(line: 1, mo: 'mo', style: 'style', qty: 1, targetDay: 1);
 
     var tempResult;
     print('getMoInfo : $query');
@@ -112,18 +113,19 @@ ORDER BY line''';
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    result.add(SqlMoInfo(
+                    result = SqlMoInfo(
                         line: element['line'],
                         mo: element['mo'],
                         style: element['style'],
-                        qty: element['qty'])),
+                        qty: element['qty'],
+                        targetDay: element['TargetDay']),
                   }
               }
           });
     } catch (e) {
       print(e.toString());
     }
-
+    print(result);
     return result;
   }
 

@@ -26,7 +26,7 @@ class g {
   static bool isMySqlConnected = false;
 
   static List<SqlEmployee> sqlEmployees = [];
-  static List<SqlMoInfo> sqlMoInfo = [];
+  static late SqlMoInfo sqlMoInfo;
   static List<SqlMK026> sqlMK026 = [];
   static List<SqlSumQty> sqlSumQty = [];
   static List<WorkSummary> workSummary = [];
