@@ -11,7 +11,8 @@ class _FooterState extends State<Footer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.indigo,
+      color: Colors.red,
+      child: Text('nnn'),
     );
   }
 }

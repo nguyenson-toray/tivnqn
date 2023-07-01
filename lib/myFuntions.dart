@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
+import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
 
 class MyFuntions {
-  static List<WorkSummary> summaryData() {
+  static List<WorkSummary> summaryDailyDataETS() {
+    g.processScaned.clear();
+    g.processNotScan.clear();
+
     List<WorkSummary> result = [];
     g.sqlSumQty.forEach((element) {
       g.idEmpScaneds.add(element.getEmpId);
+      g.processScaned.add(element.getGxNo);
     });
     g.idEmpScaneds = g.idEmpScaneds.toSet().toList();
-
+    g.processScaned = g.processScaned.toSet().toList();
+    g.processNotScan =
+        g.processAll.toSet().difference(g.processScaned.toSet()).toList();
     g.idEmpScaneds.forEach((idEmpScaned) {
       final String currentName = g.sqlEmployees
           .firstWhere((emp) => emp.getEmpId == idEmpScaned)
           .getEmpName;
       final String currentEmpShortName = currentName;
-      late WorkSummary workSummary;
+      WorkSummary workSummary = WorkSummary(
+          shortName: 'shortName',
+          processDetailQtys: [
+            ProcessDetailQty(GxNo: 0, GxName: 'GxName', qty: 0)
+          ]);
       List<ProcessDetailQty> processDetailQtys = [];
       for (int i = 0; i < g.sqlSumQty.length; i++) {
         if (idEmpScaned == g.sqlSumQty[i].EmpId) {
@@ -39,8 +52,9 @@ class MyFuntions {
     return result;
   }
 
-  Future<bool> initDataStarUp() async {
-    g.isMySqlConnected = await g.mySql.initConnection();
+  static Future<bool> getSqlData() async {
+    g.isMySqlConnected =
+        await g.mySql.initConnection(g.dbETSDB_TI, g.sqlUser, g.sqlPass);
     if (g.isMySqlConnected) {
       g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
       g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
@@ -49,8 +63,11 @@ class MyFuntions {
       g.currentMO = g.sqlMoInfo.getMo;
       g.currentStyle = g.sqlMoInfo.getStyle;
     }
-    g.workSummary = MyFuntions.summaryData();
-
+    g.isMySqlConnected =
+        await g.mySql.initConnection(g.dbProduction, g.sqlUser, g.sqlPass);
+    if (g.isMySqlConnected) {
+      g.sqlT01 = await g.mySql.getT01InspectionData(g.currentLine);
+    }
     return (g.sqlSumQty.isNotEmpty);
   }
 
@@ -58,13 +75,64 @@ class MyFuntions {
     Color result = Colors.yellow;
     int ration = (qty / target * 100).round();
     if (ration <= 25)
-      result = Colors.red;
+      result = Colors.redAccent;
     else if (ration <= 50)
-      result = Colors.orange;
+      result = Colors.orangeAccent;
     else if (ration <= 75)
-      result = Colors.yellow;
+      result = Colors.yellowAccent;
     else
-      result = Colors.green;
+      result = Colors.greenAccent;
+    return result;
+  }
+
+  static bool parseBool(int integer) {
+    if (integer > 0)
+      return true;
+    else
+      return false;
+  }
+
+  static List<ChartData> sqlT01ToChartData(List<SqlT01> dataInput) {
+    List<SqlT01> input = [...dataInput];
+    List<ChartData> result = [];
+    List<String> dates = [];
+    input.forEach((element) {
+      dates.add(element.getX02);
+    });
+    dates = dates.toSet().toList();
+    dates.forEach((dateString) {
+      DateTime currentDate = DateFormat(g.dateFormat).parse(dateString);
+      num qty1st = 0;
+      num qty1stOK = 0;
+      num qty1stNOK = 0;
+      num qtyAfterRepaire = 0;
+      num qtyOKAfterRepaire = 0;
+      num rationDefect1st = 0;
+      num rationDefectAfterRepaire = 0;
+      input.forEach((data) {
+        if (dateString == data.getX02) {
+          qty1st += data.getX06;
+          qty1stOK += data.getX07;
+          qtyAfterRepaire += data.getX08;
+          qtyOKAfterRepaire += data.getX09;
+        }
+        qty1stNOK = qty1st - qty1stOK;
+        rationDefect1st = double.parse((qty1stNOK / qty1st).toStringAsFixed(4));
+        rationDefectAfterRepaire = double.parse(
+            ((qtyAfterRepaire - qtyOKAfterRepaire) / qtyAfterRepaire)
+                .toStringAsFixed(4));
+      });
+      ChartData data = ChartData(
+          date: dateString,
+          qty1st: qty1st,
+          qty1stOK: qty1stOK,
+          qty1stNOK: qty1stNOK,
+          qtyAfterRepaire: qtyAfterRepaire,
+          qtyOKAfterRepaire: qtyOKAfterRepaire,
+          rationDefect1st: rationDefect1st,
+          rationDefectAfterRepaire: rationDefectAfterRepaire);
+      result.add(data);
+    });
     return result;
   }
 }

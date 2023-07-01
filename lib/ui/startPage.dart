@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:tivnqn/global.dart';
-import 'package:tivnqn/model/sqlEmployee.dart';
-import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboardSewingLine.dart';
 
 class StartPage extends StatefulWidget {
@@ -46,26 +45,18 @@ class _StartPageState extends State<StartPage> {
     super.initState();
   }
 
-  Future<bool> initData() async {
+  Future<void> initData() async {
     fluWakeLock.enable();
-    g.isMySqlConnected = await g.mySql.initConnection();
-    if (g.isMySqlConnected) {
-      g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
-      g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
-      g.sqlEmployees = await g.mySql.getEmployees();
-      g.sqlMoInfo = await g.mySql.getMoInfo(g.currentLine);
-      g.currentMO = g.sqlMoInfo.getMo;
-      g.currentStyle = g.sqlMoInfo.getStyle;
-    }
-    g.workSummary = MyFuntions.summaryData();
-    if (g.sqlSumQty.isNotEmpty) {
-      Loader.hide();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardSewingLine()),
-      );
-    }
-    return (g.sqlSumQty.isNotEmpty);
+    await MyFuntions.getSqlData();
+    g.workSummary = MyFuntions.summaryDailyDataETS();
+    g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
+    g.chartUi = ChartUI.createChartUI(
+        g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
+    Loader.hide();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const DashboardSewingLine()),
+    );
   }
 
   showLoading() {

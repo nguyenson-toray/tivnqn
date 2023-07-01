@@ -1,4 +1,4 @@
-package tivnqn.com.vn.tivnqn
+package tivnqn.dashboard
 
 import io.flutter.embedding.android.FlutterActivity
 

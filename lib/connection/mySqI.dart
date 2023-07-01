@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMk026.dart';
 import 'package:tivnqn/model/sqlMoInfo.dart';
 import 'package:tivnqn/model/sqlSumQty.dart';
+import 'package:tivnqn/model/sqlT01.dart';
 
 class MySql {
   bool isLoading = false;
@@ -21,7 +23,7 @@ class MySql {
   final String tblineDayData = 'tblineDayData';
   final String tbBsReturnWorkCode = 'tbBsReturnWorkCode';
   bool lanConnectionAvailable = false;
-  Future<bool> initConnection() async {
+  Future<bool> initConnection(String dbName, user, pass) async {
     bool isConnected = false;
     await Socket.connect(ipLAN, port, timeout: const Duration(seconds: 3))
         .then((socket) {
@@ -175,9 +177,11 @@ ORDER BY GxNo ASC''';
             }
           else
             {
+              g.processAll.clear(),
               tempResult = value.cast<Map<String, dynamic>>(),
               for (var element in tempResult)
                 {
+                  g.processAll.add(element['GxNo']),
                   result.add(SqlMK026(
                       GxNo: element['GxNo'],
                       GxName: element['GxName'],
@@ -211,5 +215,42 @@ ORDER BY GxNo ASC''';
             }
         });
     return tempResult;
+  }
+
+  Future<List<SqlT01>> getT01InspectionData(int line) async {
+    List<SqlT01> result = [];
+    List<Map<String, dynamic>> tempResult = [];
+    final String query = '''SELECT X02, X06, X07, X08, X09
+FROM [Production].[dbo].[T01_1st inspection data]
+WHERE X01=8 and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.rangeDays}, getdate()) )
+ORDER BY X02 ASC
+    ''';
+    print('getT01InspectionData ${line} ');
+    print(query);
+    try {
+      var tempResult = [];
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {
+                //error
+              }
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    result.add(SqlT01(
+                        x02: element['X02'],
+                        x06: element['X06'],
+                        x07: element['X07'],
+                        x08: element['X08'],
+                        x09: element['X09']))
+                  }
+              }
+          });
+    } catch (e) {
+      print('getInspectionData --> Exception : ' + e.toString());
+    }
+    return result;
   }
 }

@@ -38,11 +38,11 @@ Future<void> detectDeviceInfo() async {
 
 getsharedPreferences() async {
   g.sharedPreferences = await SharedPreferences.getInstance();
-  if (g.sharedPreferences.getInt("CurrentLine") == null) {
-    g.sharedPreferences.setInt('CurrentLine', 8);
+  if (g.sharedPreferences.getInt("currentLine") == null) {
+    g.sharedPreferences.setInt('currentLine', 8);
     g.currentLine = 8;
   } else {
-    g.currentLine = g.sharedPreferences.getInt("CurrentLine")!;
+    g.currentLine = g.sharedPreferences.getInt("currentLine")!;
   }
 }
 

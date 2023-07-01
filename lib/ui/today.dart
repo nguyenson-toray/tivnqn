@@ -83,7 +83,7 @@ class _TodayState extends State<Today> {
                             )
                           ],
                         ),
-                        Divider(height: 1),
+                        Divider(height: 1, color: Colors.white),
                       ],
                     );
                   },
