@@ -10,6 +10,7 @@ class MyFuntions {
   static List<WorkSummary> summaryDailyDataETS() {
     g.processScaned.clear();
     g.processNotScan.clear();
+    g.idEmpScaneds.clear();
 
     List<WorkSummary> result = [];
     g.sqlSumQty.forEach((element) {
@@ -35,10 +36,9 @@ class MyFuntions {
         if (idEmpScaned == g.sqlSumQty[i].EmpId) {
           final int GxNo = g.sqlSumQty[i].getGxNo;
           final int qty = g.sqlSumQty[i].getSumQty;
-          final String GxName = g.sqlMK026
-              .firstWhere(
-                  (element) => element.getGxNo == g.sqlSumQty[i].getGxNo)
-              .getGxName;
+          final String GxName = g.processDetail
+              .firstWhere((element) => element.getNo == g.sqlSumQty[i].getGxNo)
+              .getName;
           final processDetailQty =
               ProcessDetailQty(GxNo: GxNo, GxName: GxName, qty: qty);
           processDetailQtys.add(processDetailQty);
@@ -49,19 +49,25 @@ class MyFuntions {
       }
       result.add(workSummary);
     });
+    print('summaryDailyDataETS => ${result.length}');
     return result;
   }
 
   static Future<bool> getSqlData() async {
+    print('getSqlData : g.needLoadAllData = ${g.needLoadAllData}');
     g.isMySqlConnected =
         await g.mySql.initConnection(g.dbETSDB_TI, g.sqlUser, g.sqlPass);
     if (g.isMySqlConnected) {
+      if (g.needLoadAllData) {
+        // g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
+        g.sqlEmployees = await g.mySql.getEmployees();
+        g.sqlMoInfo = await g.mySql.getMoInfo(g.currentLine);
+        g.currentMO = g.sqlMoInfo.getMo;
+        g.currentStyle = g.sqlMoInfo.getStyle;
+        g.currentCnid = await g.mySql.getCnid(g.currentMO);
+        g.processDetail = await g.mySql.getProcessDetail(g.currentCnid);
+      }
       g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
-      g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
-      g.sqlEmployees = await g.mySql.getEmployees();
-      g.sqlMoInfo = await g.mySql.getMoInfo(g.currentLine);
-      g.currentMO = g.sqlMoInfo.getMo;
-      g.currentStyle = g.sqlMoInfo.getStyle;
     }
     g.isMySqlConnected =
         await g.mySql.initConnection(g.dbProduction, g.sqlUser, g.sqlPass);
@@ -75,13 +81,13 @@ class MyFuntions {
     Color result = Colors.yellow;
     int ration = (qty / target * 100).round();
     if (ration <= 25)
-      result = Colors.redAccent;
+      result = Colors.red;
     else if (ration <= 50)
-      result = Colors.orangeAccent;
+      result = Colors.orange;
     else if (ration <= 75)
-      result = Colors.yellowAccent;
+      result = Colors.yellow;
     else
-      result = Colors.greenAccent;
+      result = Colors.green;
     return result;
   }
 

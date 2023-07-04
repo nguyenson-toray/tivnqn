@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMk026.dart';
 import 'package:tivnqn/model/sqlMoInfo.dart';
@@ -94,6 +95,59 @@ ORDER BY CODE ASC''';
       print(e.toString());
     }
 
+    return result;
+  }
+
+  Future<String> getCnid(String mo) async {
+    String cnid = '';
+    String queryGetCnid = ''' SELECT TOP(1) Cnid
+ FROM  T_ZdGxCheck 
+ WHERE ZDCODE = '$mo'  
+ ORDER BY CheckDate DESC''';
+
+    try {
+      await connection
+          .getRowsOfQueryResult(queryGetCnid)
+          .then((value) => {cnid = value[0]['Cnid']});
+    } catch (e) {
+      print(e.toString());
+    }
+    print('getCnid of MO: $mo => $cnid');
+    return cnid;
+  }
+
+  Future<List<ProcessDetail>> getProcessDetail(String cnid) async {
+    String query = '''  SELECT cnid, GxNO, GxCode, gxName
+ FROM [ETSDB_TI].[dbo].tbSczzdGxDetail  
+ WHERE cnid =  '$cnid' AND GxType = 'Sewing'
+ ORDER BY GxNO ASC ''';
+
+    List<ProcessDetail> result = [];
+    var tempResult;
+    print('getProcessDetail : $query');
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                g.processAll.clear(),
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    g.processAll.add(element['GxNO']),
+                    result.add(ProcessDetail(
+                        cind: cnid,
+                        no: element['GxNO'],
+                        code: element['GxCode'],
+                        name: element['gxName'])),
+                  }
+              }
+          });
+    } catch (e) {
+      print(e.toString());
+    }
+    print(result.length);
     return result;
   }
 
@@ -222,7 +276,7 @@ ORDER BY GxNo ASC''';
     List<Map<String, dynamic>> tempResult = [];
     final String query = '''SELECT X02, X06, X07, X08, X09
 FROM [Production].[dbo].[T01_1st inspection data]
-WHERE X01=8 and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.rangeDays}, getdate()) )
+WHERE X01 = ${line} and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.rangeDays}, getdate()) )
 ORDER BY X02 ASC
     ''';
     print('getT01InspectionData ${line} ');

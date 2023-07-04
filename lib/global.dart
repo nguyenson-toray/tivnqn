@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tivnqn/model/chartData.dart';
+import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/connection/mySqI.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
@@ -24,7 +27,6 @@ class g {
   static final dbProduction = 'Production';
   static final dbETSDB_TI = 'ETSDB_TI';
 
-  static bool isTV = true;
   static bool isTVLine = true;
   static String version = '1.0.0';
   static double screenWidthPixel = 0;
@@ -34,9 +36,11 @@ class g {
   static double appBarH = 50;
   static double todayWidth = 200;
 
+  static bool needLoadAllData = true;
   static int currentLine = 8;
   static String currentMO = '2023JUN003';
   static String currentStyle = 'DS-23AU001';
+  static String currentCnid = '';
   static int rangeTime = 6;
   static late SharedPreferences sharedPreferences;
   static var mySql = MySql();
@@ -44,10 +48,11 @@ class g {
 
   static List<SqlEmployee> sqlEmployees = [];
   static late SqlMoInfo sqlMoInfo;
-  static List<SqlMK026> sqlMK026 = [];
+  // static List<SqlMK026> sqlMK026 = [];
   static List<SqlSumQty> sqlSumQty = [];
   static List<WorkSummary> workSummary = [];
   static List<SqlEmployee> employeesScaned = [];
+  static List<ProcessDetail> processDetail = [];
   static List<int> processAll = [];
   static List<int> processScaned = [];
   static List<int> processNotScan = [];

@@ -62,12 +62,12 @@ class _StartPageState extends State<StartPage> {
   showLoading() {
     return Loader.show(
       context,
-      overlayColor: g.isTV ? Colors.white : Colors.black54,
+      overlayColor: Colors.white,
       progressIndicator: SizedBox(
           width: 100,
           height: 200,
           child: Column(children: [
-            g.isTV ? Image.asset('assets/logo.png') : Container(),
+            Image.asset('assets/logo.png'),
             Image.asset('assets/loading.gif')
           ])),
     );

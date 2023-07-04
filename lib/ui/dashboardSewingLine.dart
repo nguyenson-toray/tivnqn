@@ -19,15 +19,16 @@ class DashboardSewingLine extends StatefulWidget {
 
 class _DashboardSewingLineState extends State<DashboardSewingLine> {
   final lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  bool changeSetting = false;
   ChartSeriesController? _chartSeriesController;
 
   @override
   void initState() {
-    if (DateTime.now().hour > 3)
+    g.needLoadAllData = false;
+    if (DateTime.now().hour >= 9)
       setState(() {
         g.showETS = true;
       });
-    ;
     Timer.periodic(new Duration(seconds: g.secondsAutoGetData), (timer) {
       refreshData();
       if (DateTime.now().hour > 17) exit(0);
@@ -39,7 +40,9 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
   Future<void> refreshData() async {
     await MyFuntions.getSqlData();
     setState(() {
+      g.workSummary.clear();
       g.workSummary = MyFuntions.summaryDailyDataETS();
+      g.chartData.clear();
       g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
       g.chartUi = ChartUI.createChartUI(
           g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
@@ -49,35 +52,96 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
     });
   }
 
+  Widget setting() {
+    return Container(
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text('LINE : '),
+        DropdownButton<String>(
+          value: g.currentLine.toString(),
+          items: lines.map<DropdownMenuItem<String>>((int value) {
+            return DropdownMenuItem<String>(
+              value: value.toString(),
+              child: Text(
+                value.toString(),
+                style: TextStyle(fontSize: 20),
+              ),
+            );
+          }).toList(),
+          onChanged: (String? newValue) async {
+            g.currentLine = int.parse(newValue!);
+            g.sharedPreferences.setInt('currentLine', g.currentLine);
+            g.needLoadAllData = true;
+            await refreshData();
+            g.needLoadAllData = false;
+          },
+        ),
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.lightBlue,
           actions: [
-            Text(
-              'LINE : ',
-              style: TextStyle(fontSize: 8),
-            ),
-            DropdownButton<String>(
-              value: g.currentLine.toString(),
-              items: lines.map<DropdownMenuItem<String>>((int value) {
-                return DropdownMenuItem<String>(
-                  value: value.toString(),
-                  child: Text(
-                    value.toString(),
-                    style: TextStyle(fontSize: 8),
+            g.isTVLine
+                ? Row(
+                    children: [
+                      Text(changeSetting ? 'Lưu' : 'Cài đặt'),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            changeSetting = !changeSetting;
+                          });
+                        },
+                        child: changeSetting
+                            ? Icon(
+                                Icons.save,
+                                color: Colors.orange,
+                              )
+                            : Icon(
+                                Icons.settings,
+                                color: Colors.white,
+                              ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      InkWell(
+                          onTap: () async {
+                            setState(() {
+                              g.currentLine > 1
+                                  ? g.currentLine = g.currentLine - 1
+                                  : g.currentLine = 9;
+                            });
+                            g.sharedPreferences
+                                .setInt('currentLine', g.currentLine);
+                            g.needLoadAllData = true;
+                            await refreshData();
+                            g.needLoadAllData = false;
+                          },
+                          child: Icon(Icons.arrow_back)),
+                      Text('LINE'),
+                      InkWell(
+                          onTap: () async {
+                            setState(() {
+                              g.currentLine < 9
+                                  ? g.currentLine = g.currentLine + 1
+                                  : g.currentLine = 1;
+                            });
+                            g.sharedPreferences
+                                .setInt('currentLine', g.currentLine);
+                            g.needLoadAllData = true;
+                            await refreshData();
+                            g.needLoadAllData = false;
+                          },
+                          child: Icon(Icons.arrow_forward)),
+                    ],
                   ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  g.currentLine = int.parse(newValue!);
-                  g.sharedPreferences.setInt('currentLine', g.currentLine);
-                  refreshData();
-                  // changeSetting();
-                });
-              },
+            SizedBox(
+              width: 20,
             ),
             Row(
               children: [
@@ -112,19 +176,17 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               ),
             ],
           ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                g.showETS ? 'SẢN LƯỢNG HÔM NAY - ETS' : 'SẢN LƯỢNG & TỈ LỆ LỖI',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30),
-              ),
-            ],
-          ),
+          title: changeSetting
+              ? setting()
+              : Text(
+                  g.showETS
+                      ? 'SẢN LƯỢNG HÔM NAY - ETS : ${g.currentStyle.trim()}'
+                      : 'SẢN LƯỢNG & TỈ LỆ LỖI',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28),
+                ),
           toolbarHeight: g.appBarH,
           centerTitle: true,
         ),
@@ -134,18 +196,28 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               ? Column(
                   children: [
                     Expanded(child: Today()),
-                    SizedBox(
-                      height: 30,
-                      child: Marquee(
-                          velocity: 30.0,
-                          scrollAxis: Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red),
-                          text:
-                              '''CĐ CHƯA CÓ SẢN LƯỢNG : ${g.processNotScan}'''),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                            height: 25,
+                            width: 25,
+                            child: Image.asset('assets/warning2.gif')),
+                        SizedBox(
+                          height: 25,
+                          width: 900,
+                          child: Marquee(
+                              velocity: 30.0,
+                              scrollAxis: Axis.horizontal,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red),
+                              text:
+                                  '''CĐ CHƯA CÓ SẢN LƯỢNG : ${g.processNotScan}'''),
+                        ),
+                      ],
                     ),
                   ],
                 )

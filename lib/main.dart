@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initializeDateFormatting('en');
+  initializeDateFormatting('vi');
   await getsharedPreferences();
   await detectDeviceInfo();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -40,7 +40,6 @@ getsharedPreferences() async {
   g.sharedPreferences = await SharedPreferences.getInstance();
   if (g.sharedPreferences.getInt("currentLine") == null) {
     g.sharedPreferences.setInt('currentLine', 8);
-    g.currentLine = 8;
   } else {
     g.currentLine = g.sharedPreferences.getInt("currentLine")!;
   }
