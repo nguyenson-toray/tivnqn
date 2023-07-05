@@ -122,12 +122,23 @@ class _TodayState extends State<Today> {
                   ),
                   // color: MyFuntions.getColorByQty(
                   //     process[0].getQty, g.sqlMoInfo.getTargetDay),
-                  child: Text(g.workSummary[index].getShortName.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 13,
-                      )),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      process[0].getQty > g.sqlMoInfo.getTargetDay
+                          ? Icon(
+                              Icons.star,
+                              color: Colors.white,
+                            )
+                          : Container(),
+                      Text(g.workSummary[index].getShortName.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 13,
+                          )),
+                    ],
+                  ),
                 )
               ]),
         );
