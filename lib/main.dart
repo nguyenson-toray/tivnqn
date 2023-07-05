@@ -37,7 +37,7 @@ Future<void> detectDeviceInfo() async {
   if (ip == '192.168.1.69' || ip == '192.168.1.70') {
     g.isTVLine = false;
   }
-  print('isTVLine : $g.isTVLine');
+  print('isTVLine :' + g.isTVLine.toString());
 }
 
 getsharedPreferences() async {

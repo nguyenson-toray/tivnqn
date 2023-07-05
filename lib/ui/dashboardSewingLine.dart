@@ -167,14 +167,14 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
             children: [
               Image.asset('assets/logo_white.png'),
               CircleAvatar(
-                maxRadius: 24,
+                maxRadius: g.appBarH / 2 - 2,
                 backgroundColor: Colors.white,
                 child: Center(
                   child: Text(
                     g.currentLine.toString(),
                     style: const TextStyle(
-                        color: Colors.blue,
-                        fontSize: 34,
+                        color: Colors.blueAccent,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -184,19 +184,20 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
           title: changeSetting
               ? setting()
               : Text(
+                  textAlign: TextAlign.center,
                   g.showETS
                       ? 'SẢN LƯỢNG HÔM NAY : ${g.currentStyle.trim()}'
                       : 'SẢN LƯỢNG & TỈ LỆ LỖI',
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 30),
+                      fontSize: 24),
                 ),
           toolbarHeight: g.appBarH,
           centerTitle: true,
         ),
         body: Container(
-          padding: EdgeInsets.all(2),
+          // padding: EdgeInsets.all(1),
           child: g.showETS
               ? Column(
                   children: [
@@ -205,26 +206,26 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                         : ShowNotification(),
                     Expanded(child: Today()),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SizedBox(
-                            height: 25,
-                            width: 25,
+                            height: 23,
+                            width: 23,
                             child: Image.asset('assets/warning2.gif')),
                         SizedBox(
-                          height: 25,
-                          width: 900,
+                          height: 23,
+                          width: 890,
                           child: Marquee(
                               blankSpace: 200,
                               velocity: 30.0,
                               scrollAxis: Axis.horizontal,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
                               text:
-                                  '''0-25% : ĐỎ   26-50% : CAM   51-75% : VÀNG   76-100% : XANH       Tổng ${g.idEmpScaneds.length} bạn CN có sản lượng. Những công đoạn chưa có sản lượng : ${g.processNotScan}'''),
+                                  '''0-25% : ĐỎ   26-50% : CAM   51-75% : VÀNG   76-100% : XANH          Tổng ${g.idEmpScaneds.length} bạn CN có sản lượng.          ${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
                         ),
                       ],
                     ),

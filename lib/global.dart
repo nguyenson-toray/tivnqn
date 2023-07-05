@@ -32,7 +32,7 @@ class g {
   static double screenHeightPixel = 0;
   static double screenWidthInch = 0;
   static double screenHeightInch = 0;
-  static double appBarH = 50;
+  static double appBarH = 35;
   static double todayWidth = 200;
 
   static bool needLoadAllData = true;
