@@ -8,7 +8,8 @@ class ChartUI {
   static Legend myLegend = Legend(
       itemPadding: 5,
       // height: '40%',
-      textStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.black),
+      textStyle: TextStyle(
+          fontSize: 18, fontWeight: FontWeight.normal, color: Colors.black),
       position: LegendPosition.bottom,
       isVisible: true,
       overflowMode: LegendItemOverflowMode.wrap);

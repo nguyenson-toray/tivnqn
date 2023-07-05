@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:blinking_text/blinking_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartUI.dart';
-import 'package:tivnqn/ui/footer.dart';
+import 'package:tivnqn/ui/showNotification.dart';
 import 'package:tivnqn/ui/today.dart';
 import 'package:tivnqn/global.dart';
 import 'package:marquee/marquee.dart';
@@ -25,13 +25,18 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
   @override
   void initState() {
     g.needLoadAllData = false;
-    if (DateTime.now().hour >= 9)
-      setState(() {
-        g.showETS = true;
-      });
-    Timer.periodic(new Duration(seconds: g.secondsAutoGetData), (timer) {
+    if (DateTime.now().isAfter(
+            DateTime.parse(g.todayString + " " + g.setting.getShowBegin)) &&
+        DateTime.now().isBefore(
+            DateTime.parse(g.todayString + " " + g.setting.getShowEnd)))
+      g.showETS = false;
+    else
+      g.showETS = true;
+
+    Timer.periodic(new Duration(seconds: g.setting.getReloadTimeSeconds),
+        (timer) {
       refreshData();
-      if (DateTime.now().hour > 17) exit(0);
+      if (DateTime.now().hour >= 17) exit(0);
     });
     // TODO: implement initState
     super.initState();
@@ -63,7 +68,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               value: value.toString(),
               child: Text(
                 value.toString(),
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 22),
               ),
             );
           }).toList(),
@@ -168,8 +173,8 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                   child: Text(
                     g.currentLine.toString(),
                     style: const TextStyle(
-                        color: Colors.orange,
-                        fontSize: 35,
+                        color: Colors.blue,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -180,12 +185,12 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               ? setting()
               : Text(
                   g.showETS
-                      ? 'SẢN LƯỢNG HÔM NAY - ETS : ${g.currentStyle.trim()}'
+                      ? 'SẢN LƯỢNG HÔM NAY : ${g.currentStyle.trim()}'
                       : 'SẢN LƯỢNG & TỈ LỆ LỖI',
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 28),
+                      fontSize: 30),
                 ),
           toolbarHeight: g.appBarH,
           centerTitle: true,
@@ -195,6 +200,9 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
           child: g.showETS
               ? Column(
                   children: [
+                    g.setting.showNotification == 0
+                        ? Container()
+                        : ShowNotification(),
                     Expanded(child: Today()),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -207,15 +215,16 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                           height: 25,
                           width: 900,
                           child: Marquee(
+                              blankSpace: 200,
                               velocity: 30.0,
                               scrollAxis: Axis.horizontal,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.red),
+                                  color: Colors.black),
                               text:
-                                  '''CĐ CHƯA CÓ SẢN LƯỢNG : ${g.processNotScan}'''),
+                                  '''0-25% : ĐỎ   26-50% : CAM   51-75% : VÀNG   76-100% : XANH       Tổng ${g.idEmpScaneds.length} bạn CN có sản lượng. Những công đoạn chưa có sản lượng : ${g.processNotScan}'''),
                         ),
                       ],
                     ),

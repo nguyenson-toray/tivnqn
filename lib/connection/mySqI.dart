@@ -5,8 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/processDetail.dart';
+import 'package:tivnqn/model/setting.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
-import 'package:tivnqn/model/sqlMk026.dart';
 import 'package:tivnqn/model/sqlMoInfo.dart';
 import 'package:tivnqn/model/sqlSumQty.dart';
 import 'package:tivnqn/model/sqlT01.dart';
@@ -67,6 +67,47 @@ class MySql {
       print('initializeConnection - $ipLAN FAILSE :$e');
     }
     return isConnected;
+  }
+
+  Future<Setting> getSetting() async {
+    String query =
+        '''SELECT reloadTimeSeconds, showNotification, text, imgURL, showBegin, showEnd, chartBegin, chartEnd, rangeDay
+FROM A_Setting''';
+    late Setting result = Setting(
+        reloadTimeSeconds: 30,
+        showNotification: 0,
+        text: 'text',
+        imgURL: 'imgURL',
+        showBegin: 'showBegin',
+        showEnd: 'showEnd',
+        chartBegin: 'chartBegin',
+        chartEnd: 'chartEnd',
+        rangeDay: 14);
+    var tempResult = [];
+    var element;
+    await connection.getRowsOfQueryResult(query).then((value) => {
+          if (value.runtimeType == String)
+            {
+              //error
+            }
+          else
+            {
+              tempResult = value.cast<Map<String, dynamic>>(),
+              element = tempResult[0],
+              result = Setting(
+                  reloadTimeSeconds: element['reloadTimeSeconds'],
+                  showNotification: element['showNotification'],
+                  text: element['text'],
+                  imgURL: element['imgURL'],
+                  showBegin: element['showBegin'],
+                  showEnd: element['showEnd'],
+                  chartBegin: element['chartBegin'],
+                  chartEnd: element['chartEnd'],
+                  rangeDay: element['rangeDay'])
+            }
+        });
+
+    return result;
   }
 
   Future<List<SqlEmployee>> getEmployees() async {
@@ -217,36 +258,6 @@ ORDER BY GxNo ASC''';
     return result;
   }
 
-  Future<List<SqlMK026>> getMK026(int line) async {
-    String query = '''SELECT GxNo, GxName, CardColor
-FROM A_MK026
-WHERE  Line = $line 
-ORDER BY GxNo ASC''';
-    List<SqlMK026> result = [];
-    var tempResult = [];
-    await connection.getRowsOfQueryResult(query).then((value) => {
-          if (value.runtimeType == String)
-            {
-              //error
-            }
-          else
-            {
-              g.processAll.clear(),
-              tempResult = value.cast<Map<String, dynamic>>(),
-              for (var element in tempResult)
-                {
-                  g.processAll.add(element['GxNo']),
-                  result.add(SqlMK026(
-                      GxNo: element['GxNo'],
-                      GxName: element['GxName'],
-                      CardColor: element['CardColor']))
-                }
-            }
-        });
-
-    return result;
-  }
-
   List<Map<int, String>> geDefectCodeNames() {
     String queryString =
         'SELLECT ReturnWorkCode, ReturnWorkName FROM dbo.$tbBsReturnWorkCode';
@@ -276,7 +287,7 @@ ORDER BY GxNo ASC''';
     List<Map<String, dynamic>> tempResult = [];
     final String query = '''SELECT X02, X06, X07, X08, X09
 FROM [Production].[dbo].[T01_1st inspection data]
-WHERE X01 = ${line} and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.rangeDays}, getdate()) )
+WHERE X01 = ${line} and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.setting.getRangeDay}, getdate()) )
 ORDER BY X02 ASC
     ''';
     print('getT01InspectionData ${line} ');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -15,6 +16,9 @@ Future<void> main() async {
   await detectDeviceInfo();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   g.version = packageInfo.version;
+  g.todayString = DateFormat(g.dateFormat).format(
+    g.today,
+  );
   runApp(const MyApp());
 }
 

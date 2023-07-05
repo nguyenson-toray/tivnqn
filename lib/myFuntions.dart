@@ -25,7 +25,9 @@ class MyFuntions {
       final String currentName = g.sqlEmployees
           .firstWhere((emp) => emp.getEmpId == idEmpScaned)
           .getEmpName;
-      final String currentEmpShortName = currentName;
+      var names = currentName.split(' ');
+      final String currentEmpShortName =
+          names[names.length - 2] + " " + names.last;
       WorkSummary workSummary = WorkSummary(
           shortName: 'shortName',
           processDetailQtys: [
@@ -59,7 +61,6 @@ class MyFuntions {
         await g.mySql.initConnection(g.dbETSDB_TI, g.sqlUser, g.sqlPass);
     if (g.isMySqlConnected) {
       if (g.needLoadAllData) {
-        // g.sqlMK026 = await g.mySql.getMK026(g.currentLine);
         g.sqlEmployees = await g.mySql.getEmployees();
         g.sqlMoInfo = await g.mySql.getMoInfo(g.currentLine);
         g.currentMO = g.sqlMoInfo.getMo;
@@ -67,6 +68,7 @@ class MyFuntions {
         g.currentCnid = await g.mySql.getCnid(g.currentMO);
         g.processDetail = await g.mySql.getProcessDetail(g.currentCnid);
       }
+      g.setting = await g.mySql.getSetting();
       g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
     }
     g.isMySqlConnected =
@@ -80,14 +82,14 @@ class MyFuntions {
   static Color getColorByQty(int qty, int target) {
     Color result = Colors.yellow;
     int ration = (qty / target * 100).round();
-    if (ration <= 25)
-      result = Colors.red;
-    else if (ration <= 50)
-      result = Colors.orange;
+    if (ration <= 33)
+      result = Colors.redAccent;
+    else if (ration <= 66)
+      result = Colors.orangeAccent;
     else if (ration <= 75)
-      result = Colors.yellow;
+      result = Colors.yellowAccent;
     else
-      result = Colors.green;
+      result = Colors.greenAccent;
     return result;
   }
 

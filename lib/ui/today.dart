@@ -44,13 +44,13 @@ class _TodayState extends State<Today> {
         List<ProcessDetailQty> process =
             g.workSummary[index].getProcessDetailQtys;
         return Card(
-          // shape: RoundedRectangleBorder(
-          //   side: BorderSide(
-          //       color: MyFuntions.getColorByQty(
-          //           process[0].getQty, g.sqlMoInfo.getTargetDay),
-          //       width: 1),
-          //   borderRadius: BorderRadius.circular(5),
-          // ),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+                color: MyFuntions.getColorByQty(
+                    process[0].getQty, g.sqlMoInfo.getTargetDay),
+                width: 1),
+            borderRadius: BorderRadius.circular(5),
+          ),
           surfaceTintColor: Colors.pink,
           color: Colors.cyan[50],
           margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
@@ -76,6 +76,17 @@ class _TodayState extends State<Today> {
                               child: Text(
                                 '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
                                 overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: process[index2].getGxNo == 150
+                                      ? Colors.deepPurpleAccent
+                                      : Colors.black,
+                                  fontWeight: process[index2].getGxNo >=
+                                              g.processNoFinishBegin &&
+                                          process[index2].getGxNo <=
+                                              g.processNoFinishEnd
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                               ),
                             ),
                             Text(
@@ -89,13 +100,16 @@ class _TodayState extends State<Today> {
                   },
                 ),
               ),
-              subtitle: Text(g.workSummary[index].getShortName.toString(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
+              subtitle: Container(
+                color: MyFuntions.getColorByQty(
+                    process[0].getQty, g.sqlMoInfo.getTargetDay),
+                child: Text(g.workSummary[index].getShortName.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
                       fontSize: 13,
-                      color: MyFuntions.getColorByQty(
-                          process[0].getQty, g.sqlMoInfo.getTargetDay)))),
+                    )),
+              )),
         );
       },
     );
