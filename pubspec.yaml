@@ -56,7 +56,10 @@ dependencies:
   icons_launcher: ^2.1.2
   marquee: ^2.2.3
   change_app_package_name: ^1.1.0
-  blinking_text: ^1.0.2
+  blinking_text: ^1.0.2 
+  assets_audio_player: ^3.0.6 
+  date_picker_timeline: ^1.2.5
+  ndialog: ^4.3.0
   # flutter pub run change_app_package_name:main com.new.package.name
 icons_launcher:
   image_path: 'D:\Programming\Flutter\tivnqn\assets\ic_launcher.png'
@@ -89,12 +92,16 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logo.png
+    - assets/style.png
     - assets/warning.png
     - assets/warning.gif
+    - assets/star.gif
+    - assets/speaker.gif
     - assets/warning2.gif
     - assets/logo_white.png
     - assets/error.png
     - assets/loading.gif
+    - assets/notification_sound.wav
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

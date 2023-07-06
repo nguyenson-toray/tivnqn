@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
@@ -69,7 +70,7 @@ class MyFuntions {
         g.processDetail = await g.mySql.getProcessDetail(g.currentCnid);
       }
       g.setting = await g.mySql.getSetting();
-      g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine);
+      g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine, g.pickedDate);
     }
     g.isMySqlConnected =
         await g.mySql.initConnection(g.dbProduction, g.sqlUser, g.sqlPass);
@@ -82,9 +83,9 @@ class MyFuntions {
   static Color getColorByQty(int qty, int target) {
     Color result = Colors.yellow;
     int ration = (qty / target * 100).round();
-    if (ration <= 33)
+    if (ration <= 25)
       result = Colors.redAccent;
-    else if (ration <= 66)
+    else if (ration <= 50)
       result = Colors.orangeAccent;
     else if (ration <= 75)
       result = Colors.yellowAccent;

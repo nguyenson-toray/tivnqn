@@ -193,11 +193,16 @@ ORDER BY CODE ASC''';
   }
 
   Future<SqlMoInfo> getMoInfo(int line) async {
-    String query = '''SELECT line, mo, style, qty, TargetDay
+    String query = '''SELECT line, mo, style, qty, TargetDay, LastProcess
 FROM A_MoInfo
 WHERE line = ${line}''';
-    late SqlMoInfo result =
-        SqlMoInfo(line: 1, mo: 'mo', style: 'style', qty: 1, targetDay: 1);
+    late SqlMoInfo result = SqlMoInfo(
+        line: 1,
+        mo: 'mo',
+        style: 'style',
+        qty: 1,
+        targetDay: 1,
+        lastProcess: 0);
 
     var tempResult;
     print('getMoInfo : $query');
@@ -215,7 +220,8 @@ WHERE line = ${line}''';
                         mo: element['mo'],
                         style: element['style'],
                         qty: element['qty'],
-                        targetDay: element['TargetDay']),
+                        targetDay: element['TargetDay'],
+                        lastProcess: element['LastProcess']),
                   }
               }
           });
@@ -226,10 +232,13 @@ WHERE line = ${line}''';
     return result;
   }
 
-  Future<List<SqlSumQty>> getSqlSumQty(int line) async {
+  Future<List<SqlSumQty>> getSqlSumQty(int line, DateTime date) async {
+    String dateString = DateFormat(g.dateFormat).format(
+      g.pickedDate,
+    );
     String query = '''SELECT GxNo, EmpId,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine = 'L$line'  AND CONVERT(date,WorkDate)=CONVERT(date,getdate())
+WHERE  WorkLine = 'L$line'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
 GROUP BY GxNo, EmpId
 ORDER BY GxNo ASC''';
     List<SqlSumQty> result = [];

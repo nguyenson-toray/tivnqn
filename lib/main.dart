@@ -19,6 +19,7 @@ Future<void> main() async {
   g.todayString = DateFormat(g.dateFormat).format(
     g.today,
   );
+
   runApp(const MyApp());
 }
 
@@ -34,9 +35,10 @@ Future<void> detectDeviceInfo() async {
   print('screenWidthInch : ${g.screenWidthInch}');
   print('screenHeightInch : ${g.screenHeightInch}');
   final ip = await NetworkInfo().getWifiIP();
-  if (ip == '192.168.1.69' || ip == '192.168.1.70') {
+  if (ip!.contains('192.168.1.7')) {
+    g.isTVLine = true;
+  } else
     g.isTVLine = false;
-  }
   print('isTVLine :' + g.isTVLine.toString());
 }
 
@@ -61,7 +63,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'TIVN-QN',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
         home: const StartPage(),

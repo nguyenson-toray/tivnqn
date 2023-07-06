@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/setting.dart';
-import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/connection/mySqI.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMoInfo.dart';
@@ -15,11 +13,13 @@ import 'package:tivnqn/model/workSummary.dart';
 
 class g {
   static DateTime today = DateTime.now();
+  static DateTime pickedDate = DateTime.now();
   static int processNoFinishBegin = 71;
   static int processNoFinishEnd = 150;
   static String title = 'SẢN LƯỢNG & TỈ LỆ LỖI';
   static late String todayString;
   static final String dateFormat = 'yyyy-MM-dd';
+  static final String dateFormat2 = 'dd/MM/yyyy';
   static final rangeDays = 14;
   static final sqlUser = 'app';
   static final sqlPass = 'Toray@123';
@@ -32,7 +32,7 @@ class g {
   static double screenHeightPixel = 0;
   static double screenWidthInch = 0;
   static double screenHeightInch = 0;
-  static double appBarH = 35;
+  static double appBarH = 40;
   static double todayWidth = 200;
 
   static bool needLoadAllData = true;

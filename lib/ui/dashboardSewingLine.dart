@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:blinking_text/blinking_text.dart';
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartUI.dart';
-import 'package:tivnqn/ui/showNotification.dart';
 import 'package:tivnqn/ui/today.dart';
 import 'package:tivnqn/global.dart';
 import 'package:marquee/marquee.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class DashboardSewingLine extends StatefulWidget {
   const DashboardSewingLine({super.key});
@@ -26,9 +29,9 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
   void initState() {
     g.needLoadAllData = false;
     if (DateTime.now().isAfter(
-            DateTime.parse(g.todayString + " " + g.setting.getShowBegin)) &&
+            DateTime.parse(g.todayString + " " + g.setting.getChartBegin)) &&
         DateTime.now().isBefore(
-            DateTime.parse(g.todayString + " " + g.setting.getShowEnd)))
+            DateTime.parse(g.todayString + " " + g.setting.getChartEnd)))
       g.showETS = false;
     else
       g.showETS = true;
@@ -36,10 +39,74 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
     Timer.periodic(new Duration(seconds: g.setting.getReloadTimeSeconds),
         (timer) {
       refreshData();
+      if (g.setting.getShowNotification != 0 &&
+          DateTime.now().isAfter(
+              DateTime.parse(g.todayString + " " + g.setting.getShowBegin)) &&
+          DateTime.now().isBefore(
+              DateTime.parse(g.todayString + " " + g.setting.getShowEnd))) {
+        showNotification();
+      } else {
+        Loader.hide();
+      }
+
       if (DateTime.now().hour >= 17) exit(0);
     });
     // TODO: implement initState
     super.initState();
+  }
+
+  Future<void> playAudio() async {
+    AssetsAudioPlayer.newPlayer().open(Audio("assets/notification_sound.wav"),
+        autoStart: true, volume: 0.5);
+  }
+
+  showNotification() async {
+    if (Loader.isShown)
+      return;
+    else {
+      double textH = g.setting.text.length > 0 ? 200 : 0;
+      double imgH = g.screenHeightPixel / 2 - textH - 16;
+      playAudio();
+      return Loader.show(context,
+          overlayColor: Colors.white,
+          progressIndicator: Scaffold(
+            body: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: textH,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: Image.asset('assets/speaker.gif'),
+                        ),
+                        Flexible(
+                          child: Text(
+                            '${g.setting.getText}',
+                            style: TextStyle(
+                                fontSize: 30, overflow: TextOverflow.visible),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                      height: imgH,
+                      child: Image.network(
+                        g.setting.getImgURL,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.warning,
+                        ),
+                      )),
+                ],
+              ),
+            ),
+          ));
+    }
   }
 
   Future<void> refreshData() async {
@@ -54,35 +121,36 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
       _chartSeriesController?.updateDataSource(
           updatedDataIndexes:
               List<int>.generate(g.chartData.length, (i) => i + 1));
+      g.needLoadAllData = false;
     });
   }
 
-  Widget setting() {
-    return Container(
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text('LINE : '),
-        DropdownButton<String>(
-          value: g.currentLine.toString(),
-          items: lines.map<DropdownMenuItem<String>>((int value) {
-            return DropdownMenuItem<String>(
-              value: value.toString(),
-              child: Text(
-                value.toString(),
-                style: TextStyle(fontSize: 22),
-              ),
-            );
-          }).toList(),
-          onChanged: (String? newValue) async {
-            g.currentLine = int.parse(newValue!);
-            g.sharedPreferences.setInt('currentLine', g.currentLine);
-            g.needLoadAllData = true;
-            await refreshData();
-            g.needLoadAllData = false;
-          },
-        ),
-      ]),
-    );
-  }
+  // Widget setting() {
+  //   return Container(
+  //     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+  //       Text('LINE : '),
+  //       DropdownButton<String>(
+  //         value: g.currentLine.toString(),
+  //         items: lines.map<DropdownMenuItem<String>>((int value) {
+  //           return DropdownMenuItem<String>(
+  //             value: value.toString(),
+  //             child: Text(
+  //               value.toString(),
+  //               style: TextStyle(fontSize: 22),
+  //             ),
+  //           );
+  //         }).toList(),
+  //         onChanged: (String? newValue) async {
+  //           g.currentLine = int.parse(newValue!);
+  //           g.sharedPreferences.setInt('currentLine', g.currentLine);
+  //           g.needLoadAllData = true;
+  //           await refreshData();
+  //           g.needLoadAllData = false;
+  //         },
+  //       ),
+  //     ]),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -90,67 +158,61 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
         appBar: AppBar(
           backgroundColor: Colors.lightBlue,
           actions: [
-            g.isTVLine
-                ? Row(
-                    children: [
-                      Text(changeSetting ? 'Lưu' : 'Cài đặt'),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            changeSetting = !changeSetting;
-                          });
-                        },
-                        child: changeSetting
-                            ? Icon(
-                                Icons.save,
-                                color: Colors.orange,
-                              )
-                            : Icon(
-                                Icons.settings,
-                                color: Colors.white,
-                              ),
-                      ),
-                    ],
-                  )
-                : Row(
-                    children: [
-                      InkWell(
-                          onTap: () async {
-                            setState(() {
-                              g.currentLine > 1
-                                  ? g.currentLine = g.currentLine - 1
-                                  : g.currentLine = 9;
-                            });
-                            g.sharedPreferences
-                                .setInt('currentLine', g.currentLine);
-                            g.needLoadAllData = true;
-                            await refreshData();
-                            g.needLoadAllData = false;
-                          },
-                          child: Icon(Icons.arrow_back)),
-                      Text('LINE'),
-                      InkWell(
-                          onTap: () async {
-                            setState(() {
-                              g.currentLine < 9
-                                  ? g.currentLine = g.currentLine + 1
-                                  : g.currentLine = 1;
-                            });
-                            g.sharedPreferences
-                                .setInt('currentLine', g.currentLine);
-                            g.needLoadAllData = true;
-                            await refreshData();
-                            g.needLoadAllData = false;
-                          },
-                          child: Icon(Icons.arrow_forward)),
-                    ],
+            Row(
+              children: [
+                InkWell(
+                    onTap: () {
+                      setState(() {
+                        g.currentLine > 1 ? g.currentLine-- : g.currentLine = 9;
+                        g.needLoadAllData = true;
+                      });
+                      g.sharedPreferences.setInt('currentLine', g.currentLine);
+                      refreshData();
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 30,
+                    )),
+                Text('LINE ',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22)),
+                CircleAvatar(
+                  maxRadius: g.appBarH / 2 - 2,
+                  backgroundColor: Colors.white,
+                  child: Center(
+                    child: Text(
+                      g.currentLine.toString(),
+                      style: const TextStyle(
+                          color: Colors.blueAccent,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
+                ),
+                InkWell(
+                    onTap: () {
+                      setState(() {
+                        g.currentLine < 9 ? g.currentLine++ : g.currentLine = 1;
+                        g.needLoadAllData = true;
+                      });
+                      g.sharedPreferences.setInt('currentLine', g.currentLine);
+                      refreshData();
+                    },
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                      size: 30,
+                    )),
+              ],
+            ),
             SizedBox(
               width: 20,
             ),
             Row(
               children: [
-                Text("ETS"),
                 Switch(
                   value: g.showETS,
                   onChanged: (value) {
@@ -159,39 +221,127 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                     });
                   },
                 ),
+                Text(
+                  "ETS",
+                  style: TextStyle(color: Colors.white),
+                ),
               ],
             ),
           ],
-          leading: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Image.asset('assets/logo_white.png'),
-              CircleAvatar(
-                maxRadius: g.appBarH / 2 - 2,
-                backgroundColor: Colors.white,
-                child: Center(
-                  child: Text(
-                    g.currentLine.toString(),
-                    style: const TextStyle(
-                        color: Colors.blueAccent,
-                        fontSize: 23,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          title: changeSetting
-              ? setting()
+          leading: g.showETS
+              ? Row(
+                  children: [
+                    Icon(
+                      Icons.group,
+                      color: Colors.pinkAccent,
+                      size: 28,
+                    ),
+                    Text(
+                      '''${g.idEmpScaneds.length}''',
+                      style: TextStyle(
+                          color: Colors.pinkAccent,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )
+              : Image.asset('assets/logo_white.png'),
+          title: g.showETS
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                      Row(
+                        children: [
+                          Image.asset('assets/style.png'),
+                          Text('${g.currentStyle.trim()}',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22)),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          InkWell(
+                              onTap: () async {
+                                NDialog(
+                                  dialogStyle: DialogStyle(titleDivider: true),
+                                  // title: Text("NDialog"),
+                                  content: Container(
+                                    height: 100,
+                                    width: g.screenWidthPixel / 2,
+                                    child: DatePicker(
+                                      DateTime.now()
+                                          .subtract(Duration(days: 7)),
+                                      daysCount: 14,
+                                      initialSelectedDate: DateTime.now(),
+                                      selectionColor: Colors.black,
+                                      selectedTextColor: Colors.white,
+                                      onDateChange: (date) {
+                                        // New date selected
+                                        print('New date selected : ');
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          if (date != null) {
+                                            g.pickedDate = date;
+                                            g.needLoadAllData = true;
+                                            refreshData();
+                                          }
+
+                                          // if (pickedDate != null)
+                                          //   setState(() {
+                                          //     g.pickedDate = pickedDate;
+                                          //     g.needLoadAllData = true;
+                                          //   });
+                                          // refreshData();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  // actions: <Widget>[
+                                  //   TextButton(
+                                  //       child: Text("Okay"),
+                                  //       onPressed: () =>
+                                  //           Navigator.pop(context)),
+                                  //   TextButton(
+                                  //       child: Text("Close"),
+                                  //       onPressed: () =>
+                                  //           Navigator.pop(context)),
+                                  // ],
+                                ).show(context);
+                                // DateTime? pickedDate = await showDatePicker(
+                                //     context: context,
+                                //     initialDate: DateTime.now(),
+                                //     firstDate: DateTime(2022),
+                                //     //DateTime.now() - not to allow to choose before today.
+
+                                //     lastDate: DateTime(2024));
+                                // if (pickedDate != null)
+                                //   setState(() {
+                                //     g.pickedDate = pickedDate;
+                                //     g.needLoadAllData = true;
+                                //   });
+                                // refreshData();
+                              },
+                              child: Icon(Icons.calendar_month,
+                                  color: Colors.tealAccent)),
+                          Text(
+                              DateFormat(g.dateFormat2).format(
+                                g.pickedDate,
+                              ),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22)),
+                        ],
+                      ),
+                    ])
               : Text(
-                  textAlign: TextAlign.center,
-                  g.showETS
-                      ? 'SẢN LƯỢNG HÔM NAY : ${g.currentStyle.trim()}'
-                      : 'SẢN LƯỢNG & TỈ LỆ LỖI',
+                  'SẢN LƯỢNG & TỈ LỆ LỖI',
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 24),
+                      fontSize: 22),
                 ),
           toolbarHeight: g.appBarH,
           centerTitle: true,
@@ -201,20 +351,29 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
           child: g.showETS
               ? Column(
                   children: [
-                    g.setting.showNotification == 0
-                        ? Container()
-                        : ShowNotification(),
+                    SizedBox(
+                      height: g.needLoadAllData ? 4 : 0,
+                      width: g.screenHeightPixel,
+                      child: LinearProgressIndicator(color: Colors.blueGrey),
+                    ),
                     Expanded(child: Today()),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
+                        Text(
+                          DateFormat('hh:mm').format(DateTime.now()),
+                          style: const TextStyle(
+                              color: Colors.blue,
+                              // fontSize: 23,
+                              fontWeight: FontWeight.bold),
+                        ),
                         SizedBox(
                             height: 23,
                             width: 23,
                             child: Image.asset('assets/warning2.gif')),
                         SizedBox(
                           height: 23,
-                          width: 890,
+                          width: 850,
                           child: Marquee(
                               blankSpace: 200,
                               velocity: 30.0,
@@ -225,7 +384,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
                               text:
-                                  '''0-25% : ĐỎ   26-50% : CAM   51-75% : VÀNG   76-100% : XANH          Tổng ${g.idEmpScaneds.length} bạn CN có sản lượng.          ${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
+                                  '''0-25 : Đỏ    26-50 : Cam    51-75 : Vàng    76-100 : Xanh    >100 : Ngôi sao      ${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
                         ),
                       ],
                     ),
