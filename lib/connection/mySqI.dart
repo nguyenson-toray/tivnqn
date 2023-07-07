@@ -232,13 +232,14 @@ WHERE line = ${line}''';
     return result;
   }
 
-  Future<List<SqlSumQty>> getSqlSumQty(int line, DateTime date) async {
+  Future<List<SqlSumQty>> getSqlSumQty(
+      int line, String mo, DateTime date) async {
     String dateString = DateFormat(g.dateFormat).format(
       g.pickedDate,
     );
     String query = '''SELECT GxNo, EmpId,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine = 'L$line'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+WHERE  WorkLine = 'L$line' AND ZDCode = '$mo'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
 GROUP BY GxNo, EmpId
 ORDER BY GxNo ASC''';
     List<SqlSumQty> result = [];

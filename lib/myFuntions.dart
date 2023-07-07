@@ -70,7 +70,8 @@ class MyFuntions {
         g.processDetail = await g.mySql.getProcessDetail(g.currentCnid);
       }
       g.setting = await g.mySql.getSetting();
-      g.sqlSumQty = await g.mySql.getSqlSumQty(g.currentLine, g.pickedDate);
+      g.sqlSumQty = await g.mySql
+          .getSqlSumQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
     }
     g.isMySqlConnected =
         await g.mySql.initConnection(g.dbProduction, g.sqlUser, g.sqlPass);
