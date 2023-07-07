@@ -347,38 +347,39 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                           DateFormat('hh:mm').format(DateTime.now()),
                           style: const TextStyle(
                               color: Colors.blue,
-                              fontSize: 24,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
-                            height: 23,
-                            width: 23,
+                            height: 22,
+                            width: 22,
                             child: g.processNotScan.length > 0
                                 ? Image.asset('assets/warning2.gif')
                                 : Icon(
                                     Icons.thumb_up,
-                                    color: Colors.pinkAccent,
+                                    size: 20,
+                                    color: Colors.greenAccent,
                                   )),
                         SizedBox(
-                          height: 23,
+                          height: 30,
                           width: 850,
                           child: g.processNotScan.length > 0
                               ? Marquee(
                                   blankSpace: 200,
-                                  velocity: 30.0,
+                                  velocity: 40.0,
                                   scrollAxis: Axis.horizontal,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black),
+                                      color: Colors.redAccent),
                                   text:
                                       '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}''')
                               : Text(
                                   '100% CĐ có sản lượng !',
                                   style: const TextStyle(
-                                      color: Colors.pinkAccent,
-                                      fontSize: 24,
+                                      color: Colors.greenAccent,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold),
                                 ),
                           //0-25 : Đỏ    26-50 : Cam    51-75 : Vàng    76-100 : Xanh    >100 : Ngôi sao
