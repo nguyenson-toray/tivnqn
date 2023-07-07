@@ -120,12 +120,13 @@ class _TodayState extends State<Today> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   process[0].getQty > g.sqlMoInfo.getTargetDay
-                      ? SizedBox(
-                          height: 17, child: Image.asset('assets/star.gif'))
-                      // Icon(
-                      //     Icons.star,
-                      //     color: Colors.white,
-                      //   )
+                      ?
+                      // SizedBox(
+                      //     height: 17, child: Image.asset('assets/star.gif'))
+                      Icon(
+                          Icons.star,
+                          color: Colors.white,
+                        )
                       // : (process[0].getQty <= 0.25 * g.sqlMoInfo.getTargetDay &&
                       //         DateTime.now().hour > 12)
                       //     ? Icon(

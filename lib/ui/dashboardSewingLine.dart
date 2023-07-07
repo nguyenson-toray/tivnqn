@@ -162,6 +162,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               children: [
                 InkWell(
                     onTap: () {
+                      if (g.needLoadAllData) return;
                       setState(() {
                         g.currentLine > 1 ? g.currentLine-- : g.currentLine = 9;
                         g.needLoadAllData = true;
@@ -194,6 +195,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                 ),
                 InkWell(
                     onTap: () {
+                      if (g.needLoadAllData) return;
                       setState(() {
                         g.currentLine < 9 ? g.currentLine++ : g.currentLine = 1;
                         g.needLoadAllData = true;
@@ -278,8 +280,6 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                                       selectionColor: Colors.black,
                                       selectedTextColor: Colors.white,
                                       onDateChange: (date) {
-                                        // New date selected
-                                        print('New date selected : ');
                                         Navigator.pop(context);
                                         setState(() {
                                           if (date != null) {
@@ -287,41 +287,11 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                                             g.needLoadAllData = true;
                                             refreshData();
                                           }
-
-                                          // if (pickedDate != null)
-                                          //   setState(() {
-                                          //     g.pickedDate = pickedDate;
-                                          //     g.needLoadAllData = true;
-                                          //   });
-                                          // refreshData();
                                         });
                                       },
                                     ),
                                   ),
-                                  // actions: <Widget>[
-                                  //   TextButton(
-                                  //       child: Text("Okay"),
-                                  //       onPressed: () =>
-                                  //           Navigator.pop(context)),
-                                  //   TextButton(
-                                  //       child: Text("Close"),
-                                  //       onPressed: () =>
-                                  //           Navigator.pop(context)),
-                                  // ],
                                 ).show(context);
-                                // DateTime? pickedDate = await showDatePicker(
-                                //     context: context,
-                                //     initialDate: DateTime.now(),
-                                //     firstDate: DateTime(2022),
-                                //     //DateTime.now() - not to allow to choose before today.
-
-                                //     lastDate: DateTime(2024));
-                                // if (pickedDate != null)
-                                //   setState(() {
-                                //     g.pickedDate = pickedDate;
-                                //     g.needLoadAllData = true;
-                                //   });
-                                // refreshData();
                               },
                               child: Icon(Icons.calendar_month,
                                   color: Colors.tealAccent)),
@@ -352,9 +322,12 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               ? Column(
                   children: [
                     SizedBox(
-                      height: g.needLoadAllData ? 4 : 0,
+                      height: 3,
                       width: g.screenHeightPixel,
-                      child: LinearProgressIndicator(color: Colors.blueGrey),
+                      child: Visibility(
+                          visible: g.needLoadAllData,
+                          child: LinearProgressIndicator(
+                              color: Colors.greenAccent)),
                     ),
                     Expanded(child: Today()),
                     Row(
@@ -384,7 +357,8 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
                               text:
-                                  '''0-25 : Đỏ    26-50 : Cam    51-75 : Vàng    76-100 : Xanh    >100 : Ngôi sao      ${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
+                                  '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
+                          //0-25 : Đỏ    26-50 : Cam    51-75 : Vàng    76-100 : Xanh    >100 : Ngôi sao
                         ),
                       ],
                     ),
