@@ -21,21 +21,34 @@ class DashboardSewingLine extends StatefulWidget {
 }
 
 class _DashboardSewingLineState extends State<DashboardSewingLine> {
-  final lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  final lines = [1, 2, 3, 4, 5, 6, 8, 9];
   bool changeSetting = false;
   ChartSeriesController? _chartSeriesController;
 
   @override
   void initState() {
-    g.needLoadAllData = false;
-    if (DateTime.now().isAfter(
+    if (g.isTVLine) g.autochangeLine = false;
+    if (!g.isTVLine &&
+        DateTime.now().isAfter(
             DateTime.parse(g.todayString + " " + g.setting.getChartBegin)) &&
         DateTime.now().isBefore(
             DateTime.parse(g.todayString + " " + g.setting.getChartEnd)))
       g.showETS = false;
     else
       g.showETS = true;
-
+    Timer.periodic(new Duration(minutes: g.setting.getMinuteChangeLine),
+        (timer) {
+      if (g.autochangeLine)
+        setState(() {
+          g.currentIndexLine < lines.length - 1
+              ? g.currentIndexLine++
+              : g.currentIndexLine = 0;
+          g.currentLine = lines[g.currentIndexLine];
+          g.needLoadAllData = true;
+        });
+      g.sharedPreferences.setInt('currentLine', g.currentLine);
+      refreshData();
+    });
     Timer.periodic(new Duration(seconds: g.setting.getReloadTimeSeconds),
         (timer) {
       refreshData();
@@ -61,55 +74,29 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
   }
 
   showNotification() async {
-    if (Loader.isShown)
+    if (Loader.isShown || !g.isTVLine)
       return;
     else {
-      double textH = g.setting.text.length > 0 ? 200 : 0;
-      double imgH = g.screenHeightPixel / 2 - textH - 16;
       playAudio();
       return Loader.show(context,
           overlayColor: Colors.white,
           progressIndicator: Scaffold(
             body: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: textH,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: Image.asset('assets/speaker.gif'),
-                        ),
-                        Flexible(
-                          child: Text(
-                            '${g.setting.getText}',
-                            style: TextStyle(
-                                fontSize: 30, overflow: TextOverflow.visible),
-                          ),
-                        ),
-                      ],
-                    ),
+                color: Colors.white,
+                padding: const EdgeInsets.all(8.0),
+                child: Image.network(
+                  g.setting.getImgURL,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.warning,
+                    size: 50,
                   ),
-                  Container(
-                      height: imgH,
-                      child: Image.network(
-                        g.setting.getImgURL,
-                        errorBuilder: (context, error, stackTrace) => Icon(
-                          Icons.warning,
-                        ),
-                      )),
-                ],
-              ),
-            ),
+                )),
           ));
     }
   }
 
   Future<void> refreshData() async {
+    if (g.isLoading) return;
     await MyFuntions.getSqlData();
     setState(() {
       g.workSummary.clear();
@@ -162,9 +149,12 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
               children: [
                 InkWell(
                     onTap: () {
-                      if (g.needLoadAllData) return;
+                      if (g.isLoading) return;
                       setState(() {
-                        g.currentLine > 1 ? g.currentLine-- : g.currentLine = 9;
+                        g.currentIndexLine > 0
+                            ? g.currentIndexLine--
+                            : g.currentIndexLine = lines.length - 1;
+                        g.currentLine = lines[g.currentIndexLine];
                         g.needLoadAllData = true;
                       });
                       g.sharedPreferences.setInt('currentLine', g.currentLine);
@@ -173,13 +163,13 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                     child: Icon(
                       Icons.arrow_back,
                       color: Colors.white,
-                      size: 30,
+                      size: 44,
                     )),
                 Text('LINE ',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 22)),
+                        fontSize: 30)),
                 CircleAvatar(
                   maxRadius: g.appBarH / 2 - 2,
                   backgroundColor: Colors.white,
@@ -195,9 +185,12 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                 ),
                 InkWell(
                     onTap: () {
-                      if (g.needLoadAllData) return;
+                      if (g.isLoading) return;
                       setState(() {
-                        g.currentLine < 9 ? g.currentLine++ : g.currentLine = 1;
+                        g.currentIndexLine < lines.length - 1
+                            ? g.currentIndexLine++
+                            : g.currentIndexLine = 0;
+                        g.currentLine = lines[g.currentIndexLine];
                         g.needLoadAllData = true;
                       });
                       g.sharedPreferences.setInt('currentLine', g.currentLine);
@@ -206,52 +199,69 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                     child: Icon(
                       Icons.arrow_forward,
                       color: Colors.white,
-                      size: 30,
+                      size: 44,
                     )),
               ],
             ),
             SizedBox(
               width: 20,
             ),
-            Row(
-              children: [
-                Switch(
-                  value: g.showETS,
-                  onChanged: (value) {
-                    setState(() {
-                      g.showETS = value;
-                    });
-                  },
-                ),
-                Text(
-                  "ETS",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
+            g.isTVLine
+                ? Row(
+                    children: [
+                      Switch(
+                        value: g.showETS,
+                        onChanged: (value) {
+                          setState(() {
+                            g.showETS = value;
+                          });
+                        },
+                      ),
+                      Text(
+                        "ETS",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Switch(
+                        value: g.autochangeLine,
+                        onChanged: (value) {
+                          setState(() {
+                            g.autochangeLine = value;
+                          });
+                        },
+                      ),
+                      Text(
+                        "Auto change",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  )
           ],
-          leading: g.showETS
-              ? Row(
-                  children: [
-                    Icon(
-                      Icons.group,
-                      color: Colors.pinkAccent,
-                      size: 28,
-                    ),
-                    Text(
-                      '''${g.idEmpScaneds.length}''',
-                      style: TextStyle(
-                          color: Colors.pinkAccent,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                )
-              : Image.asset('assets/logo_white.png'),
           title: g.showETS
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                      g.showETS
+                          ? Row(
+                              children: [
+                                Icon(
+                                  Icons.group,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                                Text(
+                                  '''${g.idEmpScaneds.length}''',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )
+                          : Image.asset('assets/logo_white.png'),
                       Row(
                         children: [
                           Image.asset('assets/style.png'),
@@ -259,7 +269,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 22)),
+                                  fontSize: 30)),
                         ],
                       ),
                       Row(
@@ -294,7 +304,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                                 ).show(context);
                               },
                               child: Icon(Icons.calendar_month,
-                                  color: Colors.tealAccent)),
+                                  size: 40, color: Colors.white)),
                           Text(
                               DateFormat(g.dateFormat2).format(
                                 g.pickedDate,
@@ -302,7 +312,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 22)),
+                                  fontSize: 30)),
                         ],
                       ),
                     ])
@@ -311,7 +321,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 22),
+                      fontSize: 30),
                 ),
           toolbarHeight: g.appBarH,
           centerTitle: true,
@@ -325,7 +335,7 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                       height: 3,
                       width: g.screenHeightPixel,
                       child: Visibility(
-                          visible: g.needLoadAllData,
+                          visible: g.isLoading,
                           child: LinearProgressIndicator(
                               color: Colors.greenAccent)),
                     ),
@@ -337,27 +347,40 @@ class _DashboardSewingLineState extends State<DashboardSewingLine> {
                           DateFormat('hh:mm').format(DateTime.now()),
                           style: const TextStyle(
                               color: Colors.blue,
-                              // fontSize: 23,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                             height: 23,
                             width: 23,
-                            child: Image.asset('assets/warning2.gif')),
+                            child: g.processNotScan.length > 0
+                                ? Image.asset('assets/warning2.gif')
+                                : Icon(
+                                    Icons.thumb_up,
+                                    color: Colors.pinkAccent,
+                                  )),
                         SizedBox(
                           height: 23,
                           width: 850,
-                          child: Marquee(
-                              blankSpace: 200,
-                              velocity: 30.0,
-                              scrollAxis: Axis.horizontal,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                              text:
-                                  '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
+                          child: g.processNotScan.length > 0
+                              ? Marquee(
+                                  blankSpace: 200,
+                                  velocity: 30.0,
+                                  scrollAxis: Axis.horizontal,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  text:
+                                      '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}''')
+                              : Text(
+                                  '100% CĐ có sản lượng !',
+                                  style: const TextStyle(
+                                      color: Colors.pinkAccent,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold),
+                                ),
                           //0-25 : Đỏ    26-50 : Cam    51-75 : Vàng    76-100 : Xanh    >100 : Ngôi sao
                         ),
                       ],

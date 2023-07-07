@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:flu_wake_lock/flu_wake_lock.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartUI.dart';
@@ -52,6 +53,14 @@ class _StartPageState extends State<StartPage> {
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
     g.chartUi = ChartUI.createChartUI(
         g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
+    final ip = await NetworkInfo().getWifiIP();
+    if ((g.setting.getIpTvLine).toString().contains(ip!)) {
+      g.isTVLine = true;
+    } else
+      g.isTVLine = false;
+    print('isTVLine :${g.isTVLine}');
+    print('ip : $ip');
+    print('getIpTvLine : ${g.setting.getIpTvLine.toString()}');
     Loader.hide();
     Navigator.pushReplacement(
       context,

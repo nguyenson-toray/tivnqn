@@ -34,12 +34,6 @@ Future<void> detectDeviceInfo() async {
   print('screenHeightPixel : ${g.screenHeightPixel}');
   print('screenWidthInch : ${g.screenWidthInch}');
   print('screenHeightInch : ${g.screenHeightInch}');
-  final ip = await NetworkInfo().getWifiIP();
-  if (ip!.contains('192.168.1.7')) {
-    g.isTVLine = true;
-  } else
-    g.isTVLine = false;
-  print('isTVLine :' + g.isTVLine.toString());
 }
 
 getsharedPreferences() async {

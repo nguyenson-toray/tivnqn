@@ -61,8 +61,11 @@ dependencies:
   date_picker_timeline: ^1.2.5
   ndialog: ^4.3.0
   # flutter pub run change_app_package_name:main com.new.package.name
+
+  # flutter pub get
+  # dart run icons_launcher:create
 icons_launcher:
-  image_path: 'D:\Programming\Flutter\tivnqn\assets\ic_launcher.png'
+  image_path: 'D:\Programming\Flutter\tivnqn\assets\ic_launcher2.png'
   platforms:
     android:
       enable: true
@@ -102,6 +105,7 @@ flutter:
     - assets/error.png
     - assets/loading.gif
     - assets/notification_sound.wav
+    - assets/ic_launcher2.png
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

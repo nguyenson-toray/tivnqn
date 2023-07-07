@@ -26,19 +26,22 @@ class g {
   static final dbProduction = 'Production';
   static final dbETSDB_TI = 'ETSDB_TI';
 
-  static bool isTVLine = true;
   static String version = '2.0.0';
   static double screenWidthPixel = 0;
   static double screenHeightPixel = 0;
   static double screenWidthInch = 0;
   static double screenHeightInch = 0;
   static double appBarH = 40;
-  static double todayWidth = 200;
 
+  static bool isTVLine = true;
+  static bool autochangeLine = true;
+  static bool isLoading = false;
   static bool needLoadAllData = true;
-  static int currentLine = 8;
-  static String currentMO = '2023JUN003';
-  static String currentStyle = 'DS-23AU001';
+  static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  static int currentLine = 1;
+  static int currentIndexLine = 0;
+  static String currentMO = '';
+  static String currentStyle = '';
   static String currentCnid = '';
   static late SharedPreferences sharedPreferences;
   static var mySql = MySql();
@@ -55,16 +58,7 @@ class g {
   static List<int> processNotScan = [];
   static List<String> idEmpScaneds = [];
   static List<SqlT01> sqlT01 = [];
-  static Setting setting = Setting(
-      reloadTimeSeconds: 30,
-      showNotification: 0,
-      text: '',
-      imgURL: '',
-      showBegin: '',
-      showEnd: '',
-      chartBegin: '',
-      chartEnd: '',
-      rangeDay: 14);
+  static late Setting setting;
   List<Map<int, String>> defectCodeNames = [];
 
   static bool showETS = false;

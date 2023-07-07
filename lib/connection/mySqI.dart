@@ -71,18 +71,9 @@ class MySql {
 
   Future<Setting> getSetting() async {
     String query =
-        '''SELECT reloadTimeSeconds, showNotification, text, imgURL, showBegin, showEnd, chartBegin, chartEnd, rangeDay
+        '''SELECT reloadTimeSeconds, showNotification, text, imgURL, showBegin, showEnd, chartBegin, chartEnd, rangeDay, ipTvLine, minuteChangeLine, lines
 FROM A_Setting''';
-    late Setting result = Setting(
-        reloadTimeSeconds: 30,
-        showNotification: 0,
-        text: 'text',
-        imgURL: 'imgURL',
-        showBegin: 'showBegin',
-        showEnd: 'showEnd',
-        chartBegin: 'chartBegin',
-        chartEnd: 'chartEnd',
-        rangeDay: 14);
+    late Setting result;
     var tempResult = [];
     var element;
     await connection.getRowsOfQueryResult(query).then((value) => {
@@ -95,15 +86,19 @@ FROM A_Setting''';
               tempResult = value.cast<Map<String, dynamic>>(),
               element = tempResult[0],
               result = Setting(
-                  reloadTimeSeconds: element['reloadTimeSeconds'],
-                  showNotification: element['showNotification'],
-                  text: element['text'],
-                  imgURL: element['imgURL'],
-                  showBegin: element['showBegin'],
-                  showEnd: element['showEnd'],
-                  chartBegin: element['chartBegin'],
-                  chartEnd: element['chartEnd'],
-                  rangeDay: element['rangeDay'])
+                reloadTimeSeconds: element['reloadTimeSeconds'],
+                showNotification: element['showNotification'],
+                text: element['text'],
+                imgURL: element['imgURL'],
+                showBegin: element['showBegin'],
+                showEnd: element['showEnd'],
+                chartBegin: element['chartBegin'],
+                chartEnd: element['chartEnd'],
+                rangeDay: element['rangeDay'],
+                ipTvLine: element['ipTvLine'],
+                minuteChangeLine: element['minuteChangeLine'],
+                lines: element['lines'],
+              )
             }
         });
 
@@ -239,7 +234,7 @@ WHERE line = ${line}''';
     );
     String query = '''SELECT GxNo, EmpId,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine = 'L$line' AND ZDCode = '$mo'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+WHERE  WorkLine = 'L$line' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
 GROUP BY GxNo, EmpId
 ORDER BY GxNo ASC''';
     List<SqlSumQty> result = [];

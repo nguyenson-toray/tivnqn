@@ -58,6 +58,7 @@ class MyFuntions {
 
   static Future<bool> getSqlData() async {
     print('getSqlData : g.needLoadAllData = ${g.needLoadAllData}');
+    g.isLoading = true;
     g.isMySqlConnected =
         await g.mySql.initConnection(g.dbETSDB_TI, g.sqlUser, g.sqlPass);
     if (g.isMySqlConnected) {
@@ -70,6 +71,12 @@ class MyFuntions {
         g.processDetail = await g.mySql.getProcessDetail(g.currentCnid);
       }
       g.setting = await g.mySql.getSetting();
+      g.lines.clear();
+      g.setting.getLines.toString().split(',').forEach((element) {
+        g.lines.add(int.parse(element));
+      });
+      g.currentIndexLine = g.lines.indexOf(g.currentLine);
+
       g.sqlSumQty = await g.mySql
           .getSqlSumQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
     }
@@ -78,6 +85,7 @@ class MyFuntions {
     if (g.isMySqlConnected) {
       g.sqlT01 = await g.mySql.getT01InspectionData(g.currentLine);
     }
+    g.isLoading = false;
     return (g.sqlSumQty.isNotEmpty);
   }
 
