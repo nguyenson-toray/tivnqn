@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-class SqlSumQty {
+class SqlSumEmpQty {
   int GxNo;
   String EmpId;
-  int SumQty;
+  int SumEmpQty;
   get getGxNo => this.GxNo;
 
   set setGxNo(GxNo) => this.GxNo = GxNo;
@@ -13,16 +13,17 @@ class SqlSumQty {
 
   set setEmpId(EmpId) => this.EmpId = EmpId;
 
-  get getSumQty => this.SumQty;
+  get getSumEmpQty => this.SumEmpQty;
 
-  set setSumQty(SumQty) => this.SumQty = SumQty;
+  set setSumEmpQty(SumEmpQty) => this.SumEmpQty = SumEmpQty;
 
-  SqlSumQty({
+  SqlSumEmpQty({
     required this.GxNo,
     required this.EmpId,
-    required this.SumQty,
+    required this.SumEmpQty,
   });
 
   @override
-  String toString() => 'SqlSumQty(GxNo: $GxNo, EmpId: $EmpId, SumQty: $SumQty)';
+  String toString() =>
+      'SqlSumEmpQty(GxNo: $GxNo, EmpId: $EmpId, SumEmpQty: $SumEmpQty)';
 }

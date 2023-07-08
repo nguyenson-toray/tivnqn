@@ -16,8 +16,7 @@ class Today extends StatefulWidget {
 
 class _TodayState extends State<Today> {
 // Declaring the controller and the item size
-  late ScrollController _scrollController;
-  final itemSize = g.sqlSumQty.length;
+  final itemSize = g.sqlSumEmpQty.length;
   List<String> qtyDetail = [];
 // Initializing
   @override
@@ -49,13 +48,13 @@ class _TodayState extends State<Today> {
         List<ProcessDetailQty> process =
             g.workSummary[index].getProcessDetailQtys;
         return Card(
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-                color: MyFuntions.getColorByQty(
-                    process[0].getQty, g.sqlMoInfo.getTargetDay),
-                width: 1),
-            borderRadius: BorderRadius.circular(7),
-          ),
+          // shape: RoundedRectangleBorder(
+          //   side: BorderSide(
+          //       // color: MyFuntions.getColorByQty2(
+          //       //     process[0].getQty, g.sqlMoInfo.getTargetDay),
+          //       width: 1),
+          //   borderRadius: BorderRadius.circular(7),
+          // ),
           color: Colors.cyan[50],
           margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
           child: Column(children: [

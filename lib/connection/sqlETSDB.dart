@@ -1,58 +1,46 @@
 import 'dart:io';
-import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
+import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'package:tivnqn/model/processDetail.dart';
-import 'package:tivnqn/model/setting.dart';
+import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMoInfo.dart';
-import 'package:tivnqn/model/sqlSumQty.dart';
-import 'package:tivnqn/model/sqlT01.dart';
+import 'package:tivnqn/model/sqlSumEmpQty.dart';
+import 'package:tivnqn/model/sqlSumNoQty.dart';
 
-class MySql {
-  bool isLoading = false;
+class SqlETSDB {
   var connection = ConnectToSqlServerDirectly();
   final String ipLAN = '192.168.1.11';
   final String dbName = 'ETSDB_TI';
   final int port = 1433;
   final String instanceSql = 'MSSQLSERVER';
-  final user = 'readonly';
+  final user = 'app';
   final pass = 'Toray@123';
-  final String tbReturnWork = 'tbReturnWork';
-  final String tblineDayData = 'tblineDayData';
-  final String tbBsReturnWorkCode = 'tbBsReturnWorkCode';
-  bool lanConnectionAvailable = false;
-  Future<bool> initConnection(String dbName, user, pass) async {
+
+  Future<bool> initConnection() async {
     bool isConnected = false;
-    await Socket.connect(ipLAN, port, timeout: const Duration(seconds: 3))
-        .then((socket) {
-      // do what need to be done
-      print('Connection to IP LAN : $ipLAN:$port OK');
-      lanConnectionAvailable = true;
-      // Don't forget to close socket
-      socket.destroy();
-    }).catchError((error) {});
-    if (!lanConnectionAvailable) {
-      Fluttertoast.showToast(
-          msg: "LAN connection to SQL Server ETSDB_TI not available !",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      return false;
-    }
     try {
-      isConnected = await connection.initializeConnection(
-        ipLAN,
-        dbName,
-        user,
-        pass,
-        instance: instanceSql,
-      );
+      bool lanConnection = false;
+      await Socket.connect(ipLAN, port, timeout: const Duration(seconds: 3))
+          .then((socket) {
+        // do what need to be done
+        lanConnection = true;
+        // Don't forget to close socket
+        socket.destroy();
+      });
+      print('SqlETSDB checkLAN IP : $ipLAN  port : $port : $lanConnection');
+      if (lanConnection)
+        isConnected = await connection.initializeConnection(
+          ipLAN,
+          dbName,
+          user,
+          pass,
+          instance: instanceSql,
+        );
+
       if (!isConnected) {
         Fluttertoast.showToast(
             msg: "SQL Server not available !",
@@ -64,44 +52,42 @@ class MySql {
             fontSize: 16.0);
       }
     } catch (e) {
-      print('initializeConnection - $ipLAN FAILSE :$e');
+      print(e);
     }
+
+    print('SqlETSDB initConnection : $isConnected');
     return isConnected;
   }
 
-  Future<Setting> getSetting() async {
+  Future<AppSetting> getSetting() async {
     String query =
-        '''SELECT reloadTimeSeconds, showNotification, text, imgURL, showBegin, showEnd, chartBegin, chartEnd, rangeDay, ipTvLine, minuteChangeLine, lines
-FROM A_Setting''';
-    late Setting result;
+        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine 
+FROM A_AppSetting''';
+    late AppSetting result;
     var tempResult = [];
     var element;
     await connection.getRowsOfQueryResult(query).then((value) => {
           if (value.runtimeType == String)
-            {
-              //error
-            }
+            {print('ERROR')}
           else
             {
               tempResult = value.cast<Map<String, dynamic>>(),
               element = tempResult[0],
-              result = Setting(
-                reloadTimeSeconds: element['reloadTimeSeconds'],
-                showNotification: element['showNotification'],
-                text: element['text'],
-                imgURL: element['imgURL'],
-                showBegin: element['showBegin'],
-                showEnd: element['showEnd'],
-                chartBegin: element['chartBegin'],
-                chartEnd: element['chartEnd'],
-                rangeDay: element['rangeDay'],
-                ipTvLine: element['ipTvLine'],
-                minuteChangeLine: element['minuteChangeLine'],
+              result = AppSetting(
                 lines: element['lines'],
+                timeChangeLine: element['timeChangeLine'],
+                timeReload: element['timeReload'],
+                rangeDays: element['rangeDays'],
+                showNotification: element['showNotification'],
+                notificationURL: element['notificationURL'],
+                showBegin: element['showBegin'],
+                showDuration: element['showDuration'],
+                chartBegin: element['chartBegin'],
+                chartDuration: element['chartDuration'],
+                ipTvLine: element['ipTvLine'],
               )
             }
         });
-
     return result;
   }
 
@@ -227,7 +213,7 @@ WHERE line = ${line}''';
     return result;
   }
 
-  Future<List<SqlSumQty>> getSqlSumQty(
+  Future<List<SqlSumEmpQty>> getSqlSumEmpQty(
       int line, String mo, DateTime date) async {
     String dateString = DateFormat(g.dateFormat).format(
       g.pickedDate,
@@ -237,9 +223,9 @@ FROM EmployeeDayData
 WHERE  WorkLine = 'L$line' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
 GROUP BY GxNo, EmpId
 ORDER BY GxNo ASC''';
-    List<SqlSumQty> result = [];
+    List<SqlSumEmpQty> result = [];
     var tempResult;
-    print('getSqlSumQty : $query');
+    print('getSqlSumEmpQty : $query');
     try {
       await connection.getRowsOfQueryResult(query).then((value) => {
             if (value.runtimeType == String)
@@ -249,10 +235,10 @@ ORDER BY GxNo ASC''';
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    result.add(SqlSumQty(
+                    result.add(SqlSumEmpQty(
                         GxNo: element['GxNo'],
                         EmpId: element['EmpId'],
-                        SumQty: element['Sum_Qty'])),
+                        SumEmpQty: element['Sum_Qty'])),
                   }
               }
           });
@@ -263,64 +249,37 @@ ORDER BY GxNo ASC''';
     return result;
   }
 
-  List<Map<int, String>> geDefectCodeNames() {
-    String queryString =
-        'SELLECT ReturnWorkCode, ReturnWorkName FROM dbo.$tbBsReturnWorkCode';
-    List<Map<int, String>> tempResult = [];
-    connection.getRowsOfQueryResult(queryString).then((value) => {
-          if (value.runtimeType == String)
-            {
-              //error
-            }
-          else
-            {
-              tempResult = value.cast<Map<int, String>>(),
-              tempResult.forEach((element) {
-                int returnWorkCode =
-                    int.parse(element['ReturnWorkCode'].toString());
-                String returnWorkName = element['ReturnWorkName'].toString();
-                var map = {returnWorkCode, returnWorkName};
-                tempResult.add(map as Map<int, String>);
-              })
-            }
-        });
-    return tempResult;
-  }
-
-  Future<List<SqlT01>> getT01InspectionData(int line) async {
-    List<SqlT01> result = [];
-    List<Map<String, dynamic>> tempResult = [];
-    final String query = '''SELECT X02, X06, X07, X08, X09
-FROM [Production].[dbo].[T01_1st inspection data]
-WHERE X01 = ${line} and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.setting.getRangeDay}, getdate()) )
-ORDER BY X02 ASC
-    ''';
-    print('getT01InspectionData ${line} ');
-    print(query);
+  Future<List<SqlSumNoQty>> getSqlSumNoQty(
+      int line, String mo, DateTime date) async {
+    String dateString = DateFormat(g.dateFormat).format(
+      g.pickedDate,
+    );
+    String query = '''SELECT GxNo,SUM(Qty) as Sum_Qty
+FROM EmployeeDayData
+WHERE  WorkLine = 'L$line' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+GROUP BY GxNo
+ORDER BY GxNo ASC''';
+    List<SqlSumNoQty> result = [];
+    var tempResult;
+    print('getSqlSumNoQty : $query');
     try {
-      var tempResult = [];
       await connection.getRowsOfQueryResult(query).then((value) => {
             if (value.runtimeType == String)
-              {
-                //error
-              }
+              {print('Query : $query => ERROR ')}
             else
               {
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    result.add(SqlT01(
-                        x02: element['X02'],
-                        x06: element['X06'],
-                        x07: element['X07'],
-                        x08: element['X08'],
-                        x09: element['X09']))
+                    result.add(SqlSumNoQty(
+                        GxNo: element['GxNo'], SumNoQty: element['Sum_Qty'])),
                   }
               }
           });
     } catch (e) {
-      print('getInspectionData --> Exception : ' + e.toString());
+      print(e.toString());
     }
+
     return result;
   }
 }

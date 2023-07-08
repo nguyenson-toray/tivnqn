@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tivnqn/connection/sqlETSDB.dart';
+import 'package:tivnqn/connection/sqlProductionDB.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/processDetail.dart';
-import 'package:tivnqn/model/setting.dart';
-import 'package:tivnqn/connection/mySqI.dart';
+import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMoInfo.dart';
-import 'package:tivnqn/model/sqlSumQty.dart';
+import 'package:tivnqn/model/sqlSumEmpQty.dart';
+import 'package:tivnqn/model/sqlSumNoQty.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/workSummary.dart';
 
@@ -36,7 +38,6 @@ class g {
   static bool isTVLine = true;
   static bool autochangeLine = true;
   static bool isLoading = false;
-  static bool needLoadAllData = true;
   static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   static int currentLine = 1;
   static int currentIndexLine = 0;
@@ -44,12 +45,13 @@ class g {
   static String currentStyle = '';
   static String currentCnid = '';
   static late SharedPreferences sharedPreferences;
-  static var mySql = MySql();
-  static bool isMySqlConnected = false;
+  static var sqlProductionDB = SqlProductionDB();
+  static var sqlETSDB = SqlETSDB();
 
   static List<SqlEmployee> sqlEmployees = [];
   static late SqlMoInfo sqlMoInfo;
-  static List<SqlSumQty> sqlSumQty = [];
+  static List<SqlSumEmpQty> sqlSumEmpQty = [];
+  static List<SqlSumNoQty> sqlSumNoQty = [];
   static List<WorkSummary> workSummary = [];
   static List<SqlEmployee> employeesScaned = [];
   static List<ProcessDetail> processDetail = [];
@@ -58,10 +60,23 @@ class g {
   static List<int> processNotScan = [];
   static List<String> idEmpScaneds = [];
   static List<SqlT01> sqlT01 = [];
-  static late Setting setting;
+  static AppSetting appSetting = AppSetting(
+      lines: '1,2,3,4,5,6,8,9',
+      timeChangeLine: 5,
+      timeReload: 1,
+      rangeDays: 14,
+      showNotification: 0,
+      notificationURL: '',
+      showBegin: '07:00:00',
+      showDuration: 30,
+      chartBegin: '09:00:00',
+      chartDuration: 30,
+      ipTvLine: '');
   List<Map<int, String>> defectCodeNames = [];
 
   static bool showETS = false;
+  static bool showProcess = false;
+  static ValueNotifier<int> reloadType = ValueNotifier(0);
   //--------------------
   static late Widget chartUi;
   static List<ChartData> chartData = [];

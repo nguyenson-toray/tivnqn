@@ -1,8 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/model/chartData.dart';
-import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
@@ -14,7 +13,7 @@ class MyFuntions {
     g.idEmpScaneds.clear();
 
     List<WorkSummary> result = [];
-    g.sqlSumQty.forEach((element) {
+    g.sqlSumEmpQty.forEach((element) {
       g.idEmpScaneds.add(element.getEmpId);
       g.processScaned.add(element.getGxNo);
     });
@@ -35,12 +34,13 @@ class MyFuntions {
             ProcessDetailQty(GxNo: 0, GxName: 'GxName', qty: 0)
           ]);
       List<ProcessDetailQty> processDetailQtys = [];
-      for (int i = 0; i < g.sqlSumQty.length; i++) {
-        if (idEmpScaned == g.sqlSumQty[i].EmpId) {
-          final int GxNo = g.sqlSumQty[i].getGxNo;
-          final int qty = g.sqlSumQty[i].getSumQty;
+      for (int i = 0; i < g.sqlSumEmpQty.length; i++) {
+        if (idEmpScaned == g.sqlSumEmpQty[i].EmpId) {
+          final int GxNo = g.sqlSumEmpQty[i].getGxNo;
+          final int qty = g.sqlSumEmpQty[i].getSumEmpQty;
           final String GxName = g.processDetail
-              .firstWhere((element) => element.getNo == g.sqlSumQty[i].getGxNo)
+              .firstWhere(
+                  (element) => element.getNo == g.sqlSumEmpQty[i].getGxNo)
               .getName;
           final processDetailQty =
               ProcessDetailQty(GxNo: GxNo, GxName: GxName, qty: qty);
@@ -56,37 +56,55 @@ class MyFuntions {
     return result;
   }
 
-  static Future<bool> getSqlData() async {
-    print('getSqlData : g.needLoadAllData = ${g.needLoadAllData}');
+  static Future<bool> loadDataSQL(int type) async {
+    print('loadDataSQL : ${type}');
     g.isLoading = true;
-    g.isMySqlConnected =
-        await g.mySql.initConnection(g.dbETSDB_TI, g.sqlUser, g.sqlPass);
-    if (g.isMySqlConnected) {
-      if (g.needLoadAllData) {
-        g.sqlEmployees = await g.mySql.getEmployees();
-        g.sqlMoInfo = await g.mySql.getMoInfo(g.currentLine);
-        g.currentMO = g.sqlMoInfo.getMo;
-        g.currentStyle = g.sqlMoInfo.getStyle;
-        g.currentCnid = await g.mySql.getCnid(g.currentMO);
-        g.processDetail = await g.mySql.getProcessDetail(g.currentCnid);
-      }
-      g.setting = await g.mySql.getSetting();
-      g.lines.clear();
-      g.setting.getLines.toString().split(',').forEach((element) {
-        g.lines.add(int.parse(element));
-      });
-      g.currentIndexLine = g.lines.indexOf(g.currentLine);
+    switch (type) {
+      case 1: //load production db
+        {
+          g.sqlT01 =
+              await g.sqlProductionDB.getT01InspectionData(g.currentLine);
+        }
+        break;
+      case 2: // load all ETS
+        {
+          g.sqlEmployees = await g.sqlETSDB.getEmployees();
+          g.sqlMoInfo = await g.sqlETSDB.getMoInfo(g.currentLine);
+          g.currentMO = g.sqlMoInfo.getMo;
+          g.currentStyle = g.sqlMoInfo.getStyle;
+          g.currentCnid = await g.sqlETSDB.getCnid(g.currentMO);
+          g.processDetail = await g.sqlETSDB.getProcessDetail(g.currentCnid);
+          g.appSetting = await g.sqlETSDB.getSetting();
+          g.lines.clear();
+          g.appSetting.getLines.toString().split(',').forEach((element) {
+            g.lines.add(int.parse(element));
+          });
+          g.currentIndexLine = g.lines.indexOf(g.currentLine);
 
-      g.sqlSumQty = await g.mySql
-          .getSqlSumQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
-    }
-    g.isMySqlConnected =
-        await g.mySql.initConnection(g.dbProduction, g.sqlUser, g.sqlPass);
-    if (g.isMySqlConnected) {
-      g.sqlT01 = await g.mySql.getT01InspectionData(g.currentLine);
+          g.sqlSumEmpQty = await g.sqlETSDB
+              .getSqlSumEmpQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumNoQty = await g.sqlETSDB
+              .getSqlSumNoQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
+        }
+        break;
+      case 3: // load line data
+        {
+          g.appSetting = await g.sqlETSDB.getSetting();
+          g.lines.clear();
+          g.appSetting.getLines.toString().split(',').forEach((element) {
+            g.lines.add(int.parse(element));
+          });
+          g.currentIndexLine = g.lines.indexOf(g.currentLine);
+          g.sqlSumEmpQty = await g.sqlETSDB
+              .getSqlSumEmpQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumNoQty = await g.sqlETSDB
+              .getSqlSumNoQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
+        }
+        break;
+      default:
     }
     g.isLoading = false;
-    return (g.sqlSumQty.isNotEmpty);
+    return (g.sqlSumEmpQty.isNotEmpty);
   }
 
   static Color getColorByQty(int qty, int target) {
@@ -100,6 +118,20 @@ class MyFuntions {
       result = Colors.yellowAccent;
     else
       result = Colors.greenAccent;
+    return result;
+  }
+
+  static Color getColorByQty2(int qty, int target) {
+    Color result = Color.fromRGBO(248, 240, 168, 1);
+    int ration = (qty / target * 100).round();
+    if (ration <= 25)
+      result = Color.fromARGB(255, 250, 181, 181);
+    else if (ration <= 50)
+      result = Color.fromARGB(255, 250, 221, 183);
+    else if (ration <= 75)
+      result = Color.fromARGB(255, 245, 245, 186);
+    else
+      result = Color.fromARGB(255, 183, 245, 215);
     return result;
   }
 
@@ -152,5 +184,18 @@ class MyFuntions {
       result.add(data);
     });
     return result;
+  }
+
+  static String getLinkImageNotification(String orgLink) {
+    // https: //drive.google.com/file/d/1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB/view?usp=drive_link
+    // file ID : 1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
+    // -> https://drive.google.com/uc?export=view&id=<FILE_ID>
+    String link = 'https://drive.google.com/uc?export=view&id=';
+    String temp1 = orgLink.split('https://drive.google.com/file/d/')[0];
+    String fileId = temp1.split('/')[0];
+    link += fileId;
+    print('getLinkImageNotification : $orgLink');
+    print('-> : $link');
+    return link;
   }
 }

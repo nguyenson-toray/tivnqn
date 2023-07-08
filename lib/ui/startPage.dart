@@ -48,19 +48,23 @@ class _StartPageState extends State<StartPage> {
 
   Future<void> initData() async {
     fluWakeLock.enable();
-    await MyFuntions.getSqlData();
+    await g.sqlProductionDB.initConnection();
+    await g.sqlETSDB.initConnection();
+    await MyFuntions.loadDataSQL(1);
+    await MyFuntions.loadDataSQL(2);
+    // await MyFuntions.getSqlData();
     g.workSummary = MyFuntions.summaryDailyDataETS();
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
     g.chartUi = ChartUI.createChartUI(
         g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
     final ip = await NetworkInfo().getWifiIP();
-    if ((g.setting.getIpTvLine).toString().contains(ip!)) {
+    if ((g.appSetting.getIpTvLine).toString().contains(ip!)) {
       g.isTVLine = true;
     } else
       g.isTVLine = false;
     print('isTVLine :${g.isTVLine}');
     print('ip : $ip');
-    print('getIpTvLine : ${g.setting.getIpTvLine.toString()}');
+    print('getIpTvLine : ${g.appSetting.getIpTvLine.toString()}');
     Loader.hide();
     Navigator.pushReplacement(
       context,

@@ -59,7 +59,7 @@ dependencies:
   blinking_text: ^1.0.2 
   assets_audio_player: ^3.0.6 
   date_picker_timeline: ^1.2.5
-  ndialog: ^4.3.0
+  ndialog: ^4.3.0 
   # flutter pub run change_app_package_name:main com.new.package.name
 
   # flutter pub get
