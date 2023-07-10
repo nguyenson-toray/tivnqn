@@ -24,7 +24,6 @@ class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
         // horizontal gap between two items
         crossAxisSpacing: 1,
         itemBuilder: (context, index) {
-          print('${g.processDetail[index].getNo}');
           int qty = 0;
           try {
             qty = (g.sqlSumNoQty.firstWhere((element) =>
@@ -45,7 +44,7 @@ class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: 150,
+                  width: (g.screenWidth - 180) / 5,
                   child: Text(
                     noAndName,
                     overflow: TextOverflow.ellipsis,

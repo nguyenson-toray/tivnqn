@@ -33,13 +33,14 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
             List<ProcessDetailQty> process =
                 g.workSummary[index].getProcessDetailQtys;
             return Card(
-              // shape: RoundedRectangleBorder(
-              //   side: BorderSide(
-              //       // color: MyFuntions.getColorByQty2(
-              //       //     process[0].getQty, g.sqlMoInfo.getTargetDay),
-              //       width: 1),
-              //   borderRadius: BorderRadius.circular(7),
-              // ),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    color: Colors.white,
+                    // color: MyFuntions.getColorByQty2(
+                    //     process[0].getQty, g.sqlMoInfo.getTargetDay),
+                    width: 1),
+                borderRadius: BorderRadius.circular(5),
+              ),
               color: Colors.cyan[50],
               margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
               child: Column(children: [
@@ -63,7 +64,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                             children: [
                               Container(
                                 padding: EdgeInsets.fromLTRB(2, 1, 2, 1),
-                                width: 128,
+                                width: (g.screenWidth - 195) / 6,
                                 child: Text(
                                   '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
                                   overflow: TextOverflow.ellipsis,
@@ -94,7 +95,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                   ),
                 ),
                 Container(
-                  width: 170,
+                  width: g.screenWidth / 6,
                   decoration: BoxDecoration(
                     color: MyFuntions.getColorByQty(
                         process[0].getQty, g.sqlMoInfo.getTargetDay),
@@ -154,7 +155,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
             g.processNotScan.length > 0
                 ? SizedBox(
                     height: g.footerH,
-                    width: g.screenWidth - 200,
+                    width: g.screenWidth - 160,
                     child: Marquee(
                         blankSpace: 200,
                         velocity: 40.0,
@@ -178,7 +179,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
               'Version : ${g.version}',
               style: const TextStyle(
                   color: Colors.black,
-                  fontSize: 6,
+                  fontSize: 8,
                   fontWeight: FontWeight.normal),
             )
           ],
