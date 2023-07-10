@@ -29,13 +29,18 @@ class g {
   static final dbETSDB_TI = 'ETSDB_TI';
 
   static String version = '2.0.0';
-  static double screenWidthPixel = 0;
-  static double screenHeightPixel = 0;
-  static double screenWidthInch = 0;
-  static double screenHeightInch = 0;
+  // static double screenWidthPixel = 0;
+  static double screenWidth = 0;
+  // static double screenHeightPixel = 0;
+  static double screenHeight = 0;
+  // static double screenWidthInch = 0;
+  // static double screenHeightInch = 0;
   static double appBarH = 40;
+  static double footerH = 25;
 
+  static String ip = '';
   static bool isTVLine = true;
+  static int screenType = 1; //1 :chart , 2: name, 3: process
   static bool autochangeLine = true;
   static bool isLoading = false;
   static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -63,7 +68,7 @@ class g {
   static AppSetting appSetting = AppSetting(
       lines: '1,2,3,4,5,6,8,9',
       timeChangeLine: 5,
-      timeReload: 1,
+      timeReload: 30,
       rangeDays: 14,
       showNotification: 0,
       notificationURL: '',
@@ -74,7 +79,7 @@ class g {
       ipTvLine: '');
   List<Map<int, String>> defectCodeNames = [];
 
-  static bool showETS = false;
+  // static bool showETS = false;
   static bool showProcess = false;
   static ValueNotifier<int> reloadType = ValueNotifier(0);
   //--------------------

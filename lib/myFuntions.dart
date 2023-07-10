@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class MyFuntions {
   static List<WorkSummary> summaryDailyDataETS() {
@@ -74,7 +78,7 @@ class MyFuntions {
           g.currentStyle = g.sqlMoInfo.getStyle;
           g.currentCnid = await g.sqlETSDB.getCnid(g.currentMO);
           g.processDetail = await g.sqlETSDB.getProcessDetail(g.currentCnid);
-          g.appSetting = await g.sqlETSDB.getSetting();
+
           g.lines.clear();
           g.appSetting.getLines.toString().split(',').forEach((element) {
             g.lines.add(int.parse(element));
@@ -87,13 +91,14 @@ class MyFuntions {
               .getSqlSumNoQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
         }
         break;
-      case 3: // load line data
+      case 3: // load line data , setting
         {
-          g.appSetting = await g.sqlETSDB.getSetting();
+          await g.sqlETSDB.getSetting();
           g.lines.clear();
           g.appSetting.getLines.toString().split(',').forEach((element) {
             g.lines.add(int.parse(element));
           });
+
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
           g.sqlSumEmpQty = await g.sqlETSDB
               .getSqlSumEmpQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
@@ -105,6 +110,60 @@ class MyFuntions {
     }
     g.isLoading = false;
     return (g.sqlSumEmpQty.isNotEmpty);
+  }
+
+  static int setLineFollowIP(String ip) {
+    int line = 1;
+    switch (ip) {
+      case '192.168.1.71':
+        {
+          line = 1;
+        }
+        break;
+      case '192.168.1.72':
+        {
+          line = 2;
+        }
+        break;
+      case '192.168.1.73':
+        {
+          line = 3;
+        }
+        break;
+      case '192.168.1.74':
+        {
+          line = 4;
+        }
+        break;
+      case '192.168.1.75':
+        {
+          line = 5;
+        }
+        break;
+      case '192.168.1.76':
+        {
+          line = 6;
+        }
+        break;
+      case '192.168.1.77':
+        {
+          line = 7;
+        }
+        break;
+      case '192.168.1.78':
+        {
+          line = 8;
+        }
+        break;
+      case '192.168.1.79':
+        {
+          line = 8;
+        }
+        break;
+      default:
+        line = 1;
+    }
+    return line;
   }
 
   static Color getColorByQty(int qty, int target) {
@@ -190,12 +249,17 @@ class MyFuntions {
     // https: //drive.google.com/file/d/1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB/view?usp=drive_link
     // file ID : 1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
     // -> https://drive.google.com/uc?export=view&id=<FILE_ID>
+    // https://drive.google.com/uc?export=view&id=1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
     String link = 'https://drive.google.com/uc?export=view&id=';
-    String temp1 = orgLink.split('https://drive.google.com/file/d/')[0];
-    String fileId = temp1.split('/')[0];
+    String fileId = orgLink.substring(32, 65);
     link += fileId;
-    print('getLinkImageNotification : $orgLink');
+    print('org link : ${orgLink}');
     print('-> : $link');
     return link;
+  }
+
+  static Future<void> playAudio() async {
+    AssetsAudioPlayer.newPlayer().open(Audio("assets/notification_sound.wav"),
+        autoStart: true, volume: 1.0);
   }
 }

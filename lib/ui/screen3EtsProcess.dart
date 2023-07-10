@@ -3,14 +3,14 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
 
-class ShowAllProcess extends StatefulWidget {
-  const ShowAllProcess({super.key});
+class Screen3EtsProcess extends StatefulWidget {
+  const Screen3EtsProcess({super.key});
 
   @override
-  State<ShowAllProcess> createState() => _ShowAllProcessState();
+  State<Screen3EtsProcess> createState() => _Screen3EtsProcessState();
 }
 
-class _ShowAllProcessState extends State<ShowAllProcess> {
+class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
   final itemSize = g.processDetail.length;
   @override
   Widget build(BuildContext context) {

@@ -24,25 +24,25 @@ Future<void> main() async {
 }
 
 Future<void> detectDeviceInfo() async {
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  g.screenWidthPixel = androidInfo.displayMetrics.widthPx;
-  g.screenHeightPixel = androidInfo.displayMetrics.heightPx;
-  g.screenWidthInch = androidInfo.displayMetrics.widthInches;
-  g.screenHeightInch = androidInfo.displayMetrics.heightInches;
-  print('screenWidthPixel : ${g.screenWidthPixel}');
-  print('screenHeightPixel : ${g.screenHeightPixel}');
-  print('screenWidthInch : ${g.screenWidthInch}');
-  print('screenHeightInch : ${g.screenHeightInch}');
+  // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  // g.screenWidthPixel = androidInfo.displayMetrics.widthPx;
+  // g.screenHeightPixel = androidInfo.displayMetrics.heightPx;
+  // g.screenWidthInch = androidInfo.displayMetrics.widthInches;
+  // g.screenHeightInch = androidInfo.displayMetrics.heightInches;
+  // print('screenWidthPixel : ${g.screenWidthPixel}');
+  // print('screenHeightPixel : ${g.screenHeightPixel}');
+  // print('screenWidthInch : ${g.screenWidthInch}');
+  // print('screenHeightInch : ${g.screenHeightInch}');
 }
 
 getsharedPreferences() async {
   g.sharedPreferences = await SharedPreferences.getInstance();
-  if (g.sharedPreferences.getInt("currentLine") == null) {
-    g.sharedPreferences.setInt('currentLine', 8);
-  } else {
-    g.currentLine = g.sharedPreferences.getInt("currentLine")!;
-  }
+  // if (g.sharedPreferences.getInt("currentLine") == null) {
+  //   g.sharedPreferences.setInt('currentLine', 8);
+  // } else {
+  //   g.currentLine = g.sharedPreferences.getInt("currentLine")!;
+  // }
 }
 
 class MyApp extends StatelessWidget {
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
         LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
       },
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'TIVN-QN',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),

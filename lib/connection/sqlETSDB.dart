@@ -59,11 +59,11 @@ class SqlETSDB {
     return isConnected;
   }
 
-  Future<AppSetting> getSetting() async {
+  Future<void> getSetting() async {
     String query =
         '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine 
 FROM A_AppSetting''';
-    late AppSetting result;
+    late AppSetting result = g.appSetting;
     var tempResult = [];
     var element;
     await connection.getRowsOfQueryResult(query).then((value) => {
@@ -73,7 +73,7 @@ FROM A_AppSetting''';
             {
               tempResult = value.cast<Map<String, dynamic>>(),
               element = tempResult[0],
-              result = AppSetting(
+              g.appSetting = AppSetting(
                 lines: element['lines'],
                 timeChangeLine: element['timeChangeLine'],
                 timeReload: element['timeReload'],
@@ -88,7 +88,7 @@ FROM A_AppSetting''';
               )
             }
         });
-    return result;
+    print('getSetting => ${g.appSetting} ');
   }
 
   Future<List<SqlEmployee>> getEmployees() async {

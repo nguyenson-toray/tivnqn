@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:flu_wake_lock/flu_wake_lock.dart';
@@ -6,7 +7,7 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartUI.dart';
-import 'package:tivnqn/ui/dashboardSewingLine.dart';
+import 'package:tivnqn/ui/dashboard.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -31,6 +32,8 @@ class _StartPageState extends State<StartPage> {
               print('isLoaded ==: $isLoaded');
             });
           });
+      g.screenWidth = MediaQuery.of(context).size.width;
+      g.screenHeight = MediaQuery.of(context).size.height;
     });
 
     Timer.periodic(const Duration(seconds: 2), (timer) {
@@ -39,7 +42,7 @@ class _StartPageState extends State<StartPage> {
         Loader.hide();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const DashboardSewingLine()),
+          MaterialPageRoute(builder: (context) => const Dashboard()),
         );
       }
     });
@@ -47,28 +50,41 @@ class _StartPageState extends State<StartPage> {
   }
 
   Future<void> initData() async {
+    print('Start Page - initData');
     fluWakeLock.enable();
+    g.ip = (await NetworkInfo().getWifiIP())!;
+    g.sqlETSDB.getSetting();
+    if ((g.appSetting.getIpTvLine).toString().contains(g.ip!)) {
+      g.isTVLine = true;
+    } else
+      g.isTVLine = false;
+    g.currentLine = MyFuntions.setLineFollowIP(g.ip);
+    print(
+        'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');
+    if (kDebugMode) {
+      setState(() {
+        g.currentLine = 8;
+        g.isTVLine = false;
+        // g.appSetting.setShowNotification = 0;
+        g.autochangeLine = false;
+      });
+    }
+
     await g.sqlProductionDB.initConnection();
     await g.sqlETSDB.initConnection();
     await MyFuntions.loadDataSQL(1);
     await MyFuntions.loadDataSQL(2);
-    // await MyFuntions.getSqlData();
     g.workSummary = MyFuntions.summaryDailyDataETS();
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
     g.chartUi = ChartUI.createChartUI(
         g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-    final ip = await NetworkInfo().getWifiIP();
-    if ((g.appSetting.getIpTvLine).toString().contains(ip!)) {
-      g.isTVLine = true;
-    } else
-      g.isTVLine = false;
-    print('isTVLine :${g.isTVLine}');
-    print('ip : $ip');
-    print('getIpTvLine : ${g.appSetting.getIpTvLine.toString()}');
+
+    // print('getIpTvLine : ${g.appSetting.getIpTvLine.toString()}');
+
     Loader.hide();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const DashboardSewingLine()),
+      MaterialPageRoute(builder: (context) => const Dashboard()),
     );
   }
 
