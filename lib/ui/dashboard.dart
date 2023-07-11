@@ -247,7 +247,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   Text(
                     '''Auto
-Change''',
+Change ''',
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
@@ -256,7 +256,7 @@ Change''',
       ],
       title: g.screenType == 1
           ? Text(
-              'SẢN LƯỢNG & TỈ LỆ LỖI',
+              'SẢN LƯỢNG & TỈ LỆ LỖI - LINE ${g.currentLine}',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

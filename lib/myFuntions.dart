@@ -184,13 +184,13 @@ class MyFuntions {
     Color result = Color.fromRGBO(248, 240, 168, 1);
     int ration = (qty / target * 100).round();
     if (ration <= 25)
-      result = Color.fromARGB(255, 250, 181, 181);
+      result = const Color.fromARGB(255, 245, 31, 16);
     else if (ration <= 50)
-      result = Color.fromARGB(255, 250, 221, 183);
+      result = Colors.orange;
     else if (ration <= 75)
-      result = Color.fromARGB(255, 245, 245, 186);
+      result = const Color.fromARGB(255, 248, 225, 19);
     else
-      result = Color.fromARGB(255, 183, 245, 215);
+      result = const Color.fromARGB(255, 62, 243, 68);
     return result;
   }
 

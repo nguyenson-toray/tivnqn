@@ -34,13 +34,14 @@ class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
           var noAndName =
               '${g.processDetail[index].getNo} : ${g.processDetail[index].getName}';
           return Card(
-            color: MyFuntions.getColorByQty2(qty, g.sqlMoInfo.getTargetDay),
+            // color: MyFuntions.getColorByQty2(qty, g.sqlMoInfo.getTargetDay),
+            color: Colors.teal[50],
             shape: RoundedRectangleBorder(
               // side: BorderSide(color: Colors.tealAccent, width: 1),
               borderRadius: BorderRadius.circular(3),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
@@ -53,7 +54,8 @@ class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
                 Text(
                   '$qty',
                   style: TextStyle(
-                      color: qty == 0 ? Colors.white : Colors.black,
+                      color: MyFuntions.getColorByQty2(
+                          qty, g.sqlMoInfo.getTargetDay),
                       fontWeight:
                           qty == 0 ? FontWeight.bold : FontWeight.normal),
                 )
