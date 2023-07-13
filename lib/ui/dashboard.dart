@@ -160,12 +160,27 @@ class _DashboardState extends State<Dashboard> {
     return AppBar(
       backgroundColor: Colors.lightBlue,
       // leading: Image.asset('assets/logo_white.png'),
-      leading: Visibility(
-          visible: g.isLoading,
-          child: LinearProgressIndicator(
-            color: Colors.white,
-            backgroundColor: Colors.lightBlue,
-          )),
+      leading: g.isLoading
+          ? LinearProgressIndicator(
+              color: Colors.white,
+              backgroundColor: Colors.lightBlue,
+            )
+          : Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: CircleAvatar(
+                maxRadius: g.appBarH / 2 - 2,
+                backgroundColor: Colors.white,
+                child: Center(
+                  child: Text(
+                    g.currentLine.toString(),
+                    style: const TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
       actions: [
         Row(
           children: [
@@ -278,27 +293,6 @@ Change ''',
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('LINE ',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28)),
-                  CircleAvatar(
-                    maxRadius: g.appBarH / 2 - 2,
-                    backgroundColor: Colors.white,
-                    child: Center(
-                      child: Text(
-                        g.currentLine.toString(),
-                        style: const TextStyle(
-                            color: Colors.blueAccent,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
                   Image.asset('assets/style.png'),
                   Text('${g.currentStyle.trim()}',
                       style: TextStyle(
