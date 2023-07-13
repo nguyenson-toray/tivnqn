@@ -213,14 +213,13 @@ WHERE line = ${line}''';
     return result;
   }
 
-  Future<List<SqlSumEmpQty>> getSqlSumEmpQty(
-      int line, String mo, DateTime date) async {
+  Future<List<SqlSumEmpQty>> getSqlSumEmpQty(String mo, DateTime date) async {
     String dateString = DateFormat(g.dateFormat).format(
       g.pickedDate,
     );
     String query = '''SELECT GxNo, EmpId,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine = 'L$line' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+WHERE  WorkLine LIKE '%L%' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
 GROUP BY GxNo, EmpId
 ORDER BY GxNo ASC''';
     List<SqlSumEmpQty> result = [];
@@ -249,14 +248,13 @@ ORDER BY GxNo ASC''';
     return result;
   }
 
-  Future<List<SqlSumNoQty>> getSqlSumNoQty(
-      int line, String mo, DateTime date) async {
+  Future<List<SqlSumNoQty>> getSqlSumNoQty(String mo, DateTime date) async {
     String dateString = DateFormat(g.dateFormat).format(
       g.pickedDate,
     );
     String query = '''SELECT GxNo,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine = 'L$line' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+WHERE  WorkLine LIKE '%L%' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
 GROUP BY GxNo
 ORDER BY GxNo ASC''';
     List<SqlSumNoQty> result = [];

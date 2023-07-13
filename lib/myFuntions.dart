@@ -85,10 +85,10 @@ class MyFuntions {
           });
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
 
-          g.sqlSumEmpQty = await g.sqlETSDB
-              .getSqlSumEmpQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
-          g.sqlSumNoQty = await g.sqlETSDB
-              .getSqlSumNoQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumEmpQty =
+              await g.sqlETSDB.getSqlSumEmpQty(g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumNoQty =
+              await g.sqlETSDB.getSqlSumNoQty(g.sqlMoInfo.getMo, g.pickedDate);
         }
         break;
       case 3: // load line data , setting
@@ -100,10 +100,10 @@ class MyFuntions {
           });
 
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
-          g.sqlSumEmpQty = await g.sqlETSDB
-              .getSqlSumEmpQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
-          g.sqlSumNoQty = await g.sqlETSDB
-              .getSqlSumNoQty(g.currentLine, g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumEmpQty =
+              await g.sqlETSDB.getSqlSumEmpQty(g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumNoQty =
+              await g.sqlETSDB.getSqlSumNoQty(g.sqlMoInfo.getMo, g.pickedDate);
         }
         break;
       default:
