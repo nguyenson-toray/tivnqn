@@ -17,174 +17,184 @@ class Screen2EtsName extends StatefulWidget {
 class _Screen2EtsNameState extends State<Screen2EtsName> {
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      SizedBox(
-        height: g.screenHeight - g.appBarH - g.footerH,
-        child: MasonryGridView.count(
-          padding: EdgeInsets.all(2),
-          itemCount: g.workSummary.length,
-          // the number of columns
-          crossAxisCount: 6,
-          // vertical gap between two items
-          mainAxisSpacing: 2,
-          // horizontal gap between two items
-          crossAxisSpacing: 2,
-          itemBuilder: (context, index) {
-            List<ProcessDetailQty> process =
-                g.workSummary[index].getProcessDetailQtys;
-            return Card(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(
-                    color: Colors.white,
-                    // color: MyFuntions.getColorByQty2(
-                    //     process[0].getQty, g.sqlMoInfo.getTargetDay),
-                    width: 1),
-                borderRadius: BorderRadius.circular(5),
+    return g.workSummary.length == 0
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Center(
+                child: Image.asset('assets/noData.png'),
               ),
-              color: Colors.cyan[50],
-              margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-              child: Column(children: [
-                SizedBox(
-                  height: process.length * 25,
-                  child: MasonryGridView.count(
-                    itemCount: process.length,
-                    // the number of columns
-                    crossAxisCount: 1,
-                    // vertical gap between two items
-                    mainAxisSpacing: 2,
-                    // horizontal gap between two items
-                    crossAxisSpacing: 2,
-                    itemBuilder: (context, index2) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.fromLTRB(2, 1, 2, 1),
-                                width: (g.screenWidth - 195) / 6,
-                                child: Text(
-                                  '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    // fontSize: 10,
-                                    color: process[index2].getGxNo ==
-                                            g.sqlMoInfo.getLastProcess
-                                        ? Colors.deepPurpleAccent
-                                        : Colors.black,
-                                    fontWeight: process[index2].getGxNo >=
-                                                g.processNoFinishBegin &&
-                                            process[index2].getGxNo <=
-                                                g.processNoFinishEnd
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
+              Text(
+                'KHÔNG CÓ DỮ LIỆU !',
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              )
+            ],
+          )
+        : Column(children: [
+            SizedBox(
+              height: g.screenHeight - g.appBarH - g.footerH,
+              child: MasonryGridView.count(
+                padding: EdgeInsets.all(2),
+                itemCount: g.workSummary.length,
+                // the number of columns
+                crossAxisCount: 6,
+                // vertical gap between two items
+                mainAxisSpacing: 2,
+                // horizontal gap between two items
+                crossAxisSpacing: 2,
+                itemBuilder: (context, index) {
+                  List<ProcessDetailQty> process =
+                      g.workSummary[index].getProcessDetailQtys;
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                          color: Colors.white,
+                          // color: MyFuntions.getColorByQty2(
+                          //     process[0].getQty, g.sqlMoInfo.getTargetDay),
+                          width: 1),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    color: Colors.cyan[50],
+                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                    child: Column(children: [
+                      SizedBox(
+                        height: process.length * 25,
+                        child: MasonryGridView.count(
+                          itemCount: process.length,
+                          // the number of columns
+                          crossAxisCount: 1,
+                          // vertical gap between two items
+                          mainAxisSpacing: 2,
+                          // horizontal gap between two items
+                          crossAxisSpacing: 2,
+                          itemBuilder: (context, index2) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(2, 1, 2, 1),
+                                      width: (g.screenWidth - 195) / 6,
+                                      child: Text(
+                                        '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          // fontSize: 10,
+                                          color: process[index2].getGxNo ==
+                                                  g.sqlMoInfo.getLastProcess
+                                              ? Colors.deepPurpleAccent
+                                              : Colors.black,
+                                          fontWeight: process[index2].getGxNo >=
+                                                      g.processNoFinishBegin &&
+                                                  process[index2].getGxNo <=
+                                                      g.processNoFinishEnd
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      '''${process[index2].getQty}''',
+                                    )
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                '''${process[index2].getQty}''',
-                              )
-                            ],
-                          ),
-                          Divider(height: 1, color: Colors.white),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  width: g.screenWidth / 6,
-                  decoration: BoxDecoration(
-                    color: MyFuntions.getColorByQty(
-                        process[0].getQty, g.sqlMoInfo.getTargetDay),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      process[0].getQty > g.sqlMoInfo.getTargetDay
-                          ?
-                          // SizedBox(
-                          //     height: 17, child: Image.asset('assets/star.gif'))
-                          Icon(
-                              Icons.star,
-                              color: Colors.white,
-                            )
-                          // : (process[0].getQty <= 0.25 * g.sqlMoInfo.getTargetDay &&
-                          //         DateTime.now().hour > 12)
-                          //     ? Icon(
-                          //         Icons.warning,
-                          //         color: Colors.white,
-                          //       )
-                          : Container(),
-                      Text(g.workSummary[index].getShortName.toString(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 13,
-                          )),
-                    ],
-                  ),
-                ),
-              ]),
-            );
-          },
-        ),
-      ),
-      SizedBox(
-        height: g.footerH,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              DateFormat('hh:mm').format(DateTime.now()),
-              style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
+                                Divider(height: 1, color: Colors.white),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: g.screenWidth / 6,
+                        decoration: BoxDecoration(
+                          color: MyFuntions.getColorByQty(
+                              process[0].getQty, g.sqlMoInfo.getTargetDay),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            process[0].getQty > g.sqlMoInfo.getTargetDay
+                                ?
+                                // SizedBox(
+                                //     height: 17, child: Image.asset('assets/star.gif'))
+                                Icon(
+                                    Icons.star,
+                                    color: Colors.white,
+                                  )
+                                // : (process[0].getQty <= 0.25 * g.sqlMoInfo.getTargetDay &&
+                                //         DateTime.now().hour > 12)
+                                //     ? Icon(
+                                //         Icons.warning,
+                                //         color: Colors.white,
+                                //       )
+                                : Container(),
+                            Text(g.workSummary[index].getShortName.toString(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 13,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ]),
+                  );
+                },
+              ),
             ),
-            g.processNotScan.length > 0
-                ? Image.asset('assets/warning2.gif')
-                : Icon(
-                    Icons.thumb_up,
-                    size: 20,
-                    color: Colors.green,
-                  ),
-            g.processNotScan.length > 0
-                ? SizedBox(
-                    height: g.footerH,
-                    width: g.screenWidth - 160,
-                    child: Marquee(
-                        blankSpace: 200,
-                        velocity: 40.0,
-                        scrollAxis: Axis.horizontal,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.redAccent),
-                        text:
-                            '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
-                  )
-                : Text(
-                    '100% CĐ có sản lượng !',
+            SizedBox(
+              height: g.footerH,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat('hh:mm').format(DateTime.now()),
                     style: const TextStyle(
-                        color: Colors.green,
-                        fontSize: 18,
+                        color: Colors.blue,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
-            Text(
-              'Version : ${g.version}',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 8,
-                  fontWeight: FontWeight.normal),
+                  g.processNotScan.length > 0
+                      ? Image.asset('assets/warning2.gif')
+                      : Image.asset('assets/firework.png'),
+                  g.processNotScan.length > 0
+                      ? SizedBox(
+                          height: g.footerH,
+                          width: g.screenWidth - 160,
+                          child: Marquee(
+                              blankSpace: 300,
+                              velocity: 45.0,
+                              scrollAxis: Axis.horizontal,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.redAccent),
+                              text:
+                                  '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
+                        )
+                      : Text(
+                          '100% CĐ có sản lượng !',
+                          style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                  Text(
+                    'Version : ${g.version}',
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 8,
+                        fontWeight: FontWeight.normal),
+                  )
+                ],
+              ),
             )
-          ],
-        ),
-      )
-    ]);
+          ]);
   }
 }

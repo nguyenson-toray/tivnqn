@@ -34,6 +34,7 @@ class _StartPageState extends State<StartPage> {
           });
       g.screenWidth = MediaQuery.of(context).size.width;
       g.screenHeight = MediaQuery.of(context).size.height;
+      print('screen size : ${g.screenWidth} x ${g.screenHeight}');
     });
 
     Timer.periodic(const Duration(seconds: 2), (timer) {

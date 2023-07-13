@@ -19,8 +19,11 @@ Future<void> main() async {
   g.todayString = DateFormat(g.dateFormat).format(
     g.today,
   );
-
-  runApp(const MyApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft // DeviceOrientation.portraitUp
+  ]).then((_) async {
+    runApp(new MyApp());
+  });
 }
 
 Future<void> detectDeviceInfo() async {

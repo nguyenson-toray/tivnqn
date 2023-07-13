@@ -265,11 +265,7 @@ Change ''',
           : Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.group,
-                    color: Colors.white,
-                    size: 36,
-                  ),
+                  Image.asset('assets/group.png'),
                   Text(
                     '''${g.idEmpScaneds.length}''',
                     style: TextStyle(
@@ -314,34 +310,34 @@ Change ''',
               Row(
                 children: [
                   InkWell(
-                      onTap: () async {
-                        NDialog(
-                          dialogStyle: DialogStyle(titleDivider: true),
-                          content: Container(
-                            height: 100,
-                            width: g.screenWidth,
-                            child: DatePicker(
-                              DateTime.now().subtract(Duration(days: 7)),
-                              daysCount: 14,
-                              initialSelectedDate: DateTime.now(),
-                              selectionColor: Colors.black,
-                              selectedTextColor: Colors.white,
-                              onDateChange: (date) {
-                                Navigator.pop(context);
-                                setState(() {
-                                  if (date != null) {
-                                    g.pickedDate = date;
-                                    g.reloadType.value = 3;
-                                    g.reloadType.notifyListeners();
-                                  }
-                                });
-                              },
-                            ),
+                    onTap: () async {
+                      NDialog(
+                        dialogStyle: DialogStyle(titleDivider: true),
+                        content: Container(
+                          height: 100,
+                          width: g.screenWidth,
+                          child: DatePicker(
+                            DateTime.now().subtract(Duration(days: 7)),
+                            daysCount: 14,
+                            initialSelectedDate: DateTime.now(),
+                            selectionColor: Colors.black,
+                            selectedTextColor: Colors.white,
+                            onDateChange: (date) {
+                              Navigator.pop(context);
+                              setState(() {
+                                if (date != null) {
+                                  g.pickedDate = date;
+                                  g.reloadType.value = 3;
+                                  g.reloadType.notifyListeners();
+                                }
+                              });
+                            },
                           ),
-                        ).show(context);
-                      },
-                      child: Icon(Icons.calendar_month,
-                          size: 36, color: Colors.white)),
+                        ),
+                      ).show(context);
+                    },
+                    child: Image.asset('assets/calendar.png'),
+                  ),
                   Text(
                       DateFormat(g.dateFormat2).format(
                         g.pickedDate,
