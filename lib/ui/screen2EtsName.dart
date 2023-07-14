@@ -22,11 +22,11 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Center(
-                child: Image.asset('assets/noData.png'),
+                child: Image.asset('assets/noData2.png'),
               ),
               Text(
                 'KHÔNG CÓ DỮ LIỆU !',
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               )
             ],
           )
@@ -85,7 +85,8 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                         style: TextStyle(
                                           // fontSize: 10,
                                           color: process[index2].getGxNo ==
-                                                  g.sqlMoInfo.getLastProcess
+                                                  g.currentMoDetail
+                                                      .getLastProcess
                                               ? Colors.deepPurpleAccent
                                               : Colors.black,
                                           fontWeight: process[index2].getGxNo >=
@@ -111,14 +112,14 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                       Container(
                         width: g.screenWidth / 6,
                         decoration: BoxDecoration(
-                          color: MyFuntions.getColorByQty(
-                              process[0].getQty, g.sqlMoInfo.getTargetDay),
+                          color: MyFuntions.getColorByQty(process[0].getQty,
+                              g.currentMoDetail.getTargetDay),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            process[0].getQty > g.sqlMoInfo.getTargetDay
+                            process[0].getQty > g.currentMoDetail.getTargetDay
                                 ?
                                 // SizedBox(
                                 //     height: 17, child: Image.asset('assets/star.gif'))

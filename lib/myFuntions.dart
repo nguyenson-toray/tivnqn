@@ -9,6 +9,7 @@ import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:tivnqn/ui/chartUI.dart';
 
 class MyFuntions {
   static List<WorkSummary> summaryDailyDataETS() {
@@ -60,50 +61,51 @@ class MyFuntions {
     return result;
   }
 
-  static Future<bool> loadDataSQL(int type) async {
+  static Future<bool> loadDataSQL(String type) async {
     print('loadDataSQL : ${type}');
     g.isLoading = true;
     switch (type) {
-      case 1: //load production db
+      case 'production': //load production db
         {
+          g.chartData.clear();
+          g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
+          g.chartUi = ChartUI.createChartUI(
+              g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
           g.sqlT01 =
               await g.sqlProductionDB.getT01InspectionData(g.currentLine);
         }
         break;
-      case 2: // load all ETS
+      case 'changeLine': // changeLine
         {
-          g.sqlEmployees = await g.sqlETSDB.getEmployees();
-          g.sqlMoInfo = await g.sqlETSDB.getMoInfo(g.currentLine);
-          g.currentMO = g.sqlMoInfo.getMo;
-          g.currentStyle = g.sqlMoInfo.getStyle;
-          g.currentCnid = await g.sqlETSDB.getCnid(g.currentMO);
-          g.processDetail = await g.sqlETSDB.getProcessDetail(g.currentCnid);
-
+          g.currentMoDetail = g.moDetails
+              .firstWhere((element) => element.getLine == g.currentLine);
+          g.processDetail =
+              await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
           g.lines.clear();
           g.appSetting.getLines.toString().split(',').forEach((element) {
             g.lines.add(int.parse(element));
           });
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
 
-          g.sqlSumEmpQty =
-              await g.sqlETSDB.getSqlSumEmpQty(g.sqlMoInfo.getMo, g.pickedDate);
-          g.sqlSumNoQty =
-              await g.sqlETSDB.getSqlSumNoQty(g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumEmpQty = await g.sqlETSDB
+              .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+          g.sqlSumNoQty = await g.sqlETSDB
+              .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
         }
         break;
-      case 3: // load line data , setting
+      case 'refresh': // load line data , setting
         {
-          await g.sqlETSDB.getSetting();
+          g.appSetting = await g.sqlETSDB.getAppSetting();
           g.lines.clear();
           g.appSetting.getLines.toString().split(',').forEach((element) {
             g.lines.add(int.parse(element));
           });
 
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
-          g.sqlSumEmpQty =
-              await g.sqlETSDB.getSqlSumEmpQty(g.sqlMoInfo.getMo, g.pickedDate);
-          g.sqlSumNoQty =
-              await g.sqlETSDB.getSqlSumNoQty(g.sqlMoInfo.getMo, g.pickedDate);
+          g.sqlSumEmpQty = await g.sqlETSDB
+              .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+          g.sqlSumNoQty = await g.sqlETSDB
+              .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
         }
         break;
       default:

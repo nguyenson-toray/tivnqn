@@ -27,8 +27,14 @@ Future<void> main() async {
 }
 
 Future<void> detectDeviceInfo() async {
-  // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  // AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  print('androidInfo.manufacturer : ' + androidInfo.manufacturer);
+  if (androidInfo.manufacturer.contains('tcl') ||
+      androidInfo.manufacturer.contains('TCL'))
+    g.fontSizeAppbar == 28;
+  else
+    g.fontSizeAppbar == 14;
   // g.screenWidthPixel = androidInfo.displayMetrics.widthPx;
   // g.screenHeightPixel = androidInfo.displayMetrics.heightPx;
   // g.screenWidthInch = androidInfo.displayMetrics.widthInches;

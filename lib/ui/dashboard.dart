@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _DashboardState extends State<Dashboard> {
               ? g.currentIndexLine++
               : g.currentIndexLine = 0;
           g.currentLine = g.lines[g.currentIndexLine];
-          g.reloadType.value = 2;
+          g.reloadType.value = 'changeLine';
           g.reloadType.notifyListeners();
         });
         g.sharedPreferences.setInt('currentLine', g.currentLine);
@@ -62,7 +63,7 @@ class _DashboardState extends State<Dashboard> {
     });
     Timer.periodic(new Duration(seconds: g.appSetting.getTimeReload), (timer) {
       setState(() {
-        g.reloadType.value = 3;
+        g.reloadType.value = 'refresh';
         g.reloadType.notifyListeners();
       });
       if (g.isTVLine &&
@@ -87,37 +88,37 @@ class _DashboardState extends State<Dashboard> {
     if (g.isLoading) return;
     await MyFuntions.loadDataSQL(g.reloadType.value);
     switch (g.reloadType.value) {
-      case 1: //chart production
+      case 'production': //chart production
         {
+          MyFuntions.loadDataSQL('production');
           setState(() {
-            g.chartData.clear();
-            g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
-            g.chartUi = ChartUI.createChartUI(
-                g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
             _chartSeriesController?.updateDataSource(
                 updatedDataIndexes:
                     List<int>.generate(g.chartData.length, (i) => i + 1));
           });
         }
         break;
-      case 2: //all ETS
+      case 'changeLine': //changeLine
         {
+          MyFuntions.loadDataSQL('changeLine');
           setState(() {
-            g.workSummary.clear();
             g.workSummary = MyFuntions.summaryDailyDataETS();
           });
         }
         break;
-      case 3: // line data
+      case 'refresh': // refresh
         {
+          MyFuntions.loadDataSQL('refresh');
           setState(() {
-            g.workSummary.clear();
             g.workSummary = MyFuntions.summaryDailyDataETS();
           });
         }
         break;
       default:
     }
+    setState(() {
+      g.isLoading = false;
+    });
   }
 
   showNotification() async {
@@ -160,27 +161,24 @@ class _DashboardState extends State<Dashboard> {
     return AppBar(
       backgroundColor: Colors.lightBlue,
       // leading: Image.asset('assets/logo_white.png'),
-      leading: g.isLoading
-          ? LinearProgressIndicator(
-              color: Colors.white,
-              backgroundColor: Colors.lightBlue,
-            )
-          : Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: CircleAvatar(
-                maxRadius: g.appBarH / 2 - 2,
-                backgroundColor: Colors.white,
-                child: Center(
-                  child: Text(
-                    g.currentLine.toString(),
-                    style: const TextStyle(
-                        color: Colors.blueAccent,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+      leading: Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: CircleAvatar(
+          maxRadius: g.appBarH / 2 - 2,
+          backgroundColor: g.isLoading
+              ? Colors.primaries[Random().nextInt(Colors.primaries.length)]
+              : Colors.white,
+          child: Center(
+            child: Text(
+              g.currentLine.toString(),
+              style: const TextStyle(
+                  color: Colors.blueAccent,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold),
             ),
+          ),
+        ),
+      ),
       actions: [
         Row(
           children: [
@@ -219,9 +217,9 @@ class _DashboardState extends State<Dashboard> {
                               g.currentLine = g.lines[g.currentIndexLine];
 
                               if (g.screenType == 1) {
-                                g.reloadType.value = 1;
+                                g.reloadType.value = 'production';
                               } else {
-                                g.reloadType.value = 2;
+                                g.reloadType.value = 'changeLine';
                               }
                               g.reloadType.notifyListeners();
                             });
@@ -240,9 +238,9 @@ class _DashboardState extends State<Dashboard> {
                               : g.currentIndexLine = 0;
                           g.currentLine = g.lines[g.currentIndexLine];
                           if (g.screenType == 1) {
-                            g.reloadType.value = 1;
+                            g.reloadType.value = 'production';
                           } else {
-                            g.reloadType.value = 2;
+                            g.reloadType.value = 'changeLine';
                           }
                           g.reloadType.notifyListeners();
                         });
@@ -275,7 +273,7 @@ Change ''',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 30),
+                  fontSize: g.fontSizeAppbar),
             )
           : Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               Row(
@@ -285,7 +283,7 @@ Change ''',
                     '''${g.idEmpScaneds.length}''',
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: g.fontSizeAppbar,
                         fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -294,11 +292,11 @@ Change ''',
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset('assets/style.png'),
-                  Text('${g.currentStyle.trim()}',
+                  Text('${g.currentMoDetail.getStyle.trim()}',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 28)),
+                          fontSize: g.fontSizeAppbar)),
                 ],
               ),
               Row(
@@ -321,7 +319,7 @@ Change ''',
                               setState(() {
                                 if (date != null) {
                                   g.pickedDate = date;
-                                  g.reloadType.value = 3;
+                                  g.reloadType.value = 'refresh';
                                   g.reloadType.notifyListeners();
                                 }
                               });
@@ -339,7 +337,7 @@ Change ''',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 28)),
+                          fontSize: g.fontSizeAppbar)),
                 ],
               ),
             ]),

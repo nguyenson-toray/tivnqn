@@ -110,6 +110,7 @@ flutter:
     - assets/screen2.png
     - assets/screen3.png
     - assets/noData.png
+    - assets/noData2.png
     - assets/group.png
     - assets/calendar.png
     - assets/firework.png

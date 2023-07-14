@@ -53,35 +53,44 @@ class _StartPageState extends State<StartPage> {
   Future<void> initData() async {
     print('Start Page - initData');
     fluWakeLock.enable();
+    await g.sqlProductionDB.initConnection();
+    await g.sqlETSDB.initConnection();
+    g.appSetting = await g.sqlETSDB.getAppSetting();
     g.ip = (await NetworkInfo().getWifiIP())!;
-    g.sqlETSDB.getSetting();
+
+    if (kDebugMode) {
+      setState(() {
+        //   g.ip = '192.168.1.75';
+        // g.fontSizeAppbar = 18;
+      });
+    }
     if ((g.appSetting.getIpTvLine).toString().contains(g.ip!)) {
       g.isTVLine = true;
     } else
       g.isTVLine = false;
     g.currentLine = MyFuntions.setLineFollowIP(g.ip);
+    g.appSetting.getLines.toString().split(',').forEach((element) {
+      g.lines.add(int.parse(element));
+    });
+    g.currentIndexLine = g.lines.indexOf(g.currentLine);
     print(
         'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');
-    if (kDebugMode) {
-      setState(() {
-        g.currentLine = 8;
-        g.isTVLine = false;
-        // g.appSetting.setShowNotification = 0;
-        g.autochangeLine = false;
-      });
-    }
 
-    await g.sqlProductionDB.initConnection();
-    await g.sqlETSDB.initConnection();
-    await MyFuntions.loadDataSQL(1);
-    await MyFuntions.loadDataSQL(2);
-    g.workSummary = MyFuntions.summaryDailyDataETS();
+    g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
     g.chartUi = ChartUI.createChartUI(
         g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-
-    // print('getIpTvLine : ${g.appSetting.getIpTvLine.toString()}');
-
+    g.moDetails = await g.sqlETSDB.getAllMoDetails();
+    g.sqlEmployees = await g.sqlETSDB.getEmployees();
+    g.currentMoDetail =
+        g.moDetails.firstWhere((element) => element.getLine == g.currentLine);
+    g.processDetail =
+        await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
+    g.sqlSumEmpQty =
+        await g.sqlETSDB.getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+    g.sqlSumNoQty =
+        await g.sqlETSDB.getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+    g.workSummary = MyFuntions.summaryDailyDataETS();
     Loader.hide();
     Navigator.pushReplacement(
       context,

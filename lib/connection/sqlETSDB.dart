@@ -4,10 +4,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
+import 'package:tivnqn/model/moDetail.dart';
 import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
-import 'package:tivnqn/model/sqlMoInfo.dart';
+import 'package:tivnqn/model/sqlMoSetting.dart';
 import 'package:tivnqn/model/sqlSumEmpQty.dart';
 import 'package:tivnqn/model/sqlSumNoQty.dart';
 
@@ -59,11 +60,11 @@ class SqlETSDB {
     return isConnected;
   }
 
-  Future<void> getSetting() async {
+  Future<AppSetting> getAppSetting() async {
     String query =
         '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine 
 FROM A_AppSetting''';
-    late AppSetting result = g.appSetting;
+    late AppSetting result;
     var tempResult = [];
     var element;
     await connection.getRowsOfQueryResult(query).then((value) => {
@@ -73,7 +74,7 @@ FROM A_AppSetting''';
             {
               tempResult = value.cast<Map<String, dynamic>>(),
               element = tempResult[0],
-              g.appSetting = AppSetting(
+              result = AppSetting(
                 lines: element['lines'],
                 timeChangeLine: element['timeChangeLine'],
                 timeReload: element['timeReload'],
@@ -88,7 +89,8 @@ FROM A_AppSetting''';
               )
             }
         });
-    print('getSetting => ${g.appSetting} ');
+    print('getAppSetting => ${result} ');
+    return result;
   }
 
   Future<List<SqlEmployee>> getEmployees() async {
@@ -120,22 +122,44 @@ ORDER BY CODE ASC''';
     return result;
   }
 
-  Future<String> getCnid(String mo) async {
-    String cnid = '';
-    String queryGetCnid = ''' SELECT TOP(1) Cnid
+  Future<List<String>> getCnids(List<String> moNames) async {
+    List<String> cnids = [];
+    var tempResult;
+    String where = 'WHERE ';
+    moNames.forEach((element) {
+      where += '''ZDCODE = '$element' OR ''';
+    });
+    where = where.substring(0, where.length - 4);
+    String query = '''SELECT CheckDate , Cnid ,Zdcode
  FROM  T_ZdGxCheck 
- WHERE ZDCODE = '$mo'  
+ $where
  ORDER BY CheckDate DESC''';
+    print('getCnids of $moNames : $query');
 
     try {
-      await connection
-          .getRowsOfQueryResult(queryGetCnid)
-          .then((value) => {cnid = value[0]['Cnid']});
+      var value = await connection.getRowsOfQueryResult(query);
+      if (value.runtimeType == String) {
+        print('Query : $query => ERROR ');
+      } else {
+        g.processAll.clear();
+        tempResult = value.cast<Map<String, dynamic>>();
+
+        for (var moName in moNames) {
+          String cnid = '';
+          for (var element in tempResult) {
+            if (element['Zdcode'] == moName) {
+              cnid = element['Cnid'];
+              break;
+            }
+          }
+          cnids.add(cnid);
+        }
+      }
     } catch (e) {
       print(e.toString());
     }
-    print('getCnid of MO: $mo => $cnid');
-    return cnid;
+    print('getCnid of MOs: $moNames => $cnids');
+    return cnids;
   }
 
   Future<List<ProcessDetail>> getProcessDetail(String cnid) async {
@@ -173,18 +197,78 @@ ORDER BY CODE ASC''';
     return result;
   }
 
-  Future<SqlMoInfo> getMoInfo(int line) async {
-    String query = '''SELECT line, mo, style, qty, TargetDay, LastProcess
-FROM A_MoInfo
-WHERE line = ${line}''';
-    late SqlMoInfo result = SqlMoInfo(
-        line: 1,
-        mo: 'mo',
-        style: 'style',
-        qty: 1,
-        targetDay: 1,
-        lastProcess: 0);
+  Future<List<MoDetail>> getAllMoDetails() async {
+    List<SqlMoSetting> moSettings = [];
+    List<MoDetail> result = [];
+    moSettings = await getMoSetting();
+    List<String> moNames = [];
+    moSettings.forEach((moSetting) {
+      moNames.add(moSetting.getMo);
+    });
+    List<String> cnids = [];
+    cnids = await g.sqlETSDB.getCnids(moNames);
 
+    String where = 'WHERE ';
+    moNames.forEach((element) {
+      where += '''ZDCODE = '$element' OR ''';
+    });
+    where = where.substring(0, where.length - 4);
+    String query = '''SELECT ZDCODE, STYLE_NO, MY_COUNT, XM
+FROM T_SCZZD
+$where ''';
+    var tempResult;
+    print('getAllMoDetailFromT_SCZZD : $query');
+    // MoDetail modetail = MoDetail(
+    //     line: 1,
+    //     mo: 'TESTAPP',
+    //     style: 'TESTAPPSTYLE',
+    //     desc: 'TESTAPP',
+    //     qty: 100,
+    //     cnid: 'cnid',
+    //     targetDay: 100,
+    //     lastProcess: 150);
+    var modetail;
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) async => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    for (int i = 0; i < moNames.length; i++)
+                      {
+                        if (element['ZDCODE'] == moNames[i])
+                          {
+                            modetail = MoDetail(
+                                line: moSettings[i].getLine,
+                                mo: element['ZDCODE'],
+                                style: element['STYLE_NO'],
+                                desc:
+                                    element['XM'] == null ? '' : element['XM'],
+                                qty: element['MY_COUNT'],
+                                cnid: cnids[i],
+                                lastProcess: moSettings[i].getLastProcess,
+                                targetDay: moSettings[i].getTargetDay),
+                            result.add(modetail)
+                          }
+                      }
+                  }
+              }
+          });
+    } catch (e) {
+      print(e.toString());
+    }
+    print(
+        '''getAllMoDetailFromT_SCZZD ======> result.length = ${result.length})''');
+    return result;
+  }
+
+  Future<List<SqlMoSetting>> getMoSetting() async {
+    String query = '''SELECT line, mo, targetDay, lastProcess
+FROM A_MoSetting''';
+    List<SqlMoSetting> result = [];
     var tempResult;
     print('getMoInfo : $query');
     try {
@@ -196,13 +280,13 @@ WHERE line = ${line}''';
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    result = SqlMoInfo(
-                        line: element['line'],
-                        mo: element['mo'],
-                        style: element['style'],
-                        qty: element['qty'],
-                        targetDay: element['TargetDay'],
-                        lastProcess: element['LastProcess']),
+                    result.add(
+                      SqlMoSetting(
+                          line: element['line'],
+                          mo: element['mo'],
+                          targetDay: element['targetDay'],
+                          lastProcess: element['lastProcess']),
+                    )
                   }
               }
           });
