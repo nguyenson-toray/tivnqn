@@ -292,11 +292,29 @@ Change ''',
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset('assets/style.png'),
-                  Text('${g.currentMoDetail.getStyle.trim()}',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: g.fontSizeAppbar)),
+                  Column(
+                    children: [
+                      Text('${g.currentMoDetail.getStyle.trim()}',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: g.fontSizeAppbar)),
+                      Row(
+                        children: [
+                          Text('${g.currentMoDetail.getDesc.trim()}',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  // fontWeight: FontWeight.bold,
+                                  fontSize: 12)),
+                          Text(' - ${g.currentMoDetail.getQty.toString()} Pcs',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  // fontWeight: FontWeight.bold,
+                                  fontSize: 12)),
+                        ],
+                      ),
+                    ],
+                  ),
                 ],
               ),
               Row(

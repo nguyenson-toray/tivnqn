@@ -31,10 +31,14 @@ Future<void> detectDeviceInfo() async {
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   print('androidInfo.manufacturer : ' + androidInfo.manufacturer);
   if (androidInfo.manufacturer.contains('tcl') ||
-      androidInfo.manufacturer.contains('TCL'))
-    g.fontSizeAppbar == 28;
-  else
+      androidInfo.systemFeatures.contains('android.software.leanback') ||
+      androidInfo.manufacturer.contains('TCL') ||
+      androidInfo.manufacturer.contains('Google')) {
+    g.fontSizeAppbar == 20;
+  } else {
     g.fontSizeAppbar == 14;
+  }
+  print('g.fontSizeAppbar :${g.fontSizeAppbar}');
   // g.screenWidthPixel = androidInfo.displayMetrics.widthPx;
   // g.screenHeightPixel = androidInfo.displayMetrics.heightPx;
   // g.screenWidthInch = androidInfo.displayMetrics.widthInches;

@@ -66,6 +66,7 @@ class _StartPageState extends State<StartPage> {
     }
     if ((g.appSetting.getIpTvLine).toString().contains(g.ip!)) {
       g.isTVLine = true;
+      g.autochangeLine = false;
     } else
       g.isTVLine = false;
     g.currentLine = MyFuntions.setLineFollowIP(g.ip);

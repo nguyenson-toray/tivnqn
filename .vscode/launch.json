@@ -11,11 +11,10 @@
             "program": "lib/main.dart",
             "args": [
                 "-d",
-                "chrome",
                 "emulator-5554",
+                "chrome",
                 "SM T225",
                 "192.168.1.79", //line 9
-                "chrome",
                 // "--no-sound-null-safety"
             ]
         },

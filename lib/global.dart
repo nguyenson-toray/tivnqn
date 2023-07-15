@@ -33,7 +33,7 @@ class g {
   static double screenHeight = 0;
   static double appBarH = 40;
   static double footerH = 25;
-  static double fontSizeAppbar = 28;
+  static double fontSizeAppbar = 20;
 
   static String ip = '';
   static bool isTVLine = true;
