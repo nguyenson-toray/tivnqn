@@ -1,9 +1,5 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/workSummary.dart';
@@ -18,21 +14,21 @@ class MyFuntions {
     g.idEmpScaneds.clear();
 
     List<WorkSummary> result = [];
-    g.sqlSumEmpQty.forEach((element) {
+    for (var element in g.sqlSumEmpQty) {
       g.idEmpScaneds.add(element.getEmpId);
       g.processScaned.add(element.getGxNo);
-    });
+    }
     g.idEmpScaneds = g.idEmpScaneds.toSet().toList();
     g.processScaned = g.processScaned.toSet().toList();
     g.processNotScan =
         g.processAll.toSet().difference(g.processScaned.toSet()).toList();
-    g.idEmpScaneds.forEach((idEmpScaned) {
+    for (var idEmpScaned in g.idEmpScaneds) {
       final String currentName = g.sqlEmployees
           .firstWhere((emp) => emp.getEmpId == idEmpScaned)
           .getEmpName;
       var names = currentName.split(' ');
       final String currentEmpShortName =
-          names[names.length - 2] + " " + names.last;
+          "${names[names.length - 2]} ${names.last}";
       WorkSummary workSummary = WorkSummary(
           shortName: 'shortName',
           processDetailQtys: [
@@ -56,13 +52,13 @@ class MyFuntions {
         }
       }
       result.add(workSummary);
-    });
+    }
     print('summaryDailyDataETS => ${result.length}');
     return result;
   }
 
   static Future<bool> loadDataSQL(String type) async {
-    print('loadDataSQL : ${type}');
+    print('loadDataSQL : $type');
     g.isLoading = true;
     switch (type) {
       case 'production': //load production db
@@ -159,7 +155,7 @@ class MyFuntions {
         break;
       case '192.168.1.79':
         {
-          line = 8;
+          line = 9;
         }
         break;
       default:
@@ -171,47 +167,50 @@ class MyFuntions {
   static Color getColorByQty(int qty, int target) {
     Color result = Colors.yellow;
     int ration = (qty / target * 100).round();
-    if (ration <= 25)
+    if (ration <= 25) {
       result = Colors.redAccent;
-    else if (ration <= 50)
+    } else if (ration <= 50) {
       result = Colors.orangeAccent;
-    else if (ration <= 75)
+    } else if (ration <= 75) {
       result = Colors.yellowAccent;
-    else
+    } else {
       result = Colors.greenAccent;
+    }
     return result;
   }
 
   static Color getColorByQty2(int qty, int target) {
-    Color result = Color.fromRGBO(248, 240, 168, 1);
+    Color result = const Color.fromRGBO(248, 240, 168, 1);
     int ration = (qty / target * 100).round();
-    if (ration <= 25)
+    if (ration <= 25) {
       result = const Color.fromARGB(255, 245, 31, 16);
-    else if (ration <= 50)
+    } else if (ration <= 50) {
       result = Colors.orange;
-    else if (ration <= 75)
+    } else if (ration <= 75) {
       result = const Color.fromARGB(255, 248, 225, 19);
-    else
+    } else {
       result = const Color.fromARGB(255, 62, 243, 68);
+    }
     return result;
   }
 
   static bool parseBool(int integer) {
-    if (integer > 0)
+    if (integer > 0) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   static List<ChartData> sqlT01ToChartData(List<SqlT01> dataInput) {
     List<SqlT01> input = [...dataInput];
     List<ChartData> result = [];
     List<String> dates = [];
-    input.forEach((element) {
+    for (var element in input) {
       dates.add(element.getX02);
-    });
+    }
     dates = dates.toSet().toList();
-    dates.forEach((dateString) {
+    for (var dateString in dates) {
       DateTime currentDate = DateFormat(g.dateFormat).parse(dateString);
       num qty1st = 0;
       num qty1stOK = 0;
@@ -220,7 +219,7 @@ class MyFuntions {
       num qtyOKAfterRepaire = 0;
       num rationDefect1st = 0;
       num rationDefectAfterRepaire = 0;
-      input.forEach((data) {
+      for (var data in input) {
         if (dateString == data.getX02) {
           qty1st += data.getX06;
           qty1stOK += data.getX07;
@@ -232,7 +231,7 @@ class MyFuntions {
         rationDefectAfterRepaire = double.parse(
             ((qtyAfterRepaire - qtyOKAfterRepaire) / qtyAfterRepaire)
                 .toStringAsFixed(4));
-      });
+      }
       ChartData data = ChartData(
           date: dateString,
           qty1st: qty1st,
@@ -243,7 +242,7 @@ class MyFuntions {
           rationDefect1st: rationDefect1st,
           rationDefectAfterRepaire: rationDefectAfterRepaire);
       result.add(data);
-    });
+    }
     return result;
   }
 
@@ -255,7 +254,7 @@ class MyFuntions {
     String link = 'https://drive.google.com/uc?export=view&id=';
     String fileId = orgLink.substring(32, 65);
     link += fileId;
-    print('org link : ${orgLink}');
+    print('org link : $orgLink');
     print('-> : $link');
     return link;
   }
