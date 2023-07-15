@@ -20,6 +20,7 @@ class _StartPageState extends State<StartPage> {
   bool isLoaded = false;
   String functionSellected = '';
   FluWakeLock fluWakeLock = FluWakeLock();
+  bool connected = true;
   var myTextStyle = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   @override
   void initState() {
@@ -39,36 +40,58 @@ class _StartPageState extends State<StartPage> {
 
     Timer.periodic(const Duration(seconds: 2), (timer) {
       if (!mounted) return;
-      if (isLoaded) {
+      if (connected && isLoaded) {
         Loader.hide();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
+          MaterialPageRoute(builder: (context) => Dashboard()),
         );
       }
     });
     super.initState();
   }
 
+  @override
+  void dispose() {
+    Loader.hide();
+
+    super.dispose();
+  }
+
   Future<void> initData() async {
     print('Start Page - initData');
     fluWakeLock.enable();
-    await g.sqlProductionDB.initConnection();
+    connected = await g.sqlProductionDB.initConnection();
+    if (!connected) {
+      Loader.hide();
+      Loader.show(context,
+          isSafeAreaOverlay: true,
+          overlayColor: Colors.grey[300],
+          progressIndicator: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/error.png'),
+              Text('LỖI KẾT NỐI ĐẾN MÁY CHỦ !')
+            ],
+          ));
+
+      return;
+    }
     await g.sqlETSDB.initConnection();
     g.appSetting = await g.sqlETSDB.getAppSetting();
     g.ip = (await NetworkInfo().getWifiIP())!;
 
     if (kDebugMode) {
       setState(() {
-        //   g.ip = '192.168.1.75';
-        // g.fontSizeAppbar = 18;
+        // g.ip = '192.168.1.79';
       });
     }
-    if ((g.appSetting.getIpTvLine).toString().contains(g.ip!)) {
+    if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
       g.isTVLine = true;
       g.autochangeLine = false;
-    } else
+    } else {
       g.isTVLine = false;
+    }
     g.currentLine = MyFuntions.setLineFollowIP(g.ip);
     g.appSetting.getLines.toString().split(',').forEach((element) {
       g.lines.add(int.parse(element));
@@ -92,6 +115,7 @@ class _StartPageState extends State<StartPage> {
     g.sqlSumNoQty =
         await g.sqlETSDB.getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
     g.workSummary = MyFuntions.summaryDailyDataETS();
+
     Loader.hide();
     Navigator.pushReplacement(
       context,
