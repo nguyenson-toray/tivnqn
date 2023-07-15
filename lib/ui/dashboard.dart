@@ -165,6 +165,7 @@ class _DashboardState extends State<Dashboard> {
         padding: const EdgeInsets.all(2.0),
         child: CircleAvatar(
           maxRadius: g.appBarH / 2 - 2,
+          minRadius: g.appBarH / 2 - 2,
           backgroundColor: g.isLoading
               ? Colors.primaries[Random().nextInt(Colors.primaries.length)]
               : Colors.white,
@@ -172,7 +173,7 @@ class _DashboardState extends State<Dashboard> {
             child: Text(
               g.currentLine.toString(),
               style: const TextStyle(
-                  color: Colors.blueAccent,
+                  color: Colors.blue,
                   fontSize: 26,
                   fontWeight: FontWeight.bold),
             ),
@@ -281,7 +282,7 @@ Change ''',
                 children: [
                   Image.asset('assets/group.png'),
                   Text(
-                    '''${g.idEmpScaneds.length}''',
+                    ''' ${g.idEmpScaneds.length} ''',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: g.fontSizeAppbar,
@@ -290,13 +291,8 @@ Change ''',
                   const SizedBox(
                     width: 10,
                   ),
-                  // const Icon(
-                  //   Icons.done_outline,
-                  //   color: Colors.greenAccent,
-                  //   size: 34,
-                  // ),
-                  Image.asset('assets/result.png'),
-                  Text('${g.processScaned.length}/${g.processAll.length}',
+                  Image.asset('assets/sum.png'),
+                  Text(' ${g.processScaned.length}/${g.processAll.length} ',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -316,7 +312,7 @@ Change ''',
                               fontSize: g.fontSizeAppbar)),
                       Row(
                         children: [
-                          Text('${g.currentMoDetail.getDesc.trim()}',
+                          Text(' ${g.currentMoDetail.getDesc.trim()}',
                               style: const TextStyle(
                                   color: Colors.white,
                                   // fontWeight: FontWeight.bold,
