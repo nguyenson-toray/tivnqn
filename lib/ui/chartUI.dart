@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/model/chartData.dart';
-import 'package:tivnqn/global.dart';
 
 class ChartUI {
-  static Legend myLegend = Legend(
+  static Legend myLegend = const Legend(
       itemPadding: 5,
       // height: '40%',
       textStyle: TextStyle(
@@ -18,7 +17,7 @@ class ChartUI {
 
   static Widget createChartUI(List<ChartData> dataInput, String title) {
     return SfCartesianChart(
-      margin: EdgeInsets.all(5),
+      margin: const EdgeInsets.all(5),
       backgroundColor: Colors.white,
       // title: ChartTitle(
       //   text: title,
@@ -53,7 +52,7 @@ class ChartUI {
   }
 
   static getSeries(List<ChartData> dataInput) {
-    var myDataLabelSettings = DataLabelSettings(
+    var myDataLabelSettings = const DataLabelSettings(
       labelAlignment: ChartDataLabelAlignment.middle,
       isVisible: true,
     );
@@ -87,7 +86,7 @@ class ChartUI {
       ),
       LineSeries<ChartData, String>(
           markerSettings:
-              MarkerSettings(isVisible: true, shape: DataMarkerType.rectangle),
+              const MarkerSettings(isVisible: true, shape: DataMarkerType.rectangle),
           dataSource: dataInput,
           yAxisName: 'yAxis1',
           xValueMapper: (ChartData data, _) =>
@@ -98,7 +97,7 @@ class ChartUI {
           color: Colors.pink,
           width: 2),
       LineSeries<ChartData, String>(
-          markerSettings: MarkerSettings(isVisible: true),
+          markerSettings: const MarkerSettings(isVisible: true),
           dataSource: dataInput,
           yAxisName: 'yAxis1',
           xValueMapper: (ChartData data, _) =>

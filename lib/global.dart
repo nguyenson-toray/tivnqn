@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tivnqn/connection/sqlETSDB.dart';
@@ -20,13 +19,13 @@ class g {
   static int processNoFinishEnd = 150;
   static String title = 'SẢN LƯỢNG & TỈ LỆ LỖI';
   static late String todayString;
-  static final String dateFormat = 'yyyy-MM-dd';
-  static final String dateFormat2 = 'dd/MM/yyyy';
-  static final rangeDays = 14;
-  static final sqlUser = 'app';
-  static final sqlPass = 'Toray@123';
-  static final dbProduction = 'Production';
-  static final dbETSDB_TI = 'ETSDB_TI';
+  static const String dateFormat = 'yyyy-MM-dd';
+  static const String dateFormat2 = 'dd/MM/yyyy';
+  static const rangeDays = 14;
+  static const sqlUser = 'app';
+  static const sqlPass = 'Toray@123';
+  static const dbProduction = 'Production';
+  static const dbETSDB_TI = 'ETSDB_TI';
 
   static String version = '2.0.0';
   static double screenWidth = 0;

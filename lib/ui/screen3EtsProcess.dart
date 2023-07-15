@@ -15,7 +15,7 @@ class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
   @override
   Widget build(BuildContext context) {
     return MasonryGridView.count(
-        padding: EdgeInsets.all(2),
+        padding: const EdgeInsets.all(2),
         itemCount: g.processAll.length,
         // the number of columns
         crossAxisCount: 5,

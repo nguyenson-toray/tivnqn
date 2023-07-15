@@ -1,19 +1,18 @@
-import 'dart:convert';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class SqlSumEmpQty {
   int GxNo;
   String EmpId;
   int SumEmpQty;
-  get getGxNo => this.GxNo;
+  get getGxNo => GxNo;
 
   set setGxNo(GxNo) => this.GxNo = GxNo;
 
-  get getEmpId => this.EmpId;
+  get getEmpId => EmpId;
 
   set setEmpId(EmpId) => this.EmpId = EmpId;
 
-  get getSumEmpQty => this.SumEmpQty;
+  get getSumEmpQty => SumEmpQty;
 
   set setSumEmpQty(SumEmpQty) => this.SumEmpQty = SumEmpQty;
 

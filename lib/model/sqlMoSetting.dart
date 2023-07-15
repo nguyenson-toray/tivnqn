@@ -5,19 +5,19 @@ class SqlMoSetting {
   int lastProcess;
   int targetDay;
 
-  get getLine => this.line;
+  get getLine => line;
 
   set setLine(line) => this.line = line;
 
-  get getMo => this.mo;
+  get getMo => mo;
 
   set setMo(mo) => this.mo = mo;
 
-  get getTargetDay => this.targetDay;
+  get getTargetDay => targetDay;
 
   set setTargetDay(targetDay) => this.targetDay = targetDay;
 
-  get getLastProcess => this.lastProcess;
+  get getLastProcess => lastProcess;
 
   set setLastProcess(lastProcess) => this.lastProcess = lastProcess;
   SqlMoSetting({

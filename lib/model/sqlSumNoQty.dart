@@ -2,11 +2,11 @@
 class SqlSumNoQty {
   int GxNo;
   int SumNoQty;
-  int get getGxNo => this.GxNo;
+  int get getGxNo => GxNo;
 
   set setGxNo(int GxNo) => this.GxNo = GxNo;
 
-  get getSumNoQty => this.SumNoQty;
+  get getSumNoQty => SumNoQty;
 
   set setSumNoQty(SumNoQty) => this.SumNoQty = SumNoQty;
   SqlSumNoQty({

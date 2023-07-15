@@ -33,7 +33,7 @@ class SqlETSDB {
         socket.destroy();
       });
       print('SqlETSDB checkLAN IP : $ipLAN  port : $port : $lanConnection');
-      if (lanConnection)
+      if (lanConnection) {
         isConnected = await connection.initializeConnection(
           ipLAN,
           dbName,
@@ -41,6 +41,7 @@ class SqlETSDB {
           pass,
           instance: instanceSql,
         );
+      }
 
       if (!isConnected) {
         Fluttertoast.showToast(
@@ -64,32 +65,49 @@ class SqlETSDB {
     String query =
         '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine 
 FROM A_AppSetting''';
-    late AppSetting result;
+    AppSetting result = AppSetting(
+      lines: '1',
+      timeChangeLine: 0,
+      timeReload: 0,
+      rangeDays: 0,
+      showNotification: 0,
+      notificationURL: '',
+      showBegin: '',
+      showDuration: 0,
+      chartBegin: '',
+      chartDuration: 0,
+      ipTvLine: '',
+    );
     var tempResult = [];
     var element;
-    await connection.getRowsOfQueryResult(query).then((value) => {
-          if (value.runtimeType == String)
-            {print('ERROR')}
-          else
-            {
-              tempResult = value.cast<Map<String, dynamic>>(),
-              element = tempResult[0],
-              result = AppSetting(
-                lines: element['lines'],
-                timeChangeLine: element['timeChangeLine'],
-                timeReload: element['timeReload'],
-                rangeDays: element['rangeDays'],
-                showNotification: element['showNotification'],
-                notificationURL: element['notificationURL'],
-                showBegin: element['showBegin'],
-                showDuration: element['showDuration'],
-                chartBegin: element['chartBegin'],
-                chartDuration: element['chartDuration'],
-                ipTvLine: element['ipTvLine'],
-              )
-            }
-        });
-    print('getAppSetting => ${result} ');
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('ERROR')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                element = tempResult[0],
+                result = AppSetting(
+                  lines: element['lines'],
+                  timeChangeLine: element['timeChangeLine'],
+                  timeReload: element['timeReload'],
+                  rangeDays: element['rangeDays'],
+                  showNotification: element['showNotification'],
+                  notificationURL: element['notificationURL'],
+                  showBegin: element['showBegin'],
+                  showDuration: element['showDuration'],
+                  chartBegin: element['chartBegin'],
+                  chartDuration: element['chartDuration'],
+                  ipTvLine: element['ipTvLine'],
+                )
+              }
+          });
+      print('getAppSetting => $result ');
+    } catch (e) {
+      print(e);
+    }
+
     return result;
   }
 
@@ -126,9 +144,9 @@ ORDER BY CODE ASC''';
     List<String> cnids = [];
     var tempResult;
     String where = 'WHERE ';
-    moNames.forEach((element) {
+    for (var element in moNames) {
       where += '''ZDCODE = '$element' OR ''';
-    });
+    }
     where = where.substring(0, where.length - 4);
     String query = '''SELECT CheckDate , Cnid ,Zdcode
  FROM  T_ZdGxCheck 
@@ -155,10 +173,11 @@ ORDER BY CODE ASC''';
           cnids.add(cnid);
         }
       }
+      print('getCnid of MOs: $moNames => $cnids');
     } catch (e) {
       print(e.toString());
     }
-    print('getCnid of MOs: $moNames => $cnids');
+
     return cnids;
   }
 
@@ -190,10 +209,11 @@ ORDER BY CODE ASC''';
                   }
               }
           });
+      print(result.length);
     } catch (e) {
       print(e.toString());
     }
-    print(result.length);
+
     return result;
   }
 
@@ -202,16 +222,16 @@ ORDER BY CODE ASC''';
     List<MoDetail> result = [];
     moSettings = await getMoSetting();
     List<String> moNames = [];
-    moSettings.forEach((moSetting) {
+    for (var moSetting in moSettings) {
       moNames.add(moSetting.getMo);
-    });
+    }
     List<String> cnids = [];
     cnids = await g.sqlETSDB.getCnids(moNames);
 
     String where = 'WHERE ';
-    moNames.forEach((element) {
+    for (var element in moNames) {
       where += '''ZDCODE = '$element' OR ''';
-    });
+    }
     where = where.substring(0, where.length - 4);
     String query = '''SELECT ZDCODE, STYLE_NO, MY_COUNT, XM
 FROM T_SCZZD
@@ -227,7 +247,7 @@ $where ''';
     //     cnid: 'cnid',
     //     targetDay: 100,
     //     lastProcess: 150);
-    var modetail;
+    MoDetail modetail;
     try {
       await connection.getRowsOfQueryResult(query).then((value) async => {
             if (value.runtimeType == String)
@@ -245,8 +265,7 @@ $where ''';
                                 line: moSettings[i].getLine,
                                 mo: element['ZDCODE'],
                                 style: element['STYLE_NO'],
-                                desc:
-                                    element['XM'] == null ? '' : element['XM'],
+                                desc: element['XM'] ?? '',
                                 qty: element['MY_COUNT'],
                                 cnid: cnids[i],
                                 lastProcess: moSettings[i].getLastProcess,
@@ -257,11 +276,12 @@ $where ''';
                   }
               }
           });
+      print(
+          '''getAllMoDetailFromT_SCZZD ======> result.length = ${result.length})''');
     } catch (e) {
       print(e.toString());
     }
-    print(
-        '''getAllMoDetailFromT_SCZZD ======> result.length = ${result.length})''');
+
     return result;
   }
 
@@ -290,10 +310,11 @@ FROM A_MoSetting''';
                   }
               }
           });
+      print(result);
     } catch (e) {
       print(e.toString());
     }
-    print(result);
+
     return result;
   }
 
@@ -303,7 +324,7 @@ FROM A_MoSetting''';
     );
     String query = '''SELECT GxNo, EmpId,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine LIKE '%L%' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+WHERE  WorkLine LIKE '%L%' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'$dateString')
 GROUP BY GxNo, EmpId
 ORDER BY GxNo ASC''';
     List<SqlSumEmpQty> result = [];
@@ -338,7 +359,7 @@ ORDER BY GxNo ASC''';
     );
     String query = '''SELECT GxNo,SUM(Qty) as Sum_Qty
 FROM EmployeeDayData
-WHERE  WorkLine LIKE '%L%' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'${dateString}')
+WHERE  WorkLine LIKE '%L%' AND ZDCode = '${mo.trim()}'  AND CONVERT(date,WorkDate)=CONVERT(date,'$dateString')
 GROUP BY GxNo
 ORDER BY GxNo ASC''';
     List<SqlSumNoQty> result = [];

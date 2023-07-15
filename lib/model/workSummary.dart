@@ -2,11 +2,11 @@
 class WorkSummary {
   String shortName;
   List<ProcessDetailQty> processDetailQtys;
-  get getShortName => this.shortName;
+  get getShortName => shortName;
 
   set setShortName(shortName) => this.shortName = shortName;
 
-  get getProcessDetailQtys => this.processDetailQtys;
+  get getProcessDetailQtys => processDetailQtys;
 
   set setProcessDetailQtys(processDetailQtys) =>
       this.processDetailQtys = processDetailQtys;
@@ -25,15 +25,15 @@ class ProcessDetailQty {
   int GxNo;
   String GxName;
   int qty;
-  get getGxNo => this.GxNo;
+  get getGxNo => GxNo;
 
   set setGxNo(GxNo) => this.GxNo = GxNo;
 
-  get getGxName => this.GxName;
+  get getGxName => GxName;
 
   set setGxName(GxName) => this.GxName = GxName;
 
-  get getQty => this.qty;
+  get getQty => qty;
 
   set setQty(qty) => this.qty = qty;
   ProcessDetailQty({

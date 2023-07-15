@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/myFuntions.dart';
-import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/screen2EtsName.dart';
 import 'package:tivnqn/ui/screen3EtsProcess.dart';
 import 'package:tivnqn/global.dart';
@@ -32,23 +30,23 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     DateTime chartBeginTime =
-        DateTime.parse(g.todayString + " " + g.appSetting.getChartBegin);
+        DateTime.parse("${g.todayString} " + g.appSetting.getChartBegin);
     DateTime chartEndTime =
         chartBeginTime.add(Duration(minutes: g.appSetting.getChartDuration));
     DateTime notificationBeginTime =
-        DateTime.parse(g.todayString + " " + g.appSetting.getShowBegin);
+        DateTime.parse("${g.todayString} " + g.appSetting.getShowBegin);
     DateTime notificationEndTime = notificationBeginTime
         .add(Duration(minutes: g.appSetting.getShowDuration));
 
     g.reloadType.addListener(refreshDataUI);
     if (!g.isTVLine &&
         DateTime.now().isAfter(chartBeginTime) &&
-        DateTime.now().isBefore(chartEndTime))
+        DateTime.now().isBefore(chartEndTime)) {
       g.screenType = 1;
-    else
+    } else {
       g.screenType = 2;
-    Timer.periodic(new Duration(minutes: g.appSetting.getTimeChangeLine),
-        (timer) {
+    }
+    Timer.periodic(Duration(minutes: g.appSetting.getTimeChangeLine), (timer) {
       if (g.autochangeLine) {
         setState(() {
           g.currentIndexLine < g.lines.length - 1
@@ -61,7 +59,7 @@ class _DashboardState extends State<Dashboard> {
         g.sharedPreferences.setInt('currentLine', g.currentLine);
       }
     });
-    Timer.periodic(new Duration(seconds: g.appSetting.getTimeReload), (timer) {
+    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
       setState(() {
         g.reloadType.value = 'refresh';
         g.reloadType.notifyListeners();
@@ -122,9 +120,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   showNotification() async {
-    if (Loader.isShown)
+    if (Loader.isShown) {
       return;
-    else {
+    } else {
       print(
           MyFuntions.getLinkImageNotification(g.appSetting.getNotificationURL));
       MyFuntions.playAudio();
@@ -135,7 +133,7 @@ class _DashboardState extends State<Dashboard> {
                 child: Image.network(
               MyFuntions.getLinkImageNotification(
                   g.appSetting.getNotificationURL),
-              errorBuilder: (context, error, stackTrace) => Icon(
+              errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.warning,
                 size: 50,
               ),
@@ -153,7 +151,9 @@ class _DashboardState extends State<Dashboard> {
             child: g.screenType == 1
                 ? g.chartUi
                 : g.screenType == 2
+                    // ignore: prefer_const_constructors
                     ? Screen2EtsName()
+                    // ignore: prefer_const_constructors
                     : Screen3EtsProcess()));
   }
 
@@ -185,10 +185,11 @@ class _DashboardState extends State<Dashboard> {
             InkWell(
               onTap: () {
                 setState(() {
-                  if (g.screenType < 3)
+                  if (g.screenType < 3) {
                     g.screenType++;
-                  else
+                  } else {
                     g.screenType = 1;
+                  }
                 });
               },
               child: g.screenType == 1
@@ -199,7 +200,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         !g.isTVLine
@@ -224,7 +225,7 @@ class _DashboardState extends State<Dashboard> {
                               g.reloadType.notifyListeners();
                             });
                           },
-                          child: Icon(
+                          child: const Icon(
                             Icons.arrow_back,
                             color: Colors.white,
                             size: 40,
@@ -245,7 +246,7 @@ class _DashboardState extends State<Dashboard> {
                           g.reloadType.notifyListeners();
                         });
                       },
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_forward,
                         color: Colors.white,
                         size: 40,
@@ -258,7 +259,7 @@ class _DashboardState extends State<Dashboard> {
                       });
                     },
                   ),
-                  Text(
+                  const Text(
                     '''Auto
 Change ''',
                     style: TextStyle(color: Colors.white),
@@ -269,7 +270,7 @@ Change ''',
       ],
       title: g.screenType == 1
           ? Text(
-              'SẢN LƯỢNG & TỈ LỆ LỖI - LINE ${g.currentLine}',
+              'SẢN LƯỢNG & TỈ LỆ LỖI',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -286,6 +287,20 @@ Change ''',
                         fontSize: g.fontSizeAppbar,
                         fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  // const Icon(
+                  //   Icons.done_outline,
+                  //   color: Colors.greenAccent,
+                  //   size: 34,
+                  // ),
+                  Image.asset('assets/result.png'),
+                  Text('${g.processScaned.length}/${g.processAll.length}',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: g.fontSizeAppbar)),
                 ],
               ),
               Row(
@@ -302,12 +317,12 @@ Change ''',
                       Row(
                         children: [
                           Text('${g.currentMoDetail.getDesc.trim()}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   // fontWeight: FontWeight.bold,
                                   fontSize: 12)),
                           Text(' - ${g.currentMoDetail.getQty.toString()} Pcs',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   // fontWeight: FontWeight.bold,
                                   fontSize: 12)),
@@ -323,11 +338,11 @@ Change ''',
                     onTap: () async {
                       NDialog(
                         dialogStyle: DialogStyle(titleDivider: true),
-                        content: Container(
+                        content: SizedBox(
                           height: 100,
                           width: g.screenWidth,
                           child: DatePicker(
-                            DateTime.now().subtract(Duration(days: 7)),
+                            DateTime.now().subtract(const Duration(days: 7)),
                             daysCount: 14,
                             initialSelectedDate: DateTime.now(),
                             selectionColor: Colors.black,
@@ -335,11 +350,9 @@ Change ''',
                             onDateChange: (date) {
                               Navigator.pop(context);
                               setState(() {
-                                if (date != null) {
-                                  g.pickedDate = date;
-                                  g.reloadType.value = 'refresh';
-                                  g.reloadType.notifyListeners();
-                                }
+                                g.pickedDate = date;
+                                g.reloadType.value = 'refresh';
+                                g.reloadType.notifyListeners();
                               });
                             },
                           ),

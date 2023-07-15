@@ -11,49 +11,49 @@ class AppSetting {
   String chartBegin;
   int chartDuration;
   String ipTvLine;
-  get getLines => this.lines;
+  get getLines => lines;
 
   set setLines(lines) => this.lines = lines;
 
-  get getTimeChangeLine => this.timeChangeLine;
+  get getTimeChangeLine => timeChangeLine;
 
   set setTimeChangeLine(timeChangeLine) => this.timeChangeLine = timeChangeLine;
 
-  get getTimeReload => this.timeReload;
+  get getTimeReload => timeReload;
 
   set setTimeReload(timeReload) => this.timeReload = timeReload;
 
-  get getRangeDays => this.rangeDays;
+  get getRangeDays => rangeDays;
 
   set setRangeDays(rangeDays) => this.rangeDays = rangeDays;
 
-  get getShowNotification => this.showNotification;
+  get getShowNotification => showNotification;
 
   set setShowNotification(showNotification) =>
       this.showNotification = showNotification;
 
-  get getNotificationURL => this.notificationURL;
+  get getNotificationURL => notificationURL;
 
   set setNotificationURL(notificationURL) =>
       this.notificationURL = notificationURL;
 
-  get getShowBegin => this.showBegin;
+  get getShowBegin => showBegin;
 
   set setShowBegin(showBegin) => this.showBegin = showBegin;
 
-  get getShowDuration => this.showDuration;
+  get getShowDuration => showDuration;
 
   set setShowDuration(showDuration) => this.showDuration = showDuration;
 
-  get getChartBegin => this.chartBegin;
+  get getChartBegin => chartBegin;
 
   set setChartBegin(chartBegin) => this.chartBegin = chartBegin;
 
-  get getChartDuration => this.chartDuration;
+  get getChartDuration => chartDuration;
 
   set setChartDuration(chartDuration) => this.chartDuration = chartDuration;
 
-  get getIpTvLine => this.ipTvLine;
+  get getIpTvLine => ipTvLine;
 
   set setIpTvLine(ipTvLine) => this.ipTvLine = ipTvLine;
   AppSetting({

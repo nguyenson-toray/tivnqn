@@ -8,35 +8,35 @@ class MoDetail {
   String cnid;
   int targetDay;
   int lastProcess;
-  get getLine => this.line;
+  get getLine => line;
 
   set setLine(line) => this.line = line;
 
-  get getMo => this.mo;
+  get getMo => mo;
 
   set setMo(mo) => this.mo = mo;
 
-  get getStyle => this.style;
+  get getStyle => style;
 
   set setStyle(style) => this.style = style;
 
-  get getDesc => this.desc;
+  get getDesc => desc;
 
   set setDesc(desc) => this.desc = desc;
 
-  get getQty => this.qty;
+  get getQty => qty;
 
   set setQty(qty) => this.qty = qty;
 
-  get getCnid => this.cnid;
+  get getCnid => cnid;
 
   set setCnid(cnid) => this.cnid = cnid;
 
-  get getTargetDay => this.targetDay;
+  get getTargetDay => targetDay;
 
   set setTargetDay(targetDay) => this.targetDay = targetDay;
 
-  get getLastProcess => this.lastProcess;
+  get getLastProcess => lastProcess;
 
   set setLastProcess(lastProcess) => this.lastProcess = lastProcess;
   MoDetail({

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -22,18 +21,19 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft // DeviceOrientation.portraitUp
   ]).then((_) async {
-    runApp(new MyApp());
+    runApp(const MyApp());
   });
 }
 
 Future<void> detectDeviceInfo() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  print('androidInfo.manufacturer : ' + androidInfo.manufacturer);
+  print('androidInfo.manufacturer : ${androidInfo.manufacturer}');
   if (androidInfo.manufacturer.contains('tcl') ||
       androidInfo.systemFeatures.contains('android.software.leanback') ||
       androidInfo.manufacturer.contains('TCL') ||
-      androidInfo.manufacturer.contains('Google')) {
+      androidInfo.manufacturer.contains('Google') ||
+      androidInfo.manufacturer.contains('unknown')) {
     g.fontSizeAppbar == 20;
   } else {
     g.fontSizeAppbar == 14;
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
-        LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
+        LogicalKeySet(LogicalKeyboardKey.select): const ActivateIntent(),
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

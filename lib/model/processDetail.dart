@@ -5,19 +5,19 @@ class ProcessDetail {
   int no;
   String code;
   String name;
-  get getCind => this.cind;
+  get getCind => cind;
 
   set setCind(cind) => this.cind = cind;
 
-  get getNo => this.no;
+  get getNo => no;
 
   set setNo(no) => this.no = no;
 
-  get getCode => this.code;
+  get getCode => code;
 
   set setCode(code) => this.code = code;
 
-  get getName => this.name;
+  get getName => name;
 
   set setName(name) => this.name = name;
   ProcessDetail({

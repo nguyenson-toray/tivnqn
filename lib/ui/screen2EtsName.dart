@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
@@ -17,14 +16,14 @@ class Screen2EtsName extends StatefulWidget {
 class _Screen2EtsNameState extends State<Screen2EtsName> {
   @override
   Widget build(BuildContext context) {
-    return g.workSummary.length == 0
+    return g.workSummary.isEmpty
         ? Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Center(
                 child: Image.asset('assets/noData2.png'),
               ),
-              Text(
+              const Text(
                 'KHÔNG CÓ DỮ LIỆU !',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               )
@@ -34,7 +33,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
             SizedBox(
               height: g.screenHeight - g.appBarH - g.footerH,
               child: MasonryGridView.count(
-                padding: EdgeInsets.all(2),
+                padding: const EdgeInsets.all(2),
                 itemCount: g.workSummary.length,
                 // the number of columns
                 crossAxisCount: 6,
@@ -47,7 +46,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                       g.workSummary[index].getProcessDetailQtys;
                   return Card(
                     shape: RoundedRectangleBorder(
-                      side: BorderSide(
+                      side: const BorderSide(
                           color: Colors.white,
                           // color: MyFuntions.getColorByQty2(
                           //     process[0].getQty, g.sqlMoInfo.getTargetDay),
@@ -55,7 +54,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     color: Colors.cyan[50],
-                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                    margin: const EdgeInsets.fromLTRB(2, 2, 2, 2),
                     child: Column(children: [
                       SizedBox(
                         height: process.length * 25,
@@ -77,7 +76,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.fromLTRB(2, 1, 2, 1),
+                                      padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
                                       width: (g.screenWidth - 195) / 6,
                                       child: Text(
                                         '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
@@ -103,7 +102,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                     )
                                   ],
                                 ),
-                                Divider(height: 1, color: Colors.white),
+                                const Divider(height: 1, color: Colors.white),
                               ],
                             );
                           },
@@ -123,7 +122,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                 ?
                                 // SizedBox(
                                 //     height: 17, child: Image.asset('assets/star.gif'))
-                                Icon(
+                                const Icon(
                                     Icons.star,
                                     color: Colors.white,
                                   )
@@ -136,7 +135,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                 : Container(),
                             Text(g.workSummary[index].getShortName.toString(),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.normal,
                                   fontSize: 13,
                                 )),
@@ -160,10 +159,10 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
-                  g.processNotScan.length > 0
+                  g.processNotScan.isNotEmpty
                       ? Image.asset('assets/warning2.gif')
                       : Image.asset('assets/firework.png'),
-                  g.processNotScan.length > 0
+                  g.processNotScan.isNotEmpty
                       ? SizedBox(
                           height: g.footerH,
                           width: g.screenWidth - 160,
@@ -172,16 +171,16 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                               velocity: 45.0,
                               scrollAxis: Axis.horizontal,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.redAccent),
                               text:
                                   '''${g.processNotScan.length} CĐ chưa có sản lượng : ${g.processNotScan}'''),
                         )
-                      : Text(
+                      : const Text(
                           '100% CĐ có sản lượng !',
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: Colors.green,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),

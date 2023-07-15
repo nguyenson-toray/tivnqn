@@ -15,8 +15,8 @@ class SqlProductionDB {
   final pass = 'Toray@123';
   Future<bool> checkLAN() async {
     bool lanConnection = false;
-    final String ipLAN = '192.168.1.11';
-    final int port = 1433;
+    const String ipLAN = '192.168.1.11';
+    const int port = 1433;
     await Socket.connect(ipLAN, port, timeout: const Duration(seconds: 3))
         .then((socket) {
       // do what need to be done
@@ -34,7 +34,7 @@ class SqlProductionDB {
     bool isConnected = false;
     try {
       bool lanConnection = await checkLAN();
-      if (lanConnection)
+      if (lanConnection) {
         isConnected = await connection.initializeConnection(
           ipLAN,
           dbName,
@@ -42,7 +42,7 @@ class SqlProductionDB {
           pass,
           instance: instanceSql,
         );
-
+      }
       if (!isConnected) {
         Fluttertoast.showToast(
             msg: "SQL Server not available !",
@@ -65,10 +65,10 @@ class SqlProductionDB {
     List<Map<String, dynamic>> tempResult = [];
     final String query = '''SELECT X02, X06, X07, X08, X09
 FROM [Production].[dbo].[T01_1st inspection data]
-WHERE X01 = ${line} and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.appSetting.getRangeDays}, getdate()) )
+WHERE X01 = $line and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.appSetting.getRangeDays}, getdate()) )
 ORDER BY X02 ASC
     ''';
-    print('getT01InspectionData ${line} ');
+    print('getT01InspectionData $line ');
     print(query);
     try {
       var tempResult = [];
@@ -92,7 +92,7 @@ ORDER BY X02 ASC
               }
           });
     } catch (e) {
-      print('getInspectionData --> Exception : ' + e.toString());
+      print('getInspectionData --> Exception : $e');
     }
     return result;
   }
