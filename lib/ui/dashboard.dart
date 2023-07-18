@@ -277,28 +277,7 @@ Change ''',
                   fontWeight: FontWeight.bold,
                   fontSize: g.fontSizeAppbar),
             )
-          : Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-              Row(
-                children: [
-                  Image.asset('assets/group.png'),
-                  Text(
-                    ''' ${g.idEmpScaneds.length} ''',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: g.fontSizeAppbar,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Image.asset('assets/sum.png'),
-                  Text(' ${g.processScaned.length}/${g.processAll.length} ',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: g.fontSizeAppbar)),
-                ],
-              ),
+          : Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -361,6 +340,27 @@ Change ''',
                       DateFormat(g.dateFormat2).format(
                         g.pickedDate,
                       ),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: g.fontSizeAppbar)),
+                ],
+              ),
+              Row(
+                children: [
+                  Image.asset('assets/group.png'),
+                  Text(
+                    ''' ${g.idEmpScaneds.length} ''',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: g.fontSizeAppbar,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Image.asset('assets/sum.png'),
+                  Text(' ${g.processScaned.length}/${g.processAll.length} ',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

@@ -89,17 +89,17 @@ FROM A_AppSetting''';
                 tempResult = value.cast<Map<String, dynamic>>(),
                 element = tempResult[0],
                 result = AppSetting(
-                  lines: element['lines'],
+                  lines: element['lines'].trim(),
                   timeChangeLine: element['timeChangeLine'],
                   timeReload: element['timeReload'],
                   rangeDays: element['rangeDays'],
                   showNotification: element['showNotification'],
-                  notificationURL: element['notificationURL'],
+                  notificationURL: element['notificationURL'].trim(),
                   showBegin: element['showBegin'],
                   showDuration: element['showDuration'],
                   chartBegin: element['chartBegin'],
                   chartDuration: element['chartDuration'],
-                  ipTvLine: element['ipTvLine'],
+                  ipTvLine: element['ipTvLine'].trim(),
                 )
               }
           });

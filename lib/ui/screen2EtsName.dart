@@ -18,10 +18,10 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
   Widget build(BuildContext context) {
     return g.workSummary.isEmpty
         ? Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Center(
-                child: Image.asset('assets/noData2.png'),
+                child: Image.asset('assets/noData.png'),
               ),
               const Text(
                 'KHÔNG CÓ DỮ LIỆU !',
@@ -76,7 +76,8 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(2, 1, 2, 1),
                                       width: (g.screenWidth - 195) / 6,
                                       child: Text(
                                         '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
