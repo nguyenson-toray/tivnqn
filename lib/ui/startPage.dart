@@ -114,6 +114,8 @@ class _StartPageState extends State<StartPage> {
         await g.sqlETSDB.getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
     g.sqlSumNoQty =
         await g.sqlETSDB.getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+    g.sqlCummulativeNoQty =
+        await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
     g.workSummary = MyFuntions.summaryDailyDataETS();
 
     Loader.hide();

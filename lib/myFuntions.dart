@@ -87,6 +87,8 @@ class MyFuntions {
               .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
           g.sqlSumNoQty = await g.sqlETSDB
               .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+          g.sqlCummulativeNoQty =
+              await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
         }
         break;
       case 'refresh': // load line data , setting
@@ -102,6 +104,8 @@ class MyFuntions {
               .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
           g.sqlSumNoQty = await g.sqlETSDB
               .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+          g.sqlCummulativeNoQty =
+              await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
         }
         break;
       default:
@@ -185,11 +189,11 @@ class MyFuntions {
     if (ration <= 25) {
       result = const Color.fromARGB(255, 245, 31, 16);
     } else if (ration <= 50) {
-      result = Colors.orange;
+      result = const Color.fromARGB(255, 216, 130, 2);
     } else if (ration <= 75) {
-      result = const Color.fromARGB(255, 248, 225, 19);
+      result = Color.fromARGB(255, 240, 220, 37);
     } else {
-      result = const Color.fromARGB(255, 62, 243, 68);
+      result = Color.fromARGB(255, 10, 186, 19);
     }
     return result;
   }

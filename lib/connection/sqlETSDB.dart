@@ -7,6 +7,7 @@ import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.da
 import 'package:tivnqn/model/moDetail.dart';
 import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/appSetting.dart';
+import 'package:tivnqn/model/sqlCummulativeNoQty.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMoSetting.dart';
 import 'package:tivnqn/model/sqlSumEmpQty.dart';
@@ -129,7 +130,8 @@ ORDER BY CODE ASC''';
                 for (var element in tempResult)
                   {
                     result.add(SqlEmployee(
-                        empId: element['CODE'], empName: element['NAME'])),
+                        empId: element['CODE'],
+                        empName: element['NAME'].trim())),
                   }
               }
           });
@@ -383,6 +385,38 @@ ORDER BY GxNo ASC''';
       print(e.toString());
     }
 
+    return result;
+  }
+
+  Future<List<SqlCummulativeNoQty>> getSqlCummNoQty(String mo) async {
+    String query = '''
+SELECT GxNo,  SUM(Qty) as CummulativeQty
+FROM TbZDCodeGxQty
+WHERE  ZDCode = '$mo'  
+GROUP BY GxNo 
+ORDER BY GxNo ASC
+''';
+    List<SqlCummulativeNoQty> result = [];
+    var tempResult;
+    print('getSqlCummNoQty : $query');
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    result.add(SqlCummulativeNoQty(
+                        GxNo: element['GxNo'],
+                        CummulativeQty: element['CummulativeQty'])),
+                  }
+              }
+          });
+    } catch (e) {
+      print(e.toString());
+    }
     return result;
   }
 }

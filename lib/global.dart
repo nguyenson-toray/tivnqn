@@ -6,6 +6,7 @@ import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/moDetail.dart';
 import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/appSetting.dart';
+import 'package:tivnqn/model/sqlCummulativeNoQty.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlSumEmpQty.dart';
 import 'package:tivnqn/model/sqlSumNoQty.dart';
@@ -51,6 +52,7 @@ class g {
   static late MoDetail currentMoDetail;
   static List<SqlSumEmpQty> sqlSumEmpQty = [];
   static List<SqlSumNoQty> sqlSumNoQty = [];
+  static List<SqlCummulativeNoQty> sqlCummulativeNoQty = [];
   static List<WorkSummary> workSummary = [];
   static List<SqlEmployee> employeesScaned = [];
   static List<ProcessDetail> processDetail = [];

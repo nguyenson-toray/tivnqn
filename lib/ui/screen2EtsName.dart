@@ -80,7 +80,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                           const EdgeInsets.fromLTRB(2, 1, 2, 1),
                                       width: (g.screenWidth - 195) / 6,
                                       child: Text(
-                                        '''${process[index2].getGxNo} : ${process[index2].getGxName}''',
+                                        '''${process[index2].getGxNo}-${process[index2].getGxName}''',
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           // fontSize: 10,
