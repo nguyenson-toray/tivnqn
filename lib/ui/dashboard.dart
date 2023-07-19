@@ -172,9 +172,11 @@ class _DashboardState extends State<Dashboard>
         child: CircleAvatar(
           maxRadius: g.appBarH / 2 - 2,
           minRadius: g.appBarH / 2 - 2,
-          backgroundColor: g.isLoading
-              ? Colors.primaries[Random().nextInt(Colors.primaries.length)]
-              : Colors.white,
+          backgroundColor:
+              // g.isLoading
+              //     ? Colors.primaries[Random().nextInt(Colors.primaries.length)]
+              //     :
+              Colors.white,
           child: Center(
             child: Text(
               g.currentLine.toString(),
@@ -287,10 +289,18 @@ Change ''',
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  RotationTransition(
-                      turns: Tween(begin: 0.0, end: g.isLoading ? 1.0 : 0.0)
-                          .animate(animationController),
-                      child: Image.asset('assets/style.png')),
+                  SizedBox(
+                      height: g.appBarH,
+                      width: g.appBarH,
+                      child: g.isLoading
+                          ? Image.asset('assets/loading.gif')
+                          : Image.asset('assets/style.png')),
+                  //      RotationTransition(
+                  // turns: Tween(begin: 0.0, end: g.isLoading ? 1.0 : 0.0)
+                  //     .animate(animationController),
+                  // child: g.isLoading
+                  //     ? Image.asset('assets/loading.gif')
+                  //     : Image.asset('assets/style.png')),
                   Column(
                     children: [
                       Text('${g.currentMoDetail.getStyle.trim()}',
