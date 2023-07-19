@@ -18,12 +18,17 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard>
+    with SingleTickerProviderStateMixin {
   ChartSeriesController? _chartSeriesController;
+  late final AnimationController animationController = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 2000))
+    ..repeat();
 
   @override
   void dispose() {
     g.reloadType.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -119,6 +124,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  @override
   showNotification() async {
     if (Loader.isShown) {
       return;
@@ -184,21 +190,21 @@ class _DashboardState extends State<Dashboard> {
         Row(
           children: [
             InkWell(
-              onTap: () {
-                setState(() {
-                  if (g.screenType < 3) {
-                    g.screenType++;
-                  } else {
-                    g.screenType = 1;
-                  }
-                });
-              },
-              child: g.screenType == 1
-                  ? Image.asset('assets/screen1.png')
-                  : g.screenType == 2
-                      ? Image.asset('assets/screen2.png')
-                      : Image.asset('assets/screen3.png'),
-            ),
+                onTap: () {
+                  setState(() {
+                    if (g.screenType == 1) {
+                      g.screenType = 2;
+                    } else {
+                      g.screenType = 1;
+                    }
+                  });
+                },
+                child: Container(
+                    height: g.appBarH,
+                    width: g.appBarH,
+                    child: g.screenType == 1
+                        ? Image.asset('assets/ets.png')
+                        : Image.asset('assets/chart.png'))),
           ],
         ),
         const SizedBox(
@@ -281,7 +287,10 @@ Change ''',
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/style.png'),
+                  RotationTransition(
+                      turns: Tween(begin: 0.0, end: g.isLoading ? 1.0 : 0.0)
+                          .animate(animationController),
+                      child: Image.asset('assets/style.png')),
                   Column(
                     children: [
                       Text('${g.currentMoDetail.getStyle.trim()}',
@@ -334,7 +343,9 @@ Change ''',
                         ),
                       ).show(context);
                     },
-                    child: Image.asset('assets/calendar.png'),
+                    child: Container(
+                        height: g.appBarH,
+                        child: Image.asset('assets/calendar.png')),
                   ),
                   Text(
                       DateFormat(g.dateFormat2).format(
@@ -359,7 +370,20 @@ Change ''',
                   const SizedBox(
                     width: 10,
                   ),
-                  Image.asset('assets/sum.png'),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        if (g.screenType == 2)
+                          g.screenType = 3;
+                        else if (g.screenType == 3) g.screenType = 2;
+                      });
+                    },
+                    child: Container(
+                        height: g.appBarH,
+                        child: g.screenType == 2
+                            ? Image.asset('assets/sumQty.png')
+                            : Image.asset('assets/sumName.png')),
+                  ),
                   Text(' ${g.processScaned.length}/${g.processAll.length} ',
                       style: TextStyle(
                           color: Colors.white,
