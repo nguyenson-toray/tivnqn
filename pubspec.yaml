@@ -106,15 +106,17 @@ flutter:
     - assets/loading.gif
     - assets/notification_sound.wav
     - assets/ic_launcher2.png
-    - assets/screen1.png
-    - assets/screen2.png
-    - assets/screen3.png
+    - assets/chart.png
+    - assets/sumName.png
+    - assets/sumQty.png
     - assets/noData.png
     - assets/group.png
     - assets/calendar.png
     - assets/firework.png
     - assets/sum.png
     - assets/error.png
+    - assets/ets.png
+    - assets/list.png 
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
