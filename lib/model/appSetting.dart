@@ -11,6 +11,7 @@ class AppSetting {
   String chartBegin;
   int chartDuration;
   String ipTvLine;
+  int enableMoney;
   get getLines => lines;
 
   set setLines(lines) => this.lines = lines;
@@ -56,6 +57,10 @@ class AppSetting {
   get getIpTvLine => ipTvLine;
 
   set setIpTvLine(ipTvLine) => this.ipTvLine = ipTvLine;
+
+  get getEnableMoney => enableMoney;
+
+  set setEnableMoney(enableMoney) => this.enableMoney = enableMoney;
   AppSetting({
     required this.lines,
     required this.timeChangeLine,
@@ -68,10 +73,11 @@ class AppSetting {
     required this.chartBegin,
     required this.chartDuration,
     required this.ipTvLine,
+    required this.enableMoney,
   });
 
   @override
   String toString() {
-    return 'AppSetting(lines: $lines, timeChangeLine: $timeChangeLine, timeReload: $timeReload, rangeDays: $rangeDays, showNotification: $showNotification, notificationURL: $notificationURL, showBegin: $showBegin, showDuration: $showDuration, chartBegin: $chartBegin, chartDuration: $chartDuration, ipTvLine: $ipTvLine)';
+    return 'AppSetting(lines: $lines, timeChangeLine: $timeChangeLine, timeReload: $timeReload, rangeDays: $rangeDays, showNotification: $showNotification, notificationURL: $notificationURL, showBegin: $showBegin, showDuration: $showDuration, chartBegin: $chartBegin, chartDuration: $chartDuration, ipTvLine: $ipTvLine, enableMoney: $enableMoney)';
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tivnqn/connection/sqlETSDB.dart';
 import 'package:tivnqn/connection/sqlProductionDB.dart';
@@ -37,6 +38,9 @@ class g {
 
   static String ip = '';
   static bool isTVLine = true;
+  static bool enableMoney = false;
+  static var currencyFormat =
+      NumberFormat.currency(locale: "vi_VN", symbol: "đ");
   static int screenType = 1; //1 :chart , 2: name, 3: process
   static bool autochangeLine = true;
   static bool isLoading = false;

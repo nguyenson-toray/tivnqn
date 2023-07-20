@@ -23,6 +23,7 @@ class MyFuntions {
     g.processNotScan =
         g.processAll.toSet().difference(g.processScaned.toSet()).toList();
     for (var idEmpScaned in g.idEmpScaneds) {
+      double moneyEmp = 0;
       final String currentName = g.sqlEmployees
           .firstWhere((emp) => emp.getEmpId == idEmpScaned)
           .getEmpName;
@@ -33,12 +34,14 @@ class MyFuntions {
           shortName: 'shortName',
           processDetailQtys: [
             ProcessDetailQty(GxNo: 0, GxName: 'GxName', qty: 0)
-          ]);
+          ],
+          money: 0);
       List<ProcessDetailQty> processDetailQtys = [];
       for (int i = 0; i < g.sqlSumEmpQty.length; i++) {
         if (idEmpScaned == g.sqlSumEmpQty[i].EmpId) {
           final int GxNo = g.sqlSumEmpQty[i].getGxNo;
           final int qty = g.sqlSumEmpQty[i].getSumEmpQty;
+
           final String GxName = g.processDetail
               .firstWhere(
                   (element) => element.getNo == g.sqlSumEmpQty[i].getGxNo)
@@ -46,9 +49,15 @@ class MyFuntions {
           final processDetailQty =
               ProcessDetailQty(GxNo: GxNo, GxName: GxName, qty: qty);
           processDetailQtys.add(processDetailQty);
+          moneyEmp += qty *
+              g.processDetail
+                  .firstWhere(
+                      (element) => element.getNo == processDetailQty.getGxNo)
+                  .getUnitPrice;
           workSummary = WorkSummary(
               shortName: currentEmpShortName,
-              processDetailQtys: processDetailQtys);
+              processDetailQtys: processDetailQtys,
+              money: moneyEmp);
         }
       }
       result.add(workSummary);
@@ -174,9 +183,9 @@ class MyFuntions {
     if (ration <= 25) {
       result = Colors.redAccent;
     } else if (ration <= 50) {
-      result = Colors.orangeAccent;
+      result = Colors.orange;
     } else if (ration <= 75) {
-      result = Colors.yellowAccent;
+      result = Color.fromARGB(255, 249, 227, 25);
     } else {
       result = Colors.greenAccent;
     }

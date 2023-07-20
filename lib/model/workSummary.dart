@@ -2,23 +2,25 @@
 class WorkSummary {
   String shortName;
   List<ProcessDetailQty> processDetailQtys;
-  get getShortName => shortName;
+  double money;
+  get getShortName => this.shortName;
 
   set setShortName(shortName) => this.shortName = shortName;
 
-  get getProcessDetailQtys => processDetailQtys;
+  get getProcessDetailQtys => this.processDetailQtys;
 
   set setProcessDetailQtys(processDetailQtys) =>
       this.processDetailQtys = processDetailQtys;
 
+  get getMoney => this.money;
+
+  set setMoney(money) => this.money = money;
+
   WorkSummary({
     required this.shortName,
     required this.processDetailQtys,
+    required this.money,
   });
-
-  @override
-  String toString() =>
-      'WorkSummary(shortName: $shortName, processDetailQtys: $processDetailQtys, this.processDetailQtys: ${processDetailQtys.toString})';
 }
 
 class ProcessDetailQty {

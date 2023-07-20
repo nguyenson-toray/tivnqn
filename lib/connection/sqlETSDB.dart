@@ -64,21 +64,21 @@ class SqlETSDB {
 
   Future<AppSetting> getAppSetting() async {
     String query =
-        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine 
+        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney
 FROM A_AppSetting''';
     AppSetting result = AppSetting(
-      lines: '1',
-      timeChangeLine: 0,
-      timeReload: 0,
-      rangeDays: 0,
-      showNotification: 0,
-      notificationURL: '',
-      showBegin: '',
-      showDuration: 0,
-      chartBegin: '',
-      chartDuration: 0,
-      ipTvLine: '',
-    );
+        lines: '1',
+        timeChangeLine: 0,
+        timeReload: 0,
+        rangeDays: 0,
+        showNotification: 0,
+        notificationURL: '',
+        showBegin: '',
+        showDuration: 0,
+        chartBegin: '',
+        chartDuration: 0,
+        ipTvLine: '',
+        enableMoney: 0);
     var tempResult = [];
     var element;
     try {
@@ -101,6 +101,7 @@ FROM A_AppSetting''';
                   chartBegin: element['chartBegin'],
                   chartDuration: element['chartDuration'],
                   ipTvLine: element['ipTvLine'].trim(),
+                  enableMoney: element['enableMoney'],
                 )
               }
           });
@@ -184,13 +185,14 @@ ORDER BY CODE ASC''';
   }
 
   Future<List<ProcessDetail>> getProcessDetail(String cnid) async {
-    String query = '''  SELECT cnid, GxNO, GxCode, gxName
+    String query = '''  SELECT cnid, GxNO, GxCode, gxName, SamPrice
  FROM [ETSDB_TI].[dbo].tbSczzdGxDetail  
  WHERE cnid =  '$cnid' AND GxType = 'Sewing'
  ORDER BY GxNO ASC ''';
 
     List<ProcessDetail> result = [];
     var tempResult;
+    double money = 0;
     print('getProcessDetail : $query');
     try {
       await connection.getRowsOfQueryResult(query).then((value) => {
@@ -203,17 +205,19 @@ ORDER BY CODE ASC''';
                 for (var element in tempResult)
                   {
                     g.processAll.add(element['GxNO']),
+                    money = double.tryParse(element['SamPrice'].toString())!,
                     result.add(ProcessDetail(
                         cind: cnid,
                         no: element['GxNO'],
                         code: element['GxCode'],
-                        name: element['gxName'])),
+                        name: element['gxName'],
+                        unitPrice: money))
                   }
               }
           });
       print(result.length);
     } catch (e) {
-      print(e.toString());
+      print(' $e');
     }
 
     return result;

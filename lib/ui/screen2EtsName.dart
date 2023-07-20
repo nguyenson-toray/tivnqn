@@ -117,7 +117,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             process[0].getQty > g.currentMoDetail.getTargetDay
                                 ?
@@ -125,6 +125,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                 //     height: 17, child: Image.asset('assets/star.gif'))
                                 const Icon(
                                     Icons.star,
+                                    size: 18,
                                     color: Colors.white,
                                   )
                                 // : (process[0].getQty <= 0.25 * g.sqlMoInfo.getTargetDay &&
@@ -134,12 +135,20 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                 //         color: Colors.white,
                                 //       )
                                 : Container(),
-                            Text(g.workSummary[index].getShortName.toString(),
+                            Text(
+                                '${g.workSummary[index].getShortName.toString()}',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 13,
-                                )),
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13,
+                                    color: Colors.black)),
+                            Text(
+                                g.currencyFormat
+                                    .format(g.workSummary[index].getMoney),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13,
+                                    color: Colors.white))
                           ],
                         ),
                       ),

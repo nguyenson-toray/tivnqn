@@ -79,11 +79,13 @@ class _StartPageState extends State<StartPage> {
     }
     await g.sqlETSDB.initConnection();
     g.appSetting = await g.sqlETSDB.getAppSetting();
+    g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
     g.ip = (await NetworkInfo().getWifiIP())!;
 
     if (kDebugMode) {
       setState(() {
-        // g.ip = '192.168.1.79';
+        // g.ip = '192.168.1.75';
+        g.enableMoney = true;
       });
     }
     if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
@@ -96,6 +98,7 @@ class _StartPageState extends State<StartPage> {
     g.appSetting.getLines.toString().split(',').forEach((element) {
       g.lines.add(int.parse(element));
     });
+
     g.currentIndexLine = g.lines.indexOf(g.currentLine);
     print(
         'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');

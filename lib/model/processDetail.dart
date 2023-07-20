@@ -5,26 +5,33 @@ class ProcessDetail {
   int no;
   String code;
   String name;
-  get getCind => cind;
+  double unitPrice;
+  get getCind => this.cind;
 
   set setCind(cind) => this.cind = cind;
 
-  get getNo => no;
+  get getNo => this.no;
 
   set setNo(no) => this.no = no;
 
-  get getCode => code;
+  get getCode => this.code;
 
   set setCode(code) => this.code = code;
 
-  get getName => name;
+  get getName => this.name;
 
   set setName(name) => this.name = name;
+
+  get getUnitPrice => this.unitPrice;
+
+  set setUnitPrice(unitPrice) => this.unitPrice = unitPrice;
+
   ProcessDetail({
     required this.cind,
     required this.no,
     required this.code,
     required this.name,
+    required this.unitPrice,
   });
 
   Map<String, dynamic> toMap() {
@@ -33,6 +40,7 @@ class ProcessDetail {
       'no': no,
       'code': code,
       'name': name,
+      'unitPrice': unitPrice,
     };
   }
 
@@ -42,6 +50,7 @@ class ProcessDetail {
       no: map['no'] as int,
       code: map['code'] as String,
       name: map['name'] as String,
+      unitPrice: map['unitPrice'],
     );
   }
 
@@ -52,6 +61,6 @@ class ProcessDetail {
 
   @override
   String toString() {
-    return 'ProcessDetail(cind: $cind, no: $no, code: $code, name: $name)';
+    return 'ProcessDetail(cind: $cind, no: $no, code: $code, name: $name, unitPrice: $unitPrice)';
   }
 }
