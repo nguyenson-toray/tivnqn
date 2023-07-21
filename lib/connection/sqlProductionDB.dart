@@ -62,7 +62,6 @@ class SqlProductionDB {
 
   Future<List<SqlT01>> getT01InspectionData(int line) async {
     List<SqlT01> result = [];
-    List<Map<String, dynamic>> tempResult = [];
     final String query = '''SELECT X02, X06, X07, X08, X09
 FROM [Production].[dbo].[T01_1st inspection data]
 WHERE X01 = $line and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.appSetting.getRangeDays}, getdate()) )

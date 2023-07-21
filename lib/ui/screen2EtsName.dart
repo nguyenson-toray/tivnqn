@@ -143,8 +143,10 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                     fontSize: 13,
                                     color: Colors.black)),
                             Text(
-                                g.currencyFormat
-                                    .format(g.workSummary[index].getMoney),
+                                g.enableMoney
+                                    ? g.currencyFormat
+                                        .format(g.workSummary[index].getMoney)
+                                    : '',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 13,

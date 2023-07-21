@@ -224,7 +224,6 @@ class MyFuntions {
     }
     dates = dates.toSet().toList();
     for (var dateString in dates) {
-      DateTime currentDate = DateFormat(g.dateFormat).parse(dateString);
       num qty1st = 0;
       num qty1stOK = 0;
       num qty1stNOK = 0;

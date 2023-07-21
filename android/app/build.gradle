@@ -54,7 +54,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled = true
-        archivesBaseName = "TIVNQN-ETS-${new Date().format('ddMMyyyy')}-V${versionName}"
+       // archivesBaseName = "TIVNQN-ETS-${new Date().format('ddMMyyyy')}-V${versionName}"
     }
 
     buildTypes {
