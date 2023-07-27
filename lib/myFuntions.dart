@@ -177,6 +177,57 @@ class MyFuntions {
     return line;
   }
 
+  static Color getColorByLine(int line) {
+    Color result = Colors.yellow;
+
+    switch (line) {
+      case 1:
+        result = Colors.yellow;
+        break;
+      case 2:
+        result = Colors.amber;
+        break;
+      case 3:
+        result = Colors.yellow;
+        break;
+      case 4:
+        result = Colors.green;
+        break;
+      case 5:
+        result = Colors.blue;
+        break;
+      case 6:
+        result = Colors.blueGrey;
+        break;
+      case 7:
+        result = Colors.pink;
+        break;
+      case 8:
+        result = Colors.teal;
+        break;
+      case 9:
+        result = Colors.brown;
+        break;
+      default:
+    }
+    return result;
+  }
+
+  static Color getColorByPercent(double percent) {
+    Color result = Colors.yellow;
+
+    if (percent <= 0.25) {
+      result = Colors.red;
+    } else if (percent <= 0.5) {
+      result = Colors.orange;
+    } else if (percent <= 0.75) {
+      result = Colors.amber;
+    } else {
+      result = Colors.green;
+    }
+    return result;
+  }
+
   static Color getColorByQty(int qty, int target) {
     Color result = Colors.yellow;
     int ration = (qty / target * 100).round();

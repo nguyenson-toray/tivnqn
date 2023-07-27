@@ -5,6 +5,7 @@ import 'package:tivnqn/connection/sqlETSDB.dart';
 import 'package:tivnqn/connection/sqlProductionDB.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/moDetail.dart';
+import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlCummulativeNoQty.dart';
@@ -38,6 +39,7 @@ class g {
 
   static String ip = '';
   static bool isTVLine = true;
+  static bool isTVPlanning = true;
   static bool enableMoney = false;
   static var currencyFormat =
       NumberFormat.currency(locale: "vi_VN", symbol: "đ");
@@ -72,4 +74,8 @@ class g {
   //--------------------
   static late Widget chartUi;
   static List<ChartData> chartData = [];
+
+  //---------------- planning chart
+  static bool enablePercentComplete = false;
+  static List<Planning> sqlPlanning = [];
 }

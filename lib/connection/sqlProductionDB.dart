@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
+import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 
 class SqlProductionDB {
@@ -93,6 +94,44 @@ ORDER BY X02 ASC
     } catch (e) {
       print('getInspectionData --> Exception : $e');
     }
+    return result;
+  }
+
+  Future<List<Planning>> getPlanning() async {
+    String query = '''SELECT line, style, quantity, beginDate, endDate, comment
+FROM A_Planning''';
+    List<Planning> result = [];
+    var tempResult;
+    print('getPlanning : $query');
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    result.add(
+                      Planning(
+                        line: element['line'],
+                        style: element['style'],
+                        quantity: element['quantity'],
+                        beginDate: DateTime.parse(element['beginDate']),
+                        endDate: DateTime.parse(element['endDate']),
+                        comment: element['comment'] != null
+                            ? element['comment']
+                            : '',
+                      ),
+                    )
+                  }
+              }
+          });
+      print(result);
+    } catch (e) {
+      print(e.toString());
+    }
+
     return result;
   }
 }

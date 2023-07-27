@@ -6,6 +6,7 @@ import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/chartPlanningUI.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboard.dart';
 
@@ -77,54 +78,62 @@ class _StartPageState extends State<StartPage> {
 
       return;
     }
-    await g.sqlETSDB.initConnection();
-    g.appSetting = await g.sqlETSDB.getAppSetting();
-    g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
-    g.ip = (await NetworkInfo().getWifiIP())!;
-
     if (kDebugMode) {
       setState(() {
-        // g.ip = '192.168.1.75';
+        g.ip = '192.168.1.68';
         g.enableMoney = true;
       });
     }
-    if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
-      g.isTVLine = true;
-      g.autochangeLine = false;
+    if (g.ip == '192.168.1.68') {
+      g.isTVPlanning = true;
+      g.sqlPlanning = await g.sqlProductionDB.getPlanning();
+      print(g.sqlPlanning);
     } else {
-      g.isTVLine = false;
+      if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
+        g.isTVLine = true;
+        g.autochangeLine = false;
+      } else {
+        g.isTVLine = false;
+      }
+      await g.sqlETSDB.initConnection();
+      g.appSetting = await g.sqlETSDB.getAppSetting();
+      g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
+      g.ip = (await NetworkInfo().getWifiIP())!;
+
+      g.currentLine = MyFuntions.setLineFollowIP(g.ip);
+      g.appSetting.getLines.toString().split(',').forEach((element) {
+        g.lines.add(int.parse(element));
+      });
+
+      g.currentIndexLine = g.lines.indexOf(g.currentLine);
+      print(
+          'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');
+
+      g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
+      g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
+      g.chartUi = ChartUI.createChartUI(
+          g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
+      g.moDetails = await g.sqlETSDB.getAllMoDetails();
+      g.sqlEmployees = await g.sqlETSDB.getEmployees();
+      g.currentMoDetail =
+          g.moDetails.firstWhere((element) => element.getLine == g.currentLine);
+      g.processDetail =
+          await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
+      g.sqlSumEmpQty = await g.sqlETSDB
+          .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+      g.sqlSumNoQty = await g.sqlETSDB
+          .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+      g.sqlCummulativeNoQty =
+          await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+      g.workSummary = MyFuntions.summaryDailyDataETS();
     }
-    g.currentLine = MyFuntions.setLineFollowIP(g.ip);
-    g.appSetting.getLines.toString().split(',').forEach((element) {
-      g.lines.add(int.parse(element));
-    });
-
-    g.currentIndexLine = g.lines.indexOf(g.currentLine);
-    print(
-        'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');
-
-    g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
-    g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
-    g.chartUi = ChartUI.createChartUI(
-        g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-    g.moDetails = await g.sqlETSDB.getAllMoDetails();
-    g.sqlEmployees = await g.sqlETSDB.getEmployees();
-    g.currentMoDetail =
-        g.moDetails.firstWhere((element) => element.getLine == g.currentLine);
-    g.processDetail =
-        await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-    g.sqlSumEmpQty =
-        await g.sqlETSDB.getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
-    g.sqlSumNoQty =
-        await g.sqlETSDB.getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-    g.sqlCummulativeNoQty =
-        await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-    g.workSummary = MyFuntions.summaryDailyDataETS();
 
     Loader.hide();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Dashboard()),
+      MaterialPageRoute(
+          builder: (context) =>
+              g.isTVPlanning ? ChartPlanningUI() : Dashboard()),
     );
   }
 
