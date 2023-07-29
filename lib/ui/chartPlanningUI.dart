@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +7,7 @@ import 'package:gantt_chart/gantt_chart.dart';
 import 'package:square_percent_indicater/square_percent_indicater.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/ui/chartPlanningImage.dart';
 
 class ChartPlanningUI extends StatefulWidget {
   const ChartPlanningUI({super.key});
@@ -54,16 +54,18 @@ class _ChartPlanningUIState extends State<ChartPlanningUI> {
       (a, b) => a.getLine.compareTo(b.getLine),
     );
     ganttAbsoluteEvent.clear();
+    int i = 1;
     g.sqlPlanning.forEach((element) {
       GanttAbsoluteEvent event = GanttAbsoluteEvent(
-        displayName: '''Line ${element.getLine} - ${element.getQuantity} pcs
+          displayName: '''Line ${element.getLine} - ${element.getQuantity} pcs
 ${element.getStyle}''',
-        startDate: element.getBeginDate,
-        endDate: element.getEndDate,
-      );
+          startDate: element.getBeginDate,
+          endDate: element.getEndDate,
+          suggestedColor: MyFuntions.getColorByLine(i));
       if (!element.getEndDate.isBefore(DateTime.now())) {
         ganttAbsoluteEvent.add(event);
       }
+      i++;
     });
   }
 
@@ -72,66 +74,78 @@ ${element.getStyle}''',
     // TODO: implement initState
     initData();
     Timer.periodic(Duration(seconds: 30), (timer) async {
-      g.sqlProductionDB.getPlanning().then((value) => {
-            g.sqlPlanning = value,
-            setState(() {
-              initData();
-            })
-          });
+      if (mounted) {
+        g.sqlProductionDB.getPlanning().then((value) => {
+              g.sqlPlanning = value,
+              setState(() {
+                initData();
+              })
+            });
 
-      if (DateTime.now().hour >= 17) exit(0);
+        if (DateTime.now().hour >= 17) exit(0);
+      }
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
-      focusNode: FocusNode(),
-      autofocus: true,
-      onKey: (event) {
-        if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
-          if (scrollController.offset <
-              scrollController.position.maxScrollExtent) {
-            scrollController.jumpTo(scrollController.offset + dayWidth * 30);
-          }
-        }
-        if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
-          if (scrollController.offset >
-              scrollController.position.minScrollExtent) {
-            scrollController.jumpTo(scrollController.offset - dayWidth * 30);
-          }
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: g.appBarH,
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 24,
 
-          backgroundColor: Colors.lightBlue,
-          elevation: 6.0,
-          centerTitle: true,
-          title: const Text(
-            'PRODUCTION PLANNING',
-            style: TextStyle(
-                fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-
-          // actions: [
-          //   IconButton(
-          //     onPressed: onZoomIn,
-          //     icon: const Icon(
-          //       Icons.zoom_in,
-          //     ),
-          //   ),
-          //   IconButton(
-          //     onPressed: onZoomOut,
-          //     icon: const Icon(
-          //       Icons.zoom_out,
-          //     ),
-          //   ),
-          // ],
+        backgroundColor: Colors.lightBlue,
+        elevation: 6.0,
+        centerTitle: true,
+        title: const Text(
+          'PRODUCTION PLANNING',
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        body: SingleChildScrollView(
+        // leading: InkWell(
+        //     onTap: () {
+        //       Navigator.pushReplacement(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => ChartPlanningImage()),
+        //       );
+        //     },
+        //     child: Icon(
+        //       Icons.change_circle,
+        //       color: Colors.black,
+        //     )),
+        // actions: [
+        //   IconButton(
+        //     onPressed: onZoomIn,
+        //     icon: const Icon(
+        //       Icons.zoom_in,
+        //     ),
+        //   ),
+        //   IconButton(
+        //     onPressed: onZoomOut,
+        //     icon: const Icon(
+        //       Icons.zoom_out,
+        //     ),
+        //   ),
+        // ],
+      ),
+      body: RawKeyboardListener(
+        focusNode: FocusNode(),
+        autofocus: true,
+        onKey: (event) {
+          if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+            if (scrollController.offset <
+                scrollController.position.maxScrollExtent) {
+              scrollController.jumpTo(scrollController.offset + dayWidth * 30);
+            }
+          }
+          if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+            if (scrollController.offset >
+                scrollController.position.minScrollExtent) {
+              scrollController.jumpTo(scrollController.offset - dayWidth * 30);
+            }
+          }
+        },
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(3),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

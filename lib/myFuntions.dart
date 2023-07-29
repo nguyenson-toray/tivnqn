@@ -182,33 +182,34 @@ class MyFuntions {
 
     switch (line) {
       case 1:
-        result = Colors.yellow;
+        result = Color.fromARGB(255, 197, 223, 226);
         break;
       case 2:
-        result = Colors.amber;
+        result = Color.fromARGB(255, 235, 245, 175);
         break;
       case 3:
-        result = Colors.yellow;
+        result = Color.fromARGB(255, 239, 192, 208);
         break;
       case 4:
-        result = Colors.green;
+        result = Color.fromARGB(255, 187, 240, 189);
         break;
       case 5:
-        result = Colors.blue;
+        result = Color.fromARGB(255, 167, 213, 250);
         break;
       case 6:
-        result = Colors.blueGrey;
+        result = Color.fromARGB(255, 159, 197, 218);
         break;
       case 7:
-        result = Colors.pink;
+        result = Color.fromARGB(255, 196, 243, 220);
         break;
       case 8:
-        result = Colors.teal;
+        result = Color.fromARGB(255, 175, 248, 240);
         break;
       case 9:
-        result = Colors.brown;
+        result = Color.fromARGB(255, 241, 191, 173);
         break;
       default:
+        result = Color.fromARGB(255, 208, 222, 247);
     }
     return result;
   }
@@ -315,11 +316,15 @@ class MyFuntions {
     // -> https://drive.google.com/uc?export=view&id=<FILE_ID>
     // https://drive.google.com/uc?export=view&id=1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
     String link = 'https://drive.google.com/uc?export=view&id=';
-    String fileId = orgLink.substring(32, 65);
-    link += fileId;
-    print('org link : $orgLink');
-    print('-> : $link');
-    return link;
+    try {
+      String fileId = orgLink.substring(32, 65);
+      link += fileId;
+      print('org link : $orgLink');
+      print('-> : $link');
+      return link;
+    } catch (e) {
+      return 'https://drive.google.com/uc?export=view&id=1-L3t8Rwj2DsVEeNzyGLgI7U7v06jaciL';
+    }
   }
 
   static Future<void> playAudio() async {

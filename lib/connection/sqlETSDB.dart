@@ -64,7 +64,7 @@ class SqlETSDB {
 
   Future<AppSetting> getAppSetting() async {
     String query =
-        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney
+        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney, planningURL, ipTvPlanning, enableChartPlanningUI
 FROM A_AppSetting''';
     AppSetting result = AppSetting(
         lines: '1',
@@ -78,7 +78,10 @@ FROM A_AppSetting''';
         chartBegin: '',
         chartDuration: 0,
         ipTvLine: '',
-        enableMoney: 0);
+        enableMoney: 0,
+        planningURL: '',
+        ipTvPlanning: '',
+        enableChartPlanningUI: 0);
     var tempResult = [];
     var element;
     try {
@@ -90,19 +93,21 @@ FROM A_AppSetting''';
                 tempResult = value.cast<Map<String, dynamic>>(),
                 element = tempResult[0],
                 result = AppSetting(
-                  lines: element['lines'].trim(),
-                  timeChangeLine: element['timeChangeLine'],
-                  timeReload: element['timeReload'],
-                  rangeDays: element['rangeDays'],
-                  showNotification: element['showNotification'],
-                  notificationURL: element['notificationURL'].trim(),
-                  showBegin: element['showBegin'],
-                  showDuration: element['showDuration'],
-                  chartBegin: element['chartBegin'],
-                  chartDuration: element['chartDuration'],
-                  ipTvLine: element['ipTvLine'].trim(),
-                  enableMoney: element['enableMoney'],
-                )
+                    lines: element['lines'].trim(),
+                    timeChangeLine: element['timeChangeLine'],
+                    timeReload: element['timeReload'],
+                    rangeDays: element['rangeDays'],
+                    showNotification: element['showNotification'],
+                    notificationURL: element['notificationURL'].trim(),
+                    showBegin: element['showBegin'],
+                    showDuration: element['showDuration'],
+                    chartBegin: element['chartBegin'],
+                    chartDuration: element['chartDuration'],
+                    ipTvLine: element['ipTvLine'].trim(),
+                    enableMoney: element['enableMoney'],
+                    planningURL: element['planningURL'].trim(),
+                    ipTvPlanning: element['ipTvPlanning'].trim(),
+                    enableChartPlanningUI: element['enableChartPlanningUI'])
               }
           });
       print('getAppSetting => $result ');

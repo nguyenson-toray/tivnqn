@@ -98,8 +98,8 @@ ORDER BY X02 ASC
   }
 
   Future<List<Planning>> getPlanning() async {
-    String query = '''SELECT line, style, quantity, beginDate, endDate, comment
-FROM A_Planning''';
+    String query = '''SELECT line, style, quantity, beginDate, endDate, comment 
+        FROM [Production].[dbo].[A_Planning]''';
     List<Planning> result = [];
     var tempResult;
     print('getPlanning : $query');

@@ -6,6 +6,7 @@ import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/chartPlanningImage.dart';
 import 'package:tivnqn/ui/chartPlanningUI.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboard.dart';
@@ -78,27 +79,33 @@ class _StartPageState extends State<StartPage> {
 
       return;
     }
+    await g.sqlETSDB.initConnection();
+    g.appSetting = await g.sqlETSDB.getAppSetting();
+    g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.68';
-        g.enableMoney = true;
+        g.ip = '192.168.1.70';
+        // g.enableMoney = true;
       });
     }
-    if (g.ip == '192.168.1.68') {
+
+    print(
+        'g.ip : ${g.ip}      getIpTvPlanning: [${g.appSetting.getIpTvPlanning}]');
+    if (g.ip == g.appSetting.getIpTvPlanning) {
       g.isTVPlanning = true;
-      g.sqlPlanning = await g.sqlProductionDB.getPlanning();
-      print(g.sqlPlanning);
+      if (g.appSetting.getEnableChartPlanningUI != 0) {
+        g.sqlPlanning = await g.sqlProductionDB.getPlanning();
+      }
     } else {
+      g.isTVPlanning = false;
       if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
         g.isTVLine = true;
         g.autochangeLine = false;
       } else {
         g.isTVLine = false;
       }
-      await g.sqlETSDB.initConnection();
-      g.appSetting = await g.sqlETSDB.getAppSetting();
+
       g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
-      g.ip = (await NetworkInfo().getWifiIP())!;
 
       g.currentLine = MyFuntions.setLineFollowIP(g.ip);
       g.appSetting.getLines.toString().split(',').forEach((element) {
@@ -132,8 +139,11 @@ class _StartPageState extends State<StartPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              g.isTVPlanning ? ChartPlanningUI() : Dashboard()),
+          builder: (context) => !g.isTVPlanning
+              ? Dashboard()
+              : g.appSetting.getEnableChartPlanningUI != 0
+                  ? ChartPlanningUI()
+                  : ChartPlanningImage()),
     );
   }
 
