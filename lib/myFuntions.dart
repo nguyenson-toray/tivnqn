@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/model/chartData.dart';
@@ -330,5 +331,41 @@ class MyFuntions {
   static Future<void> playAudio() async {
     AssetsAudioPlayer.newPlayer().open(Audio("assets/notification_sound.wav"),
         autoStart: true, volume: 1.0);
+  }
+
+  static DateTime findFirstDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 1));
+  }
+
+  static DateTime findLastDateOfTheWeek(DateTime dateTime) {
+    return dateTime
+        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+  }
+
+  static DateTime findLastDateOfTheMonth(DateTime dateTime) {
+    // print(
+    //     'findLastDateOfTheMonth $dateTime => ${DateTime(dateTime.year, dateTime.month + 1, 0)}');
+    return DateTime(dateTime.year, dateTime.month + 1, 0);
+  }
+
+  static DateTime findFirstDateOfTheMonth(DateTime dateTime) {
+    // print(
+    //     'findFirstDateOfTheMonth $dateTime => ${DateTime(dateTime.year, dateTime.month, 1)}');
+    return DateTime(dateTime.year, dateTime.month, 1);
+  }
+
+  static int findWeekNumber(DateTime date) {
+    int dayOfYear = int.parse(DateFormat("D").format(date));
+    return ((dayOfYear - date.weekday + 10) / 7).floor();
+  }
+
+  static Color gerRandomColor() {
+    Random random = Random();
+    Color color = Color.fromARGB(
+        random.nextInt(100) + 50,
+        random.nextInt(100) + 80,
+        random.nextInt(100) + 100,
+        random.nextInt(100) + 100);
+    return color;
   }
 }

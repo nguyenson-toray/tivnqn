@@ -2,6 +2,7 @@
 class Planning {
   int line;
   String style;
+  String desc;
   int quantity;
   DateTime beginDate;
   DateTime endDate;
@@ -13,6 +14,10 @@ class Planning {
   get getStyle => this.style;
 
   set setStyle(style) => this.style = style;
+
+  get getDesc => this.desc;
+
+  set setDesc(desc) => this.desc = desc;
 
   get getQuantity => this.quantity;
 
@@ -32,6 +37,7 @@ class Planning {
   Planning({
     required this.line,
     required this.style,
+    required this.desc,
     required this.quantity,
     required this.beginDate,
     required this.endDate,
@@ -40,6 +46,6 @@ class Planning {
 
   @override
   String toString() {
-    return 'Planning(line: $line, style: $style, quantity: $quantity, beginDate: $beginDate, endDate: $endDate, comment: $comment)';
+    return 'Planning(line: $line, style: $style, desc: $desc, quantity: $quantity, beginDate: $beginDate, endDate: $endDate, comment: $comment)';
   }
 }

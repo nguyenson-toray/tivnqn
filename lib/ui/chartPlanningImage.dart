@@ -120,7 +120,7 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
                 'Use the LEFT - RIGHT arrow buttons on the remote to scroll',
                 style: TextStyle(
                     fontSize: 9,
-                    color: Colors.blueGrey,
+                    color: Colors.blueAccent,
                     fontWeight: FontWeight.bold),
               )),
         ]));

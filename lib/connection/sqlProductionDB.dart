@@ -98,7 +98,8 @@ ORDER BY X02 ASC
   }
 
   Future<List<Planning>> getPlanning() async {
-    String query = '''SELECT line, style, quantity, beginDate, endDate, comment 
+    String query =
+        '''SELECT line, style, quantity, beginDate, endDate, comment, description
         FROM [Production].[dbo].[A_Planning]''';
     List<Planning> result = [];
     var tempResult;
@@ -116,6 +117,9 @@ ORDER BY X02 ASC
                       Planning(
                         line: element['line'],
                         style: element['style'],
+                        desc: element['description'] != null
+                            ? element['description']
+                            : '',
                         quantity: element['quantity'],
                         beginDate: DateTime.parse(element['beginDate']),
                         endDate: DateTime.parse(element['endDate']),

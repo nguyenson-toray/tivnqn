@@ -225,7 +225,7 @@ ${element.getStyle}''',
                       ? Colors.grey
                       : date.toString().substring(0, 10) ==
                               DateTime.now().toString().substring(0, 10)
-                          ? Colors.tealAccent
+                          ? Colors.green
                           : Colors.blue[400],
                 ),
                 showDays: true,

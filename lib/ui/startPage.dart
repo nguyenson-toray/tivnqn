@@ -6,8 +6,8 @@ import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/chartPlanning.dart';
 import 'package:tivnqn/ui/chartPlanningImage.dart';
-import 'package:tivnqn/ui/chartPlanningUI.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboard.dart';
 
@@ -84,7 +84,8 @@ class _StartPageState extends State<StartPage> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.70';
+        g.ip = '192.168.1.68';
+        g.appSetting.setEnableChartPlanningUI = 1;
         // g.enableMoney = true;
       });
     }
@@ -142,7 +143,7 @@ class _StartPageState extends State<StartPage> {
           builder: (context) => !g.isTVPlanning
               ? Dashboard()
               : g.appSetting.getEnableChartPlanningUI != 0
-                  ? ChartPlanningUI()
+                  ? ChartPlanning()
                   : ChartPlanningImage()),
     );
   }
