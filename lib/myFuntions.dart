@@ -183,34 +183,34 @@ class MyFuntions {
 
     switch (line) {
       case 1:
-        result = Color.fromARGB(255, 197, 223, 226);
+        result = Color.fromARGB(99, 157, 242, 242);
         break;
       case 2:
-        result = Color.fromARGB(255, 235, 245, 175);
+        result = Color.fromARGB(97, 160, 184, 251);
         break;
       case 3:
-        result = Color.fromARGB(255, 239, 192, 208);
+        result = Color.fromARGB(100, 120, 192, 208);
         break;
       case 4:
-        result = Color.fromARGB(255, 187, 240, 189);
+        result = Color.fromARGB(98, 243, 210, 240);
         break;
       case 5:
-        result = Color.fromARGB(255, 167, 213, 250);
+        result = Color.fromARGB(100, 167, 213, 250);
         break;
       case 6:
-        result = Color.fromARGB(255, 159, 197, 218);
+        result = Color.fromARGB(99, 234, 244, 174);
         break;
       case 7:
-        result = Color.fromARGB(255, 196, 243, 220);
+        result = Color.fromARGB(99, 247, 182, 196);
         break;
       case 8:
-        result = Color.fromARGB(255, 175, 248, 240);
+        result = Color.fromARGB(99, 83, 176, 185);
         break;
       case 9:
-        result = Color.fromARGB(255, 241, 191, 173);
+        result = Color.fromARGB(98, 111, 228, 249);
         break;
       default:
-        result = Color.fromARGB(255, 208, 222, 247);
+        result = Color.fromARGB(98, 125, 220, 247);
     }
     return result;
   }
@@ -359,7 +359,7 @@ class MyFuntions {
     return ((dayOfYear - date.weekday + 10) / 7).floor();
   }
 
-  static Color gerRandomColor() {
+  static Color getRandomColor() {
     Random random = Random();
     Color color = Color.fromARGB(
         random.nextInt(50) + 100,

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:intl/intl.dart';
 import 'package:marquee/marquee.dart';
+import 'package:quiver/collection.dart';
 import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
@@ -30,6 +32,35 @@ class _ChartPlanningState extends State<ChartPlanning> {
   double currentOffset = 0;
   @override
   void initState() {
+    initData();
+    currentOffset =
+        (DateTime.now().difference(DateTime.parse('2023-07-01')).inDays - 10) *
+            cellW;
+    Timer(const Duration(milliseconds: 100), () async {
+      scrollController.initialScrollOffset;
+      scrollController.jumpTo(currentOffset);
+    });
+    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
+        (timer) async {
+      if (mounted) {
+        g.sqlProductionDB.getPlanning().then((value) => {
+              // if (!listsEqual(g.sqlPlanning, value))
+              {
+                setState(() {
+                  g.sqlPlanning = value;
+                  initData();
+                })
+              }
+            });
+
+        if (DateTime.now().hour >= 17) exit(0);
+      }
+    });
+    // TODO: implement initState
+    super.initState();
+  }
+
+  void initData() {
     List<DateTime> dates = [];
     g.sqlPlanning.forEach((element) {
       dates.add(element.getEndDate);
@@ -38,15 +69,6 @@ class _ChartPlanningState extends State<ChartPlanning> {
     // endChartDate = dates.last;
     endChartDate = DateTime.parse('2024-04-31');
     dayCount = endChartDate.difference(DateTime.parse('2023-07-01')).inDays;
-    currentOffset =
-        (DateTime.now().difference(DateTime.parse('2023-07-01')).inDays - 10) *
-            cellW;
-    Timer(const Duration(milliseconds: 100), () async {
-      scrollController.initialScrollOffset;
-      scrollController.jumpTo(currentOffset);
-    });
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -167,7 +189,7 @@ E''',
                         ),
                       ),
                       Container(
-                        height: cellHeaderH,
+                        height: cellHeaderH * 2,
                         alignment: Alignment.bottomCenter,
                         child: Text(
                           'Use the LEFT - RIGHT arrow buttons on the remote control to scroll',
@@ -209,7 +231,7 @@ E''',
                           decoration: BoxDecoration(
                               border: Border.all(
                                   color: Colors.blueGrey, width: 0.1),
-                              color: Colors.teal[100]),
+                              color: Colors.lightBlue),
                           width: cellW *
                               MyFuntions.findLastDateOfTheMonth(date).day,
                           height: cellHeaderH,
@@ -237,8 +259,9 @@ E''',
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.blueGrey, width: 0.1),
-                      color:
-                          date.weekday == 7 ? Colors.white : Colors.teal[50]),
+                      color: date.weekday == 7
+                          ? Colors.white
+                          : Colors.lightBlue[200]),
                   width: cellW,
                   height: cellHeaderH,
                   // color: Colors.lightBlueAccent,
@@ -271,7 +294,6 @@ E''',
     if (lineEvents.length > 0) {
       lineEvent = lineEvents.first;
     }
-    print('lineEvent : $lineEvent');
     return Container(
         height: cellEventH,
         width: cellW * dayCount,
@@ -300,7 +322,7 @@ E''',
                       padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black, width: 0.1),
-                          color: Colors.transparent),
+                          color: Colors.white),
                       width: cellW * dayEventCount,
                       child: drawEvent(lineEvent))
                   : Container(
@@ -320,9 +342,6 @@ E''',
     String contentStr =
         'Style: ${event.getStyle} ${event.getDesc != '' ? ' - Description: ${event.getDesc}' : ''} - ${event.getQuantity}Pcs ${event.getComment != '' ? ' - Note: ${event.getComment}' : ''}';
     Widget content = Container();
-    if (event.getLine == 8) {
-      print('content : ${contentStr.length} w: $width');
-    }
     if (width / contentStr.length < 3.8) {
       content = Marquee(
           blankSpace: 20,
@@ -344,10 +363,11 @@ E''',
     return ClipPath(
       clipper: ArrowClipper(cellEventH, cellEventH - 6, Edge.RIGHT),
       child: Container(
-        padding: EdgeInsets.fromLTRB(1, 1, cellW, 0),
+        padding: EdgeInsets.fromLTRB(2, 2, cellW, 0),
         width: width,
         height: cellEventH,
-        color: MyFuntions.gerRandomColor(),
+        // color: MyFuntions.getRandomColor(),
+        color: MyFuntions.getColorByLine(event.getLine),
         child: Center(child: content),
       ),
     );
