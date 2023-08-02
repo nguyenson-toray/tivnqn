@@ -89,9 +89,7 @@ class _StartPageState extends State<StartPage> {
         // g.enableMoney = true;
       });
     }
-
-    print(
-        'g.ip : ${g.ip}      getIpTvPlanning: [${g.appSetting.getIpTvPlanning}]');
+    print('g.ip : ${g.ip} ');
     if (g.ip == g.appSetting.getIpTvPlanning) {
       g.isTVPlanning = true;
       if (g.appSetting.getEnableChartPlanningUI != 0) {

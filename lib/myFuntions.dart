@@ -362,10 +362,10 @@ class MyFuntions {
   static Color gerRandomColor() {
     Random random = Random();
     Color color = Color.fromARGB(
-        random.nextInt(100) + 50,
-        random.nextInt(100) + 80,
-        random.nextInt(100) + 100,
-        random.nextInt(100) + 100);
+        random.nextInt(50) + 100,
+        random.nextInt(50) + 150,
+        random.nextInt(50) + 150,
+        random.nextInt(50) + 150);
     return color;
   }
 }

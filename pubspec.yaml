@@ -58,7 +58,8 @@ dependencies:
   ndialog: ^4.3.0  
   gantt_chart: ^0.3.0
   square_percent_indicater: ^0.1.0
-  easy_pdf_viewer: ^1.0.7
+  easy_pdf_viewer: ^1.0.7 
+  flutter_custom_clippers: ^2.1.0
   # flutter pub run change_app_package_name:main com.new.package.name
 
   # flutter pub get

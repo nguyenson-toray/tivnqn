@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:intl/intl.dart';
+import 'package:marquee/marquee.dart';
 import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
@@ -22,7 +24,7 @@ class _ChartPlanningState extends State<ChartPlanning> {
   // int firstWeekNumber = MyFuntions.findWeekNumber(DateTime.parse('2023-07-01'));
   // int lastWeekNumber = MyFuntions.findWeekNumber(DateTime.parse('2023-12-31'));
   int dayCount = 0;
-  double cellW = 20;
+  double cellW = 16;
   double cellHeaderH = 20;
   double cellEventH = 46;
   double currentOffset = 0;
@@ -55,6 +57,10 @@ class _ChartPlanningState extends State<ChartPlanning> {
         backgroundColor: Colors.lightBlue,
         elevation: 6.0,
         centerTitle: true,
+        leadingWidth: 95,
+        leading: Image.asset(
+          'assets/logo_white.png',
+        ),
         title: const Text(
           'PRODUCTION PLANNING',
           style: TextStyle(
@@ -70,13 +76,13 @@ class _ChartPlanningState extends State<ChartPlanning> {
               if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
                 if (scrollController.offset <
                     scrollController.position.maxScrollExtent) {
-                  scrollController.jumpTo(scrollController.offset + 400);
+                  scrollController.jumpTo(scrollController.offset + 300);
                 }
               }
               if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
                 if (scrollController.offset <
                     scrollController.position.maxScrollExtent) {
-                  scrollController.jumpTo(scrollController.offset - 400);
+                  scrollController.jumpTo(scrollController.offset - 300);
                 }
               }
             },
@@ -109,13 +115,13 @@ E''',
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: Colors.blueGrey, width: 0.5),
+                                    color: Colors.blueGrey, width: 0.1),
                                 color: Colors.white),
                             height: cellEventH,
                             child: Text(
                               '${index + 1}',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 30),
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
                           );
                         },
@@ -166,11 +172,11 @@ E''',
                         child: Text(
                           'Use the LEFT - RIGHT arrow buttons on the remote control to scroll',
                           style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.blueAccent,
-                              fontWeight: FontWeight.bold),
+                              fontSize: 10,
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -183,6 +189,7 @@ E''',
   Widget header() {
     return Container(
       height: cellHeaderH * 2,
+      width: dayCount * cellW,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -201,7 +208,7 @@ E''',
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                               border: Border.all(
-                                  color: Colors.blueGrey, width: 0.5),
+                                  color: Colors.blueGrey, width: 0.1),
                               color: Colors.teal[100]),
                           width: cellW *
                               MyFuntions.findLastDateOfTheMonth(date).day,
@@ -229,11 +236,11 @@ E''',
                 return Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey, width: 0.5),
+                      border: Border.all(color: Colors.blueGrey, width: 0.1),
                       color:
-                          date.weekday == 7 ? Colors.grey[200] : Colors.white),
-                  width: cellHeaderH,
-                  height: cellW,
+                          date.weekday == 7 ? Colors.white : Colors.teal[50]),
+                  width: cellW,
+                  height: cellHeaderH,
                   // color: Colors.lightBlueAccent,
                   child: Text(
                     '${date.day}',
@@ -250,14 +257,22 @@ E''',
 
   Widget event(int line) {
     int eventIndex = 0;
-
+    Planning lineEvent = Planning(
+        line: line,
+        style: '',
+        desc: '',
+        quantity: 0,
+        beginDate: DateTime.parse('2023-01-01'),
+        endDate: DateTime.parse('2023-01-01'),
+        comment: '');
     List<Planning> lineEvents = [];
     lineEvents =
         g.sqlPlanning.where((element) => element.getLine == line).toList();
-    Planning lineEvent = lineEvents.first;
+    if (lineEvents.length > 0) {
+      lineEvent = lineEvents.first;
+    }
     print('lineEvent : $lineEvent');
     return Container(
-        // color: Colors.redAccent,
         height: cellEventH,
         width: cellW * dayCount,
         child: ListView.builder(
@@ -280,28 +295,61 @@ E''',
               bool inEvent = date.isAfter(
                       lineEvent.getBeginDate.subtract(Duration(days: 1))) &&
                   date.isBefore(lineEvent.getEndDate.add(Duration(days: 1)));
-              // print(
-              //     'date: $date  index : $index   inEvent:$inEvent  isFirstDateEvent: $isFirstDateEvent   dayEventCount : $dayEventCount');
               return inEvent && isFirstDateEvent
                   ? Container(
-                      alignment: Alignment.center,
+                      padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
                       decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.blueGrey, width: 0.5),
-                          color: MyFuntions.gerRandomColor()),
+                          border: Border.all(color: Colors.black, width: 0.1),
+                          color: Colors.transparent),
                       width: cellW * dayEventCount,
-                      height: cellEventH,
-                      child: Text(
-                          textAlign: TextAlign.center,
-                          'Style: ${lineEvent.getStyle}     Qty: ${lineEvent.getQuantity}Pcs     Desc: ${lineEvent.getComment}'))
+                      child: drawEvent(lineEvent))
                   : Container(
                       width: inEvent ? 0 : cellW,
                       height: cellEventH,
                       decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.blueGrey, width: 0.5),
+                          border: Border.all(color: Colors.black, width: 0.1),
                           color: Colors.transparent),
                     );
             }));
+  }
+
+  Widget drawEvent(Planning event) {
+    DateTime beginDate = event.getBeginDate;
+    DateTime endDate = event.getEndDate;
+    double width = (endDate.difference(beginDate).inDays + 1) * cellW;
+    String contentStr =
+        'Style: ${event.getStyle} ${event.getDesc != '' ? ' - Description: ${event.getDesc}' : ''} - ${event.getQuantity}Pcs ${event.getComment != '' ? ' - Note: ${event.getComment}' : ''}';
+    Widget content = Container();
+    if (event.getLine == 8) {
+      print('content : ${contentStr.length} w: $width');
+    }
+    if (width / contentStr.length < 3.8) {
+      content = Marquee(
+          blankSpace: 20,
+          velocity: 30.0,
+          scrollAxis: Axis.horizontal,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          style: const TextStyle(
+              // fontSize: 13,
+              fontWeight: FontWeight.normal,
+              color: Colors.black),
+          text: contentStr);
+    } else {
+      content = Text(contentStr,
+          style: const TextStyle(
+              // fontSize: 13,
+              fontWeight: FontWeight.normal,
+              color: Colors.black));
+    }
+    return ClipPath(
+      clipper: ArrowClipper(cellEventH, cellEventH - 6, Edge.RIGHT),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(1, 1, cellW, 0),
+        width: width,
+        height: cellEventH,
+        color: MyFuntions.gerRandomColor(),
+        child: Center(child: content),
+      ),
+    );
   }
 }
