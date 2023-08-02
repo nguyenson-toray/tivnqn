@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:intl/intl.dart';
 import 'package:marquee/marquee.dart';
-import 'package:quiver/collection.dart';
 import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
@@ -19,23 +18,21 @@ class ChartPlanning extends StatefulWidget {
 }
 
 class _ChartPlanningState extends State<ChartPlanning> {
-  // DateTime startChartDate = DateTime.now().subtract(Duration(days: 10));
   final scrollController = ScrollController();
   DateTime startChartDate = DateTime.parse('2023-07-01');
   DateTime endChartDate = DateTime.parse('2023-12-31');
-  // int firstWeekNumber = MyFuntions.findWeekNumber(DateTime.parse('2023-07-01'));
-  // int lastWeekNumber = MyFuntions.findWeekNumber(DateTime.parse('2023-12-31'));
   int dayCount = 0;
+  double offsetW = 8;
   double cellW = 16;
   double cellHeaderH = 20;
   double cellEventH = 46;
   double currentOffset = 0;
+  double maxScrollOffset = 0;
   @override
   void initState() {
     initData();
     currentOffset =
-        (DateTime.now().difference(DateTime.parse('2023-07-01')).inDays - 10) *
-            cellW;
+        (DateTime.now().difference(startChartDate).inDays) * offsetW;
     Timer(const Duration(milliseconds: 100), () async {
       scrollController.initialScrollOffset;
       scrollController.jumpTo(currentOffset);
@@ -44,13 +41,10 @@ class _ChartPlanningState extends State<ChartPlanning> {
         (timer) async {
       if (mounted) {
         g.sqlProductionDB.getPlanning().then((value) => {
-              // if (!listsEqual(g.sqlPlanning, value))
-              {
-                setState(() {
-                  g.sqlPlanning = value;
-                  initData();
-                })
-              }
+              setState(() {
+                g.sqlPlanning = value;
+                initData();
+              })
             });
 
         if (DateTime.now().hour >= 17) exit(0);
@@ -61,14 +55,18 @@ class _ChartPlanningState extends State<ChartPlanning> {
   }
 
   void initData() {
-    List<DateTime> dates = [];
+    List<DateTime> endDates = [];
+    List<DateTime> startDates = [];
     g.sqlPlanning.forEach((element) {
-      dates.add(element.getEndDate);
+      endDates.add(element.getEndDate);
+      startDates.add(element.getBeginDate);
     });
-    dates.sort((a, b) => a.difference(b).inDays);
-    // endChartDate = dates.last;
-    endChartDate = DateTime.parse('2024-04-31');
-    dayCount = endChartDate.difference(DateTime.parse('2023-07-01')).inDays;
+    startDates.sort((a, b) => b.difference(b).inDays);
+    endDates.sort((a, b) => a.difference(b).inDays);
+    startChartDate = MyFuntions.findFirstDateOfTheMonth(startDates.first);
+    endChartDate = MyFuntions.findLastDateOfTheMonth(endDates.last);
+    dayCount = endChartDate.difference(startChartDate).inDays + 1;
+    maxScrollOffset = dayCount * offsetW;
   }
 
   @override
@@ -96,17 +94,18 @@ class _ChartPlanningState extends State<ChartPlanning> {
             autofocus: true,
             onKey: (event) {
               if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
-                if (scrollController.offset <
-                    scrollController.position.maxScrollExtent) {
-                  scrollController.jumpTo(scrollController.offset + 300);
+                scrollController.jumpTo(scrollController.offset + 350);
+                if (scrollController.offset >= maxScrollOffset) {
+                  scrollController.jumpTo(maxScrollOffset);
                 }
               }
               if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
-                if (scrollController.offset <
-                    scrollController.position.maxScrollExtent) {
-                  scrollController.jumpTo(scrollController.offset - 300);
+                scrollController.jumpTo(scrollController.offset - 350);
+                if (scrollController.offset < 0) {
+                  scrollController.jumpTo(0);
                 }
               }
+              print('scrollController.offset: ${scrollController.offset}');
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -192,7 +191,7 @@ E''',
                         height: cellHeaderH * 2,
                         alignment: Alignment.bottomCenter,
                         child: Text(
-                          'Use the LEFT - RIGHT arrow buttons on the remote control to scroll',
+                          'Use the LEFT - RIGHT arrow buttons on the remote to scroll.',
                           style: TextStyle(
                               fontSize: 10,
                               color: Colors.black,
@@ -254,20 +253,27 @@ E''',
               itemCount: dayCount,
               itemBuilder: (context, index) {
                 DateTime date = startChartDate.add(Duration(days: index));
-
+                bool isToday = date.toString().substring(0, 10) ==
+                    DateTime.now().toString().substring(0, 10);
                 return Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.blueGrey, width: 0.1),
                       color: date.weekday == 7
                           ? Colors.white
-                          : Colors.lightBlue[200]),
+                          : isToday
+                              ? Colors.lightBlue
+                              : Colors.lightBlue[200]),
                   width: cellW,
                   height: cellHeaderH,
                   // color: Colors.lightBlueAccent,
                   child: Text(
                     '${date.day}',
-                    style: TextStyle(fontSize: 10),
+                    style: TextStyle(
+                        fontSize: isToday ? 14 : 10,
+                        color: isToday ? Colors.amber : Colors.black,
+                        fontWeight:
+                            isToday ? FontWeight.bold : FontWeight.normal),
                   ),
                 );
               },
@@ -349,19 +355,17 @@ E''',
           scrollAxis: Axis.horizontal,
           crossAxisAlignment: CrossAxisAlignment.center,
           style: const TextStyle(
-              // fontSize: 13,
-              fontWeight: FontWeight.normal,
-              color: Colors.black),
+              fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
           text: contentStr);
     } else {
       content = Text(contentStr,
           style: const TextStyle(
-              // fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.normal,
               color: Colors.black));
     }
     return ClipPath(
-      clipper: ArrowClipper(cellEventH, cellEventH - 6, Edge.RIGHT),
+      clipper: ArrowClipper(cellEventH, cellEventH - 7, Edge.RIGHT),
       child: Container(
         padding: EdgeInsets.fromLTRB(2, 2, cellW, 0),
         width: width,

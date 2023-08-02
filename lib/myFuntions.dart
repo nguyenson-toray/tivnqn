@@ -179,38 +179,37 @@ class MyFuntions {
   }
 
   static Color getColorByLine(int line) {
-    Color result = Colors.yellow;
-
+    Color result = Colors.blueAccent;
     switch (line) {
       case 1:
-        result = Color.fromARGB(99, 157, 242, 242);
+        result = Color.fromARGB(50, 100, 150, 150);
         break;
       case 2:
-        result = Color.fromARGB(97, 160, 184, 251);
+        result = Color.fromARGB(80, 100, 150, 150);
         break;
       case 3:
-        result = Color.fromARGB(100, 120, 192, 208);
+        result = Color.fromARGB(120, 100, 150, 150);
         break;
       case 4:
-        result = Color.fromARGB(98, 243, 210, 240);
+        result = Color.fromARGB(50, 120, 200, 250);
         break;
       case 5:
-        result = Color.fromARGB(100, 167, 213, 250);
+        result = Color.fromARGB(80, 120, 200, 250);
         break;
       case 6:
-        result = Color.fromARGB(99, 234, 244, 174);
+        result = Color.fromARGB(120, 120, 200, 250);
         break;
       case 7:
-        result = Color.fromARGB(99, 247, 182, 196);
+        result = Color.fromARGB(50, 130, 240, 140);
         break;
       case 8:
-        result = Color.fromARGB(99, 83, 176, 185);
+        result = Color.fromARGB(80, 130, 240, 140);
         break;
       case 9:
-        result = Color.fromARGB(98, 111, 228, 249);
+        result = Color.fromARGB(120, 130, 240, 140);
         break;
       default:
-        result = Color.fromARGB(98, 125, 220, 247);
+        result = Colors.blue;
     }
     return result;
   }
