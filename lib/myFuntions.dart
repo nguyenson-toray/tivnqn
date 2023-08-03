@@ -200,13 +200,13 @@ class MyFuntions {
         result = Color.fromARGB(120, 120, 200, 250);
         break;
       case 7:
-        result = Color.fromARGB(50, 130, 240, 140);
+        result = Color.fromARGB(49, 160, 200, 250);
         break;
       case 8:
-        result = Color.fromARGB(80, 130, 240, 140);
+        result = Color.fromARGB(100, 160, 200, 250);
         break;
       case 9:
-        result = Color.fromARGB(120, 130, 240, 140);
+        result = Color.fromARGB(150, 160, 200, 250);
         break;
       default:
         result = Colors.blue;

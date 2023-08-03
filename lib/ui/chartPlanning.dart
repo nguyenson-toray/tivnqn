@@ -20,12 +20,12 @@ class ChartPlanning extends StatefulWidget {
 class _ChartPlanningState extends State<ChartPlanning> {
   final scrollController = ScrollController();
   DateTime startChartDate = DateTime.parse('2023-07-01');
-  DateTime endChartDate = DateTime.parse('2023-12-31');
+  DateTime endChartDate = DateTime.parse('2024-05-31');
   int dayCount = 0;
   double offsetW = 8;
-  double cellW = 16;
+  double cellW = 13;
   double cellHeaderH = 20;
-  double cellEventH = 46;
+  double cellEventH = 50;
   double currentOffset = 0;
   double maxScrollOffset = 0;
   @override
@@ -64,7 +64,8 @@ class _ChartPlanningState extends State<ChartPlanning> {
     startDates.sort((a, b) => b.difference(b).inDays);
     endDates.sort((a, b) => a.difference(b).inDays);
     startChartDate = MyFuntions.findFirstDateOfTheMonth(startDates.first);
-    endChartDate = MyFuntions.findLastDateOfTheMonth(endDates.last);
+    endChartDate = MyFuntions.findLastDateOfTheMonth(endDates.last)
+        .add(Duration(days: 90));
     dayCount = endChartDate.difference(startChartDate).inDays + 1;
     maxScrollOffset = dayCount * offsetW;
   }
@@ -94,18 +95,17 @@ class _ChartPlanningState extends State<ChartPlanning> {
             autofocus: true,
             onKey: (event) {
               if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
-                scrollController.jumpTo(scrollController.offset + 350);
+                scrollController.jumpTo(scrollController.offset + cellW * 20);
                 if (scrollController.offset >= maxScrollOffset) {
                   scrollController.jumpTo(maxScrollOffset);
                 }
               }
               if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
-                scrollController.jumpTo(scrollController.offset - 350);
+                scrollController.jumpTo(scrollController.offset - cellW * 20);
                 if (scrollController.offset < 0) {
                   scrollController.jumpTo(0);
                 }
               }
-              print('scrollController.offset: ${scrollController.offset}');
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -126,7 +126,7 @@ E''',
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                      height: cellHeaderH * 2 + cellEventH * 9,
+                      height: cellEventH * 9,
                       width: 25,
                       child: ListView.builder(
                         scrollDirection: Axis.vertical,
@@ -188,12 +188,11 @@ E''',
                         ),
                       ),
                       Container(
-                        height: cellHeaderH * 2,
                         alignment: Alignment.bottomCenter,
                         child: Text(
                           'Use the LEFT - RIGHT arrow buttons on the remote to scroll.',
                           style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 8,
                               color: Colors.black,
                               fontWeight: FontWeight.normal),
                         ),
@@ -230,14 +229,14 @@ E''',
                           decoration: BoxDecoration(
                               border: Border.all(
                                   color: Colors.blueGrey, width: 0.1),
-                              color: Colors.lightBlue),
+                              color: const Color.fromARGB(255, 86, 195, 245)),
                           width: cellW *
                               MyFuntions.findLastDateOfTheMonth(date).day,
                           height: cellHeaderH,
                           child: Text(
                             '$header',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -258,22 +257,20 @@ E''',
                 return Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueGrey, width: 0.1),
+                      border: Border.all(
+                          color: isToday ? Colors.amber : Colors.blueGrey,
+                          width: isToday ? 1.5 : 0.1),
                       color: date.weekday == 7
                           ? Colors.white
-                          : isToday
-                              ? Colors.lightBlue
-                              : Colors.lightBlue[200]),
+                          : Colors.lightBlue[100]),
                   width: cellW,
                   height: cellHeaderH,
-                  // color: Colors.lightBlueAccent,
                   child: Text(
                     '${date.day}',
                     style: TextStyle(
-                        fontSize: isToday ? 14 : 10,
-                        color: isToday ? Colors.amber : Colors.black,
-                        fontWeight:
-                            isToday ? FontWeight.bold : FontWeight.normal),
+                        fontSize: 10,
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal),
                   ),
                 );
               },
@@ -346,7 +343,7 @@ E''',
     DateTime endDate = event.getEndDate;
     double width = (endDate.difference(beginDate).inDays + 1) * cellW;
     String contentStr =
-        'Style: ${event.getStyle} ${event.getDesc != '' ? ' - Description: ${event.getDesc}' : ''} - ${event.getQuantity}Pcs ${event.getComment != '' ? ' - Note: ${event.getComment}' : ''}';
+        'Style: ${event.getStyle} ${event.getDesc != '' ? '-  ${event.getDesc}' : ''} - ${event.getQuantity}Pcs ${event.getComment != '' ? ' - Note: ${event.getComment}' : ''}';
     Widget content = Container();
     if (width / contentStr.length < 3.8) {
       content = Marquee(
@@ -355,12 +352,12 @@ E''',
           scrollAxis: Axis.horizontal,
           crossAxisAlignment: CrossAxisAlignment.center,
           style: const TextStyle(
-              fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
+              fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
           text: contentStr);
     } else {
       content = Text(contentStr,
           style: const TextStyle(
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.normal,
               color: Colors.black));
     }
