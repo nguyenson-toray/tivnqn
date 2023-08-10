@@ -179,34 +179,38 @@ class MyFuntions {
   }
 
   static Color getColorByLine(int line) {
+    // if (line % 2 == 0)
+    return Color.fromARGB(50, 100, 150, 150);
+    // else
+    //   return Color.fromARGB(80, 100, 150, 150);
     Color result = Colors.blueAccent;
     switch (line) {
       case 1:
         result = Color.fromARGB(50, 100, 150, 150);
         break;
       case 2:
-        result = Color.fromARGB(80, 100, 150, 150);
+        result = Color.fromARGB(70, 100, 150, 150);
         break;
       case 3:
-        result = Color.fromARGB(120, 100, 150, 150);
+        result = Color.fromARGB(90, 100, 150, 150);
         break;
       case 4:
         result = Color.fromARGB(50, 120, 200, 250);
         break;
       case 5:
-        result = Color.fromARGB(80, 120, 200, 250);
+        result = Color.fromARGB(70, 120, 200, 250);
         break;
       case 6:
-        result = Color.fromARGB(120, 120, 200, 250);
+        result = Color.fromARGB(90, 120, 200, 250);
         break;
       case 7:
-        result = Color.fromARGB(49, 160, 200, 250);
+        result = Color.fromARGB(50, 160, 200, 250);
         break;
       case 8:
-        result = Color.fromARGB(100, 160, 200, 250);
+        result = Color.fromARGB(70, 160, 200, 250);
         break;
       case 9:
-        result = Color.fromARGB(150, 160, 200, 250);
+        result = Color.fromARGB(90, 160, 200, 250);
         break;
       default:
         result = Colors.blue;
@@ -310,16 +314,18 @@ class MyFuntions {
     return result;
   }
 
-  static String getLinkImageNotification(String orgLink) {
+  static String getLinkImage(String orgLink) {
     // https: //drive.google.com/file/d/1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB/view?usp=drive_link
     // file ID : 1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
     // -> https://drive.google.com/uc?export=view&id=<FILE_ID>
     // https://drive.google.com/uc?export=view&id=1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
+
     String link = 'https://drive.google.com/uc?export=view&id=';
     try {
-      String fileId = orgLink.substring(32, 65);
+      String fileId = orgLink.substring(33, 66);
       link += fileId;
       print('org link : $orgLink');
+      print('fileId : $fileId');
       print('-> : $link');
       return link;
     } catch (e) {

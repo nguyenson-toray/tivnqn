@@ -20,9 +20,9 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
   @override
   void initState() {
     // TODO: implement initState
-    offset = g.screenWidth / 2;
+    offset = g.screenWidth / 4;
     Timer(const Duration(seconds: 6), () async {
-      scrollController.jumpTo(offset);
+      // scrollController.jumpTo(offset);
     });
   }
 
@@ -33,6 +33,19 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
           toolbarHeight: 24,
           backgroundColor: Colors.blue,
           elevation: 6.0,
+          leadingWidth: 95,
+          actions: [
+            Text(
+              g.todayString,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            )
+          ],
+          leading: Image.asset(
+            'assets/logo_white.png',
+          ),
           centerTitle: true,
           title: const Text(
             'PRODUCTION PLANNING',
@@ -80,8 +93,7 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
               child: Container(
                   child: Image.network(
                       height: g.screenHeight - 24,
-                      MyFuntions.getLinkImageNotification(
-                          g.appSetting.planningURL),
+                      MyFuntions.getLinkImage(g.appSetting.planningURL),
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {
@@ -111,17 +123,17 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
                   fit: BoxFit.fitHeight,
                   height: g.screenHeight - 24,
                   width: 28,
-                  MyFuntions.getLinkImageNotification(g.appSetting.planningURL),
+                  MyFuntions.getLinkImage(g.appSetting.planningURL),
                   errorBuilder: (context, error, stackTrace) =>
                       Text('Load failed !'))),
           Align(
               alignment: Alignment.bottomCenter,
               child: Text(
-                'Use the LEFT - RIGHT arrow buttons on the remote to scroll',
+                'Use the LEFT - RIGHT arrow buttons on the remote to scroll.',
                 style: TextStyle(
-                    fontSize: 9,
-                    color: Colors.blueAccent,
-                    fontWeight: FontWeight.bold),
+                    fontSize: 8,
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal),
               )),
         ]));
   }

@@ -87,6 +87,7 @@ class _StartPageState extends State<StartPage> {
         g.ip = '192.168.1.68';
         g.appSetting.setEnableChartPlanningUI = 1;
         // g.enableMoney = true;
+        //g.appSetting.setEnableETS = 0;
       });
     }
     print('g.ip : ${g.ip} ');

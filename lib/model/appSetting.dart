@@ -15,6 +15,25 @@ class AppSetting {
   String ipTvPlanning;
   String planningURL;
   int enableChartPlanningUI;
+  int enableETS;
+  AppSetting({
+    required this.lines,
+    required this.timeChangeLine,
+    required this.timeReload,
+    required this.rangeDays,
+    required this.showNotification,
+    required this.notificationURL,
+    required this.showBegin,
+    required this.showDuration,
+    required this.chartBegin,
+    required this.chartDuration,
+    required this.ipTvLine,
+    required this.enableMoney,
+    required this.ipTvPlanning,
+    required this.planningURL,
+    required this.enableChartPlanningUI,
+    required this.enableETS,
+  });
   get getLines => this.lines;
 
   set setLines(lines) => this.lines = lines;
@@ -77,26 +96,13 @@ class AppSetting {
 
   set setEnableChartPlanningUI(enableChartPlanningUI) =>
       this.enableChartPlanningUI = enableChartPlanningUI;
-  AppSetting({
-    required this.lines,
-    required this.timeChangeLine,
-    required this.timeReload,
-    required this.rangeDays,
-    required this.showNotification,
-    required this.notificationURL,
-    required this.showBegin,
-    required this.showDuration,
-    required this.chartBegin,
-    required this.chartDuration,
-    required this.ipTvLine,
-    required this.enableMoney,
-    required this.ipTvPlanning,
-    required this.planningURL,
-    required this.enableChartPlanningUI,
-  });
+
+  get getEnableETS => this.enableETS;
+
+  set setEnableETS(enableETS) => this.enableETS = enableETS;
 
   @override
   String toString() {
-    return 'AppSetting(lines: $lines, timeChangeLine: $timeChangeLine, timeReload: $timeReload, rangeDays: $rangeDays, showNotification: $showNotification, notificationURL: $notificationURL, showBegin: $showBegin, showDuration: $showDuration, chartBegin: $chartBegin, chartDuration: $chartDuration, ipTvLine: $ipTvLine, enableMoney: $enableMoney, ipTvPlanning: $ipTvPlanning, planningURL: $planningURL, enableChartPlanningUI: $enableChartPlanningUI)';
+    return 'AppSetting(lines: $lines, timeChangeLine: $timeChangeLine, timeReload: $timeReload, rangeDays: $rangeDays, showNotification: $showNotification, notificationURL: $notificationURL, showBegin: $showBegin, showDuration: $showDuration, chartBegin: $chartBegin, chartDuration: $chartDuration, ipTvLine: $ipTvLine, enableMoney: $enableMoney, ipTvPlanning: $ipTvPlanning, planningURL: $planningURL, enableChartPlanningUI: $enableChartPlanningUI, enableETS: $enableETS)';
   }
 }

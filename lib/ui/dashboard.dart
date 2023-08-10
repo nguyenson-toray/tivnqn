@@ -51,6 +51,11 @@ class _DashboardState extends State<Dashboard>
     } else {
       g.screenType = 2;
     }
+    if (g.appSetting.getEnableETS == 0) {
+      g.screenType = 1;
+    } else {
+      g.screenType = 2;
+    }
     Timer.periodic(Duration(minutes: g.appSetting.getTimeChangeLine), (timer) {
       if (g.autochangeLine) {
         setState(() {
@@ -129,16 +134,14 @@ class _DashboardState extends State<Dashboard>
     if (Loader.isShown) {
       return;
     } else {
-      print(
-          MyFuntions.getLinkImageNotification(g.appSetting.getNotificationURL));
+      print(MyFuntions.getLinkImage(g.appSetting.getNotificationURL));
       MyFuntions.playAudio();
       return Loader.show(context,
           overlayColor: Colors.white,
           progressIndicator: Scaffold(
             body: Center(
                 child: Image.network(
-              MyFuntions.getLinkImageNotification(
-                  g.appSetting.getNotificationURL),
+              MyFuntions.getLinkImage(g.appSetting.getNotificationURL),
               errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.warning,
                 size: 50,
@@ -201,12 +204,14 @@ class _DashboardState extends State<Dashboard>
                     }
                   });
                 },
-                child: Container(
-                    height: g.appBarH,
-                    width: g.appBarH,
-                    child: g.screenType == 1
-                        ? Image.asset('assets/ets.png')
-                        : Image.asset('assets/chart.png'))),
+                child: g.appSetting.getEnableETS != 0
+                    ? Container(
+                        height: g.appBarH,
+                        width: g.appBarH,
+                        child: g.screenType == 1
+                            ? Image.asset('assets/ets.png')
+                            : Image.asset('assets/chart.png'))
+                    : Container()),
           ],
         ),
         const SizedBox(

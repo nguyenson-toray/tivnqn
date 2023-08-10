@@ -23,11 +23,29 @@ class _ChartPlanningState extends State<ChartPlanning> {
   DateTime endChartDate = DateTime.parse('2024-05-31');
   int dayCount = 0;
   double offsetW = 8;
-  double cellW = 13;
+  double cellW = 8;
   double cellHeaderH = 20;
   double cellEventH = 50;
   double currentOffset = 0;
   double maxScrollOffset = 0;
+  bool isEmpty = false;
+  final GlobalKey keyOffsetToday = GlobalKey();
+  // Coordinates
+  double? todayX = 100, todayY;
+
+  // This function is called when the user presses the floating button
+  void _getOffset(GlobalKey key) {
+    RenderBox? box =
+        keyOffsetToday.currentContext?.findRenderObject() as RenderBox?;
+    Offset? position = box?.localToGlobal(Offset.zero);
+    if (position != null) {
+      setState(() {
+        todayX = position.dx;
+        todayY = position.dy;
+      });
+    }
+  }
+
   @override
   void initState() {
     initData();
@@ -36,6 +54,7 @@ class _ChartPlanningState extends State<ChartPlanning> {
     Timer(const Duration(milliseconds: 100), () async {
       scrollController.initialScrollOffset;
       scrollController.jumpTo(currentOffset);
+      _getOffset(keyOffsetToday);
     });
     Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
         (timer) async {
@@ -75,10 +94,17 @@ class _ChartPlanningState extends State<ChartPlanning> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 24,
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.blue,
         elevation: 6.0,
         centerTitle: true,
         leadingWidth: 95,
+        actions: [
+          Text(
+            g.todayString,
+            style: TextStyle(
+                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+          )
+        ],
         leading: Image.asset(
           'assets/logo_white.png',
         ),
@@ -164,25 +190,35 @@ E''',
                             SliverList(
                                 delegate:
                                     SliverChildBuilderDelegate((_, index) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                      height: cellHeaderH * 2,
-                                      width: dayCount * cellW,
-                                      child: header()),
-                                  event(1),
-                                  event(2),
-                                  event(3),
-                                  event(4),
-                                  event(5),
-                                  event(6),
-                                  event(7),
-                                  event(8),
-                                  event(9),
-                                ],
-                              );
+                              return Stack(children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        height: cellHeaderH * 2,
+                                        width: dayCount * cellW,
+                                        child: header()),
+                                    event(1),
+                                    event(2),
+                                    event(3),
+                                    event(4),
+                                    event(5),
+                                    event(6),
+                                    event(7),
+                                    event(8),
+                                    event(9),
+                                  ],
+                                ),
+                                Positioned(
+                                    left: todayX! - 25 + cellW / 3,
+                                    top: cellHeaderH * 2,
+                                    child: Container(
+                                      height: cellEventH * 9,
+                                      width: 2,
+                                      color: Colors.greenAccent,
+                                    ))
+                              ]);
                             }, childCount: dayCount)),
                           ],
                         ),
@@ -208,8 +244,8 @@ E''',
 
   Widget header() {
     return Container(
-      height: cellHeaderH * 2,
-      width: dayCount * cellW,
+      // height: cellHeaderH * 2,
+      // width: dayCount * cellW,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -254,25 +290,45 @@ E''',
                 DateTime date = startChartDate.add(Duration(days: index));
                 bool isToday = date.toString().substring(0, 10) ==
                     DateTime.now().toString().substring(0, 10);
-                return Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: isToday ? Colors.amber : Colors.blueGrey,
-                          width: isToday ? 1.5 : 0.1),
-                      color: date.weekday == 7
-                          ? Colors.white
-                          : Colors.lightBlue[100]),
-                  width: cellW,
-                  height: cellHeaderH,
-                  child: Text(
-                    '${date.day}',
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal),
-                  ),
-                );
+                return isToday
+                    ? Container(
+                        key: keyOffsetToday,
+                        alignment: Alignment.center,
+                        width: cellW,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: const Color.fromARGB(255, 18, 240, 29),
+                                width: 1.5),
+                            color: date.weekday == 7
+                                ? Colors.white
+                                : isToday
+                                    ? Colors.greenAccent
+                                    : Colors.lightBlue[100]),
+                        child: Text(
+                          '${date.day}',
+                          style: TextStyle(
+                              fontSize: 8,
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold),
+                        ))
+                    : Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border:
+                                Border.all(color: Colors.blueGrey, width: 0.1),
+                            color: date.weekday == 7
+                                ? Colors.white
+                                : Colors.lightBlue[100]),
+                        width: cellW,
+                        height: cellHeaderH,
+                        child: Text(
+                          '${date.day}',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal),
+                        ),
+                      );
               },
             ),
           ),
@@ -285,6 +341,7 @@ E''',
     int eventIndex = 0;
     Planning lineEvent = Planning(
         line: line,
+        brand: '',
         style: '',
         desc: '',
         quantity: 0,
@@ -294,6 +351,7 @@ E''',
     List<Planning> lineEvents = [];
     lineEvents =
         g.sqlPlanning.where((element) => element.getLine == line).toList();
+    lineEvents.sort((a, b) => a.getBeginDate.difference(b.getBeginDate).inDays);
     if (lineEvents.length > 0) {
       lineEvent = lineEvents.first;
     }
@@ -305,7 +363,8 @@ E''',
             itemCount: dayCount,
             itemBuilder: (context, index) {
               DateTime date = startChartDate.add(Duration(days: index));
-
+              bool isToday = date.toString().substring(0, 10) ==
+                  DateTime.now().toString().substring(0, 10);
               if (eventIndex < lineEvents.length - 1 &&
                   date.isAfter(lineEvent.getEndDate)) {
                 eventIndex++;
@@ -339,38 +398,55 @@ E''',
   }
 
   Widget drawEvent(Planning event) {
+    bool isEmpty = false;
     DateTime beginDate = event.getBeginDate;
     DateTime endDate = event.getEndDate;
     double width = (endDate.difference(beginDate).inDays + 1) * cellW;
-    String contentStr =
-        'Style: ${event.getStyle} ${event.getDesc != '' ? '-  ${event.getDesc}' : ''} - ${event.getQuantity}Pcs ${event.getComment != '' ? ' - Note: ${event.getComment}' : ''}';
+    isEmpty = event.getStyle == '';
+    String contentStr = isEmpty
+        ? event.getComment
+        : '${event.getBrand} - ${event.getStyle} ${event.getDesc != '' ? '-  ${event.getDesc}' : ''} - ${event.getQuantity}Pcs ${event.getComment != '' ? ' - Note: ${event.getComment}' : ''}';
     Widget content = Container();
-    if (width / contentStr.length < 3.8) {
-      content = Marquee(
-          blankSpace: 20,
-          velocity: 30.0,
-          scrollAxis: Axis.horizontal,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          style: const TextStyle(
-              fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
-          text: contentStr);
-    } else {
+    if (width / contentStr.length > 4) {
       content = Text(contentStr,
           style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.normal,
               color: Colors.black));
+    } else if (width / contentStr.length > 3.0) {
+      content = Text(contentStr,
+          style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.normal,
+              color: Colors.black));
+    } else {
+      content = Marquee(
+          blankSpace: 20,
+          velocity: 20.0,
+          scrollAxis: Axis.horizontal,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          style: const TextStyle(
+              fontSize: 13, fontWeight: FontWeight.normal, color: Colors.black),
+          text: contentStr);
     }
-    return ClipPath(
-      clipper: ArrowClipper(cellEventH, cellEventH - 7, Edge.RIGHT),
-      child: Container(
-        padding: EdgeInsets.fromLTRB(2, 2, cellW, 0),
-        width: width,
-        height: cellEventH,
-        // color: MyFuntions.getRandomColor(),
-        color: MyFuntions.getColorByLine(event.getLine),
-        child: Center(child: content),
-      ),
-    );
+    return isEmpty
+        ? Container(
+            decoration: BoxDecoration(
+                color: Colors.amber[100],
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            alignment: Alignment.center,
+            child: Text(contentStr),
+          )
+        : ClipPath(
+            clipper: ArrowClipper(cellEventH, cellEventH - 7, Edge.RIGHT),
+            child: Container(
+              padding: EdgeInsets.fromLTRB(2, 2, cellW, 0),
+              width: width,
+              height: cellEventH,
+              // color: MyFuntions.getRandomColor(),
+              color: MyFuntions.getColorByLine(event.getLine),
+              child: Center(child: content),
+            ),
+          );
   }
 }

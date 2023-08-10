@@ -64,7 +64,7 @@ class SqlETSDB {
 
   Future<AppSetting> getAppSetting() async {
     String query =
-        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney, planningURL, ipTvPlanning, enableChartPlanningUI
+        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney, planningURL, ipTvPlanning, enableChartPlanningUI, enableETS
 FROM A_AppSetting''';
     AppSetting result = AppSetting(
         lines: '1',
@@ -81,7 +81,8 @@ FROM A_AppSetting''';
         enableMoney: 0,
         planningURL: '',
         ipTvPlanning: '',
-        enableChartPlanningUI: 0);
+        enableChartPlanningUI: 0,
+        enableETS: 0);
     var tempResult = [];
     var element;
     try {
@@ -107,7 +108,8 @@ FROM A_AppSetting''';
                     enableMoney: element['enableMoney'],
                     planningURL: element['planningURL'].trim(),
                     ipTvPlanning: element['ipTvPlanning'].trim(),
-                    enableChartPlanningUI: element['enableChartPlanningUI'])
+                    enableChartPlanningUI: element['enableChartPlanningUI'],
+                    enableETS: element['enableETS'])
               }
           });
       print('getAppSetting => $result ');
