@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
-import 'package:tivnqn/ui/chartPlanningUI.dart';
 
 class ChartPlanningImage extends StatefulWidget {
   const ChartPlanningImage({super.key});
@@ -17,13 +17,28 @@ class ChartPlanningImage extends StatefulWidget {
 class _ChartPlanningImageState extends State<ChartPlanningImage> {
   final scrollController = ScrollController();
   double offset = 0.0;
+  String linkImg = '';
   @override
   void initState() {
     // TODO: implement initState
-    offset = g.screenWidth / 4;
-    Timer(const Duration(seconds: 6), () async {
-      // scrollController.jumpTo(offset);
+    linkImg = MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
+    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
+        (timer) async {
+      if (mounted) {
+        g.sqlETSDB.getAppSetting().then((value) => {
+              g.appSetting = value,
+              if (linkImg !=
+                  MyFuntions.getLinkImage(g.appSetting.getPlanningURL))
+                setState(() {
+                  linkImg =
+                      MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
+                })
+            });
+
+        if (DateTime.now().hour >= 17) exit(0);
+      }
     });
+    super.initState();
   }
 
   @override
@@ -93,7 +108,7 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
               child: Container(
                   child: Image.network(
                       height: g.screenHeight - 24,
-                      MyFuntions.getLinkImage(g.appSetting.planningURL),
+                      linkImg,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {
@@ -123,7 +138,7 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
                   fit: BoxFit.fitHeight,
                   height: g.screenHeight - 24,
                   width: 28,
-                  MyFuntions.getLinkImage(g.appSetting.planningURL),
+                  linkImg,
                   errorBuilder: (context, error, stackTrace) =>
                       Text('Load failed !'))),
           Align(

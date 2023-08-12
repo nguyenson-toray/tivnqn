@@ -315,14 +315,19 @@ class MyFuntions {
   }
 
   static String getLinkImage(String orgLink) {
-    // https: //drive.google.com/file/d/1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB/view?usp=drive_link
+    // https://drive.google.com/file/d/1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB/view?usp=drive_link
     // file ID : 1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
     // -> https://drive.google.com/uc?export=view&id=<FILE_ID>
     // https://drive.google.com/uc?export=view&id=1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
 
     String link = 'https://drive.google.com/uc?export=view&id=';
     try {
-      String fileId = orgLink.substring(33, 66);
+      // String fileId = orgLink.substring(32, 65);
+      String fileId = orgLink
+          .split('https://drive.google.com/file/d/')[1]
+          .toString()
+          .split('/view?usp=drive_link')[0]
+          .toString();
       link += fileId;
       print('org link : $orgLink');
       print('fileId : $fileId');
