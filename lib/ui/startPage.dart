@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartPlanning.dart';
@@ -73,10 +74,16 @@ class _StartPageState extends State<StartPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset('assets/error.png'),
-              Text('LỖI KẾT NỐI ĐẾN MÁY CHỦ !')
+              Text('''LỖI KẾT NỐI ĐẾN MÁY CHỦ !
+Ứng dụng sẽ khởi động lại sau 10s''')
             ],
           ));
-
+      Future.delayed(const Duration(seconds: 10), () {
+        setState(() {
+          Loader.hide();
+          Restart.restartApp();
+        });
+      });
       return;
     }
     await g.sqlETSDB.initConnection();

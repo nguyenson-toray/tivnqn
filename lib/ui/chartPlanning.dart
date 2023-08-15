@@ -23,7 +23,7 @@ class _ChartPlanningState extends State<ChartPlanning> {
   DateTime endChartDate = DateTime.parse('2024-05-31');
   int dayCount = 0;
   double offsetW = 8;
-  double cellW = 8;
+  double cellW = 13;
   double cellHeaderH = 20;
   double cellEventH = 50;
   double currentOffset = 0;

@@ -61,6 +61,7 @@ dependencies:
   easy_pdf_viewer: ^1.0.7 
   flutter_custom_clippers: ^2.1.0
   quiver: ^3.2.1
+  restart_app: ^1.2.1
   # flutter pub run change_app_package_name:main com.new.package.name
 
   # flutter pub get
