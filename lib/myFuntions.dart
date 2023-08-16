@@ -110,12 +110,23 @@ class MyFuntions {
           });
 
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
-          g.sqlSumEmpQty = await g.sqlETSDB
-              .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
-          g.sqlSumNoQty = await g.sqlETSDB
-              .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-          g.sqlCummulativeNoQty =
-              await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+          if (g.screenType == 1) {
+            //production
+            g.sqlT01 =
+                await g.sqlProductionDB.getT01InspectionData(g.currentLine);
+            g.chartData.clear();
+            g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
+            g.chartUi = ChartUI.createChartUI(
+                g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
+          } else {
+            //ETS
+            g.sqlSumEmpQty = await g.sqlETSDB
+                .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+            g.sqlSumNoQty = await g.sqlETSDB
+                .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+            g.sqlCummulativeNoQty =
+                await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+          }
         }
         break;
       default:

@@ -118,7 +118,13 @@ class _DashboardState extends State<Dashboard>
         {
           MyFuntions.loadDataSQL('refresh');
           setState(() {
-            g.workSummary = MyFuntions.summaryDailyDataETS();
+            if (g.screenType == 1) {
+              _chartSeriesController?.updateDataSource(
+                  updatedDataIndexes:
+                      List<int>.generate(g.chartData.length, (i) => i + 1));
+            } else {
+              g.workSummary = MyFuntions.summaryDailyDataETS();
+            }
           });
         }
         break;

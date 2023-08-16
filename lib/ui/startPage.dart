@@ -91,8 +91,8 @@ class _StartPageState extends State<StartPage> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.68';
-        g.appSetting.setEnableChartPlanningUI = 1;
+        g.ip = '192.168.1.78';
+        // g.appSetting.setEnableChartPlanningUI = 1;
         // g.enableMoney = true;
         //g.appSetting.setEnableETS = 0;
       });
