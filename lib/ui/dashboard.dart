@@ -217,7 +217,15 @@ class _DashboardState extends State<Dashboard>
                         child: g.screenType == 1
                             ? Image.asset('assets/ets.png')
                             : Image.asset('assets/chart.png'))
-                    : Container()),
+                    : Container(
+                        child: Text(
+                          'Version : ${g.version}',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 6,
+                              fontWeight: FontWeight.normal),
+                        ),
+                      )),
           ],
         ),
         const SizedBox(
