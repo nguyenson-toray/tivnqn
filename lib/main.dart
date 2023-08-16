@@ -6,7 +6,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
-import 'package:tivnqn/ui/chartPlanningUI.dart';
 import 'package:tivnqn/ui/startPage.dart';
 import 'package:flutter/services.dart';
 

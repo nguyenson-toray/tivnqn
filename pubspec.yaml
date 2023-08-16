@@ -56,8 +56,6 @@ dependencies:
   assets_audio_player: ^3.0.6 
   date_picker_timeline: ^1.2.5
   ndialog: ^4.3.0  
-  gantt_chart: ^0.3.0
-  square_percent_indicater: ^0.1.0
   easy_pdf_viewer: ^1.0.7 
   flutter_custom_clippers: ^2.1.0
   quiver: ^3.2.1
