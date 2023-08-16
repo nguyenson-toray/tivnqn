@@ -60,7 +60,7 @@ class ChartUI {
       StackedColumnSeries<ChartData, String>(
         dataSource: dataInput,
         xValueMapper: (ChartData data, _) =>
-            DateFormat.Md().format(DateTime.parse(data.getDate)),
+            DateFormat.Md('vi').format(DateTime.parse(data.getDate)),
         yValueMapper: (ChartData data, _) => data.getQty1stOK,
         dataLabelSettings: myDataLabelSettings,
         name: '''初回検品合格数 - SL kiểm lần 1 đạt''',
@@ -69,7 +69,7 @@ class ChartUI {
       StackedColumnSeries<ChartData, String>(
         dataSource: dataInput,
         xValueMapper: (ChartData data, _) =>
-            DateFormat.Md().format(DateTime.parse(data.getDate)),
+            DateFormat.Md('vi').format(DateTime.parse(data.getDate)),
         yValueMapper: (ChartData data, _) => data.getQty1stNOK,
         dataLabelSettings: myDataLabelSettings,
         name: '補修後検品合格数 - SL kiểm lần 1 lỗi',
@@ -78,19 +78,19 @@ class ChartUI {
       StackedColumnSeries<ChartData, String>(
         dataSource: dataInput,
         xValueMapper: (ChartData data, _) =>
-            DateFormat.Md().format(DateTime.parse(data.getDate)),
+            DateFormat.Md('vi').format(DateTime.parse(data.getDate)),
         yValueMapper: (ChartData data, _) => data.getQtyAfterRepaire,
         dataLabelSettings: myDataLabelSettings,
         name: '補修後検品数 - SL sửa sau kiểm hàng',
         color: Colors.redAccent,
       ),
       LineSeries<ChartData, String>(
-          markerSettings:
-              const MarkerSettings(isVisible: true, shape: DataMarkerType.rectangle),
+          markerSettings: const MarkerSettings(
+              isVisible: true, shape: DataMarkerType.rectangle),
           dataSource: dataInput,
           yAxisName: 'yAxis1',
           xValueMapper: (ChartData data, _) =>
-              DateFormat.Md().format(DateTime.parse(data.getDate)),
+              DateFormat.Md('vi').format(DateTime.parse(data.getDate)),
           yValueMapper: (ChartData data, _) => data.getRationDefect1st * 100,
           dataLabelSettings: myDataLabelSettings,
           name: '初回不良率 - TL lần 1 lỗi',
@@ -101,7 +101,7 @@ class ChartUI {
           dataSource: dataInput,
           yAxisName: 'yAxis1',
           xValueMapper: (ChartData data, _) =>
-              DateFormat.Md().format(DateTime.parse(data.getDate)),
+              DateFormat.Md('vi').format(DateTime.parse(data.getDate)),
           yValueMapper: (ChartData data, _) => data.getRationDefectAfterRepaire,
           dataLabelSettings: myDataLabelSettings,
           name: '補修後不良率 - TL lỗi sau sửa',
