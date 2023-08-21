@@ -103,7 +103,7 @@ class MyFuntions {
         break;
       case 'refresh': // load line data , setting
         {
-          g.appSetting = await g.sqlETSDB.getAppSetting();
+          g.appSetting = await g.sqlProductionDB.getAppSetting();
           g.lines.clear();
           g.appSetting.getLines.toString().split(',').forEach((element) {
             g.lines.add(int.parse(element));
@@ -338,7 +338,8 @@ class MyFuntions {
           .split('https://drive.google.com/file/d/')[1]
           .toString()
           .split('/view?usp=drive_link')[0]
-          .toString();
+          .toString()
+          .split('/view?usp=sharing')[0];
       link += fileId;
       print('org link : $orgLink');
       print('fileId : $fileId');

@@ -18,26 +18,33 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
   final scrollController = ScrollController();
   double offset = 0.0;
   String linkImg = '';
+  String planningURL = '';
+  late Image imagePlanning;
+  late Image imagePlanningLine;
   @override
   void initState() {
     // TODO: implement initState
+    planningURL = g.appSetting.getPlanningURL;
     linkImg = MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
+    buildImage(linkImg);
+
     Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
         (timer) async {
       if (mounted) {
-        g.sqlETSDB.getAppSetting().then((value) => {
+        g.sqlProductionDB.getAppSetting().then((value) => {
               g.appSetting = value,
-              if (linkImg !=
-                  MyFuntions.getLinkImage(g.appSetting.getPlanningURL))
+              if (planningURL != g.appSetting.getPlanningURL)
                 setState(() {
                   linkImg =
                       MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
+                  buildImage(linkImg);
                 })
             });
 
         if (DateTime.now().hour >= 17) exit(0);
       }
     });
+
     super.initState();
   }
 
@@ -105,42 +112,10 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               controller: scrollController,
-              child: Container(
-                  child: Image.network(
-                      height: g.screenHeight - 24,
-                      linkImg,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        return Container(
-                          width: g.screenWidth,
-                          height: 5,
-                          child: LinearProgressIndicator(
-                            backgroundColor: Colors.white,
-                            color: Colors.teal,
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) =>
-                          Text('Load failed !'))),
+              child: Container(child: imagePlanning),
             ),
           ),
-          Container(
-              color: Colors.white,
-              child: Image.network(
-                  alignment: Alignment.centerLeft,
-                  fit: BoxFit.fitHeight,
-                  height: g.screenHeight - 24,
-                  width: 28,
-                  linkImg,
-                  errorBuilder: (context, error, stackTrace) =>
-                      Text('Load failed !'))),
+          Container(color: Colors.white, child: imagePlanningLine),
           Align(
               alignment: Alignment.bottomCenter,
               child: Text(
@@ -151,5 +126,40 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
                     fontWeight: FontWeight.normal),
               )),
         ]));
+  }
+
+  Future<void> buildImage(String url) async {
+    print("buildImage from url : $url");
+    imagePlanning = Image.network(
+        height: g.screenHeight - 24,
+        linkImg,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          }
+          return Container(
+            width: g.screenWidth,
+            height: 5,
+            child: LinearProgressIndicator(
+              backgroundColor: Colors.white,
+              color: Colors.teal,
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) =>
+            Text('Load failed ! Check URL & restart App'));
+    imagePlanningLine = Image.network(
+        alignment: Alignment.centerLeft,
+        fit: BoxFit.fitHeight,
+        height: g.screenHeight - 24,
+        width: 28,
+        linkImg,
+        errorBuilder: (context, error, stackTrace) =>
+            Text('Load failed ! Check URL & restart App'));
   }
 }

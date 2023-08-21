@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
+import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 
@@ -94,6 +95,64 @@ ORDER BY X02 ASC
     } catch (e) {
       print('getInspectionData --> Exception : $e');
     }
+    return result;
+  }
+
+  Future<AppSetting> getAppSetting() async {
+    String query =
+        '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney, planningURL, ipTvPlanning, enableChartPlanningUI, enableETS
+FROM [ETSDB_TI].[dbo].A_AppSetting''';
+    AppSetting result = AppSetting(
+        lines: '1',
+        timeChangeLine: 0,
+        timeReload: 0,
+        rangeDays: 0,
+        showNotification: 0,
+        notificationURL: '',
+        showBegin: '',
+        showDuration: 0,
+        chartBegin: '',
+        chartDuration: 0,
+        ipTvLine: '',
+        enableMoney: 0,
+        planningURL: '',
+        ipTvPlanning: '',
+        enableChartPlanningUI: 0,
+        enableETS: 0);
+    var tempResult = [];
+    var element;
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('ERROR')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                element = tempResult[0],
+                result = AppSetting(
+                    lines: element['lines'].trim(),
+                    timeChangeLine: element['timeChangeLine'],
+                    timeReload: element['timeReload'],
+                    rangeDays: element['rangeDays'],
+                    showNotification: element['showNotification'],
+                    notificationURL: element['notificationURL'].trim(),
+                    showBegin: element['showBegin'],
+                    showDuration: element['showDuration'],
+                    chartBegin: element['chartBegin'],
+                    chartDuration: element['chartDuration'],
+                    ipTvLine: element['ipTvLine'].trim(),
+                    enableMoney: element['enableMoney'],
+                    planningURL: element['planningURL'].trim(),
+                    ipTvPlanning: element['ipTvPlanning'].trim(),
+                    enableChartPlanningUI: element['enableChartPlanningUI'],
+                    enableETS: element['enableETS'])
+              }
+          });
+      print('getAppSetting => $result ');
+    } catch (e) {
+      print(e);
+    }
+
     return result;
   }
 

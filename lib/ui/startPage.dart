@@ -86,15 +86,16 @@ class _StartPageState extends State<StartPage> {
       });
       return;
     }
+	g.appSetting = await g.sqlProductionDB.getAppSetting();
     await g.sqlETSDB.initConnection();
-    g.appSetting = await g.sqlETSDB.getAppSetting();
+    
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.78';
-        // g.appSetting.setEnableChartPlanningUI = 1;
-        // g.enableMoney = true;
-        //g.appSetting.setEnableETS = 0;
+        g.ip = '192.168.1.68';
+        g.appSetting.setEnableChartPlanningUI = 0;
+        g.enableMoney = false;
+        g.appSetting.setEnableETS = 0;
       });
     }
     print('g.ip : ${g.ip} ');
