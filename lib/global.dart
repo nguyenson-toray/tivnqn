@@ -13,6 +13,7 @@ import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlSumEmpQty.dart';
 import 'package:tivnqn/model/sqlSumNoQty.dart';
 import 'package:tivnqn/model/sqlT01.dart';
+import 'package:tivnqn/model/sqlT01Full.dart';
 import 'package:tivnqn/model/workSummary.dart';
 
 class g {
@@ -49,6 +50,7 @@ class g {
   static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   static int currentLine = 1;
   static int currentIndexLine = 0;
+  static String dashboardGeneralType = 'general';
   static late SharedPreferences sharedPreferences;
   static var sqlProductionDB = SqlProductionDB();
   static var sqlETSDB = SqlETSDB();
@@ -67,6 +69,7 @@ class g {
   static List<int> processNotScan = [];
   static List<String> idEmpScaneds = [];
   static List<SqlT01> sqlT01 = [];
+  static List<SqlT01Full> sqlT01s = [];
   static late AppSetting appSetting;
   List<Map<int, String>> defectCodeNames = [];
 

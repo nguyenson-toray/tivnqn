@@ -7,14 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
 
-class ChartPlanningImage extends StatefulWidget {
-  const ChartPlanningImage({super.key});
+class DashboardPlanningImage extends StatefulWidget {
+  const DashboardPlanningImage({super.key});
 
   @override
-  State<ChartPlanningImage> createState() => _ChartPlanningImageState();
+  State<DashboardPlanningImage> createState() => _DashboardPlanningImageState();
 }
 
-class _ChartPlanningImageState extends State<ChartPlanningImage> {
+class _DashboardPlanningImageState extends State<DashboardPlanningImage> {
   final scrollController = ScrollController();
   double offset = 0.0;
   String linkImg = '';
@@ -57,12 +57,15 @@ class _ChartPlanningImageState extends State<ChartPlanningImage> {
           elevation: 6.0,
           leadingWidth: 95,
           actions: [
-            Text(
-              g.todayString,
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Text(
+                g.todayString,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
             )
           ],
           leading: Image.asset(

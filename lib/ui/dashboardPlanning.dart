@@ -10,14 +10,14 @@ import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/global.dart';
 
-class ChartPlanning extends StatefulWidget {
-  const ChartPlanning({super.key});
+class DashboardPlanning extends StatefulWidget {
+  const DashboardPlanning({super.key});
 
   @override
-  State<ChartPlanning> createState() => _ChartPlanningState();
+  State<DashboardPlanning> createState() => _DashboardPlanningState();
 }
 
-class _ChartPlanningState extends State<ChartPlanning> {
+class _DashboardPlanningState extends State<DashboardPlanning> {
   final scrollController = ScrollController();
   DateTime startChartDate = DateTime.parse('2023-07-01');
   DateTime endChartDate = DateTime.parse('2024-05-31');

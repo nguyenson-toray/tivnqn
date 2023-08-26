@@ -12,13 +12,13 @@ import 'package:tivnqn/ui/screen2EtsName.dart';
 import 'package:tivnqn/ui/screen3EtsProcess.dart';
 import 'package:tivnqn/global.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class DashboardSewing extends StatefulWidget {
+  const DashboardSewing({super.key});
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<DashboardSewing> createState() => _DashboardSewingState();
 }
 
-class _DashboardState extends State<Dashboard>
+class _DashboardSewingState extends State<DashboardSewing>
     with SingleTickerProviderStateMixin {
   ChartSeriesController? _chartSeriesController;
   late final AnimationController animationController = AnimationController(

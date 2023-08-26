@@ -7,10 +7,10 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
-import 'package:tivnqn/ui/chartPlanning.dart';
-import 'package:tivnqn/ui/chartPlanningImage.dart';
+import 'package:tivnqn/ui/dashboardPlanning.dart';
+import 'package:tivnqn/ui/dashboardPlanningImage.dart';
 import 'package:tivnqn/ui/chartUI.dart';
-import 'package:tivnqn/ui/dashboard.dart';
+import 'package:tivnqn/ui/dashboardSewing.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -47,7 +47,7 @@ class _StartPageState extends State<StartPage> {
         Loader.hide();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Dashboard()),
+          MaterialPageRoute(builder: (context) => DashboardSewing()),
         );
       }
     });
@@ -86,9 +86,9 @@ class _StartPageState extends State<StartPage> {
       });
       return;
     }
-	g.appSetting = await g.sqlProductionDB.getAppSetting();
+    g.appSetting = await g.sqlProductionDB.getAppSetting();
     await g.sqlETSDB.initConnection();
-    
+
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
@@ -148,10 +148,10 @@ class _StartPageState extends State<StartPage> {
       context,
       MaterialPageRoute(
           builder: (context) => !g.isTVPlanning
-              ? Dashboard()
+              ? DashboardSewing()
               : g.appSetting.getEnableChartPlanningUI != 0
-                  ? ChartPlanning()
-                  : ChartPlanningImage()),
+                  ? DashboardPlanning()
+                  : DashboardPlanningImage()),
     );
   }
 

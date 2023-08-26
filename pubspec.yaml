@@ -57,6 +57,7 @@ dependencies:
   ndialog: ^4.3.0  
   flutter_custom_clippers: ^2.1.0  #custom shapes
   quiver: ^3.2.1
+  # radio_group_v2: ^1.0.2
   restart_app: ^1.2.1
   # flutter pub run change_app_package_name:main com.new.package.name
 

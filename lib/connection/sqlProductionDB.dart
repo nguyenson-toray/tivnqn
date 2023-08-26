@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/sqlT01.dart';
+import 'package:tivnqn/model/sqlT01Full.dart';
 
 class SqlProductionDB {
   var connection = ConnectToSqlServerDirectly();
@@ -198,6 +200,43 @@ FROM [ETSDB_TI].[dbo].A_AppSetting''';
       print(e.toString());
     }
 
+    return result;
+  }
+
+  Future<List<SqlT01Full>> getT01InspectionDataFull(int rangeDays) async {
+    List<SqlT01Full> result = [];
+    List<Map<String, dynamic>> tempResult = [];
+    late DateTime beginDate;
+    beginDate = DateTime.now().subtract(Duration(days: rangeDays));
+    late DateTime day;
+    final String query =
+        '''select * from [Production].[dbo].[T01_1st inspection data]''';
+    print(
+        'select all Table 01InspectionData   ( ${rangeDays.toString()} days : from ${DateFormat(g.dateFormat).format(
+      beginDate,
+    )} to today !!!');
+    try {
+      var rowData;
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    rowData = SqlT01Full.fromMap(element),
+                    day = DateTime.parse(rowData.getX02.toString()),
+                    if (day.isAfter(beginDate))
+                      {
+                        result.add(rowData),
+                      }
+                  }
+              }
+          });
+    } catch (e) {
+      print('getInspectionData --> Exception : ' + e.toString());
+    }
     return result;
   }
 }
