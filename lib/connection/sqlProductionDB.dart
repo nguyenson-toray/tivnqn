@@ -103,7 +103,7 @@ ORDER BY X02 ASC
   Future<AppSetting> getAppSetting() async {
     String query =
         '''SELECT lines, timeChangeLine, timeReload, rangeDays, showNotification, notificationURL, showBegin, showDuration, chartBegin, chartDuration, ipTvLine, enableMoney, planningURL, ipTvPlanning, enableChartPlanningUI, enableETS
-FROM [ETSDB_TI].[dbo].A_AppSetting''';
+FROM [Production].[dbo].A_AppSetting''';
     AppSetting result = AppSetting(
         lines: '1',
         timeChangeLine: 0,
