@@ -75,10 +75,10 @@ class _StartPageState extends State<StartPage> {
             children: [
               Image.asset('assets/error.png'),
               Text('''LỖI KẾT NỐI ĐẾN MÁY CHỦ !
-Ứng dụng sẽ khởi động lại sau 10s''')
+HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => MỞ LẠI APP''')
             ],
           ));
-      Future.delayed(const Duration(seconds: 10), () {
+      Future.delayed(const Duration(seconds: 15), () {
         setState(() {
           Loader.hide();
           Restart.restartApp();
@@ -87,12 +87,13 @@ class _StartPageState extends State<StartPage> {
       return;
     }
     g.appSetting = await g.sqlProductionDB.getAppSetting();
+    g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
     await g.sqlETSDB.initConnection();
 
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.68';
+        g.ip = '192.168.1.81';
         g.appSetting.setEnableChartPlanningUI = 0;
         g.enableMoney = false;
         g.appSetting.setEnableETS = 0;
@@ -113,8 +114,6 @@ class _StartPageState extends State<StartPage> {
         g.isTVLine = false;
       }
 
-      g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
-
       g.currentLine = MyFuntions.setLineFollowIP(g.ip);
       g.appSetting.getLines.toString().split(',').forEach((element) {
         g.lines.add(int.parse(element));
@@ -128,19 +127,21 @@ class _StartPageState extends State<StartPage> {
       g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
       g.chartUi = ChartUI.createChartUI(
           g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-      g.moDetails = await g.sqlETSDB.getAllMoDetails();
-      g.sqlEmployees = await g.sqlETSDB.getEmployees();
-      g.currentMoDetail =
-          g.moDetails.firstWhere((element) => element.getLine == g.currentLine);
-      g.processDetail =
-          await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-      g.sqlSumEmpQty = await g.sqlETSDB
-          .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
-      g.sqlSumNoQty = await g.sqlETSDB
-          .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-      g.sqlCummulativeNoQty =
-          await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-      g.workSummary = MyFuntions.summaryDailyDataETS();
+      if (g.appSetting.getEnableETS != 0) {
+        g.moDetails = await g.sqlETSDB.getAllMoDetails();
+        g.sqlEmployees = await g.sqlETSDB.getEmployees();
+        g.currentMoDetail = g.moDetails
+            .firstWhere((element) => element.getLine == g.currentLine);
+        g.processDetail =
+            await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
+        g.sqlSumEmpQty = await g.sqlETSDB
+            .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+        g.sqlSumNoQty = await g.sqlETSDB
+            .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+        g.sqlCummulativeNoQty =
+            await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+        g.workSummary = MyFuntions.summaryDailyDataETS();
+      }
     }
 
     Loader.hide();
