@@ -7,6 +7,7 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
 import 'package:tivnqn/ui/dashboardPlanningImage.dart';
 import 'package:tivnqn/ui/chartUI.dart';
@@ -21,7 +22,7 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage> {
   bool isLoaded = false;
-  String functionSellected = '';
+  String imgLinkOrg = '';
   FluWakeLock fluWakeLock = FluWakeLock();
   bool connected = true;
   var myTextStyle = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -41,16 +42,6 @@ class _StartPageState extends State<StartPage> {
       print('screen size : ${g.screenWidth} x ${g.screenHeight}');
     });
 
-    Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (!mounted) return;
-      if (connected && isLoaded) {
-        Loader.hide();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => DashboardSewing()),
-        );
-      }
-    });
     super.initState();
   }
 
@@ -64,7 +55,6 @@ class _StartPageState extends State<StartPage> {
   Future<void> initData() async {
     print('Start Page - initData');
     fluWakeLock.enable();
-    connected = await g.sqlProductionDB.initConnection();
     if (!connected) {
       Loader.hide();
       Loader.show(context,
@@ -86,74 +76,135 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
       });
       return;
     }
-    g.appSetting = await g.sqlProductionDB.getAppSetting();
-    g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
-    await g.sqlETSDB.initConnection();
 
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.81';
-        g.appSetting.setEnableChartPlanningUI = 0;
-        g.enableMoney = false;
-        g.appSetting.setEnableETS = 0;
+        g.ip = '192.168.1.68';
       });
     }
+
     print('g.ip : ${g.ip} ');
-    if (g.ip == g.appSetting.getIpTvPlanning) {
-      g.isTVPlanning = true;
-      if (g.appSetting.getEnableChartPlanningUI != 0) {
-        g.sqlPlanning = await g.sqlProductionDB.getPlanning();
-      }
-    } else {
-      g.isTVPlanning = false;
-      if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
-        g.isTVLine = true;
-        g.autochangeLine = false;
-      } else {
-        g.isTVLine = false;
-      }
+    switch (g.ip) {
+      case '192.168.1.61':
+        {
+          imgLinkOrg =
+              'https://drive.google.com/file/d/1XQ_bjXdpaUupiq8k8kHpsYqCgM_Kwtpq/view?usp=drive_link';
+          g.tvName = 'preparation1';
+        }
+        break;
+      case '192.168.1.62':
+        {
+          imgLinkOrg =
+              'https://drive.google.com/file/d/1FVqBg-Pm2OQEZgXTPgQghviorrfenEdu/view?usp=drive_link';
+          g.tvName = 'preparation2';
+        }
+        break;
+      case '192.168.1.63':
+        {
+          imgLinkOrg =
+              'https://drive.google.com/file/d/1PJ0EhproXnoBN2QSBx8QTigTltKC0WgN/view?usp=drive_link';
+          g.tvName = 'preparation3';
+        }
+        break;
+      case '192.168.1.64':
+        {
+          imgLinkOrg =
+              'https://drive.google.com/file/d/1AQ_BCMtpRvQEJ8GYlLOGyQr9u-5tD-qJ/view?usp=drive_link';
+          g.tvName = 'cad';
+        }
+        break;
+      case '192.168.1.65':
+        {
+          imgLinkOrg =
+              'https://drive.google.com/file/d/13dT544GH46HJwXVIKApW_Wyrz21gBZkc/view?usp=drive_link';
+          g.tvName = 'sample';
+        }
+        break;
+      case '192.168.1.66':
+        {
+          //qc
+          imgLinkOrg =
+              'https://drive.google.com/file/d/1VT4_93iB2n8U1WqBFSSitVdAYT7vEvvg/view?usp=drive_link';
+          g.tvName = 'control4';
+        }
+        break;
+      case '192.168.1.68':
+        {
+          //planning
+          imgLinkOrg =
+              'https://drive.google.com/file/d/1DTBn5-HIKOw6vwitmKk3v85Fmo5MgaEH/view?usp=drive_link';
+          g.tvName = 'control3';
+        }
+        break;
 
-      g.currentLine = MyFuntions.setLineFollowIP(g.ip);
-      g.appSetting.getLines.toString().split(',').forEach((element) {
-        g.lines.add(int.parse(element));
-      });
-
-      g.currentIndexLine = g.lines.indexOf(g.currentLine);
-      print(
-          'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');
-
-      g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
-      g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
-      g.chartUi = ChartUI.createChartUI(
-          g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-      if (g.appSetting.getEnableETS != 0) {
-        g.moDetails = await g.sqlETSDB.getAllMoDetails();
-        g.sqlEmployees = await g.sqlETSDB.getEmployees();
-        g.currentMoDetail = g.moDetails
-            .firstWhere((element) => element.getLine == g.currentLine);
-        g.processDetail =
-            await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-        g.sqlSumEmpQty = await g.sqlETSDB
-            .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
-        g.sqlSumNoQty = await g.sqlETSDB
-            .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-        g.sqlCummulativeNoQty =
-            await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-        g.workSummary = MyFuntions.summaryDailyDataETS();
-      }
+      default:
+        {
+          g.tvName = 'line';
+        }
     }
+    switch (g.tvName) {
+      case 'line':
+        {
+          connected = await g.sqlProductionDB.initConnection();
+          g.appSetting = await g.sqlProductionDB.getAppSetting();
+          g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
+          await g.sqlETSDB.initConnection();
 
-    Loader.hide();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-          builder: (context) => !g.isTVPlanning
-              ? DashboardSewing()
-              : g.appSetting.getEnableChartPlanningUI != 0
-                  ? DashboardPlanning()
-                  : DashboardPlanningImage()),
-    );
+          g.isTVPlanning = false;
+          if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
+            g.isTVLine = true;
+            g.autochangeLine = false;
+          } else {
+            g.isTVLine = false;
+          }
+
+          g.currentLine = MyFuntions.setLineFollowIP(g.ip);
+          g.appSetting.getLines.toString().split(',').forEach((element) {
+            g.lines.add(int.parse(element));
+          });
+
+          g.currentIndexLine = g.lines.indexOf(g.currentLine);
+          print(
+              'ip : ${g.ip}    -    isTVLine :${g.isTVLine}    -       g.currentLine: ${g.currentLine}');
+
+          g.sqlT01 =
+              await g.sqlProductionDB.getT01InspectionData(g.currentLine);
+          g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
+          g.chartUi = ChartUI.createChartUI(
+              g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
+          if (g.appSetting.getEnableETS != 0) {
+            g.moDetails = await g.sqlETSDB.getAllMoDetails();
+            g.sqlEmployees = await g.sqlETSDB.getEmployees();
+            g.currentMoDetail = g.moDetails
+                .firstWhere((element) => element.getLine == g.currentLine);
+            g.processDetail =
+                await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
+            g.sqlSumEmpQty = await g.sqlETSDB
+                .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+            g.sqlSumNoQty = await g.sqlETSDB
+                .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+            g.sqlCummulativeNoQty =
+                await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+            g.workSummary = MyFuntions.summaryDailyDataETS();
+          }
+          Loader.hide();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardSewing()),
+          );
+        }
+        break;
+      default:
+        {
+          g.imgDashboardLink = MyFuntions.getLinkImage(imgLinkOrg);
+          Loader.hide();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardImage()),
+          );
+        }
+    }
   }
 
   showLoading() {

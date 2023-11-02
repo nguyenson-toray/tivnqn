@@ -41,6 +41,8 @@ class g {
   static String ip = '';
   static bool isTVLine = true;
   static bool isTVPlanning = true;
+  static String tvName = '';
+  static String imgDashboardLink = '';
   static bool enableMoney = false;
   static var currencyFormat =
       NumberFormat.currency(locale: "vi_VN", symbol: "đ");

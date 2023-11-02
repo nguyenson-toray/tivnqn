@@ -24,26 +24,28 @@ class _DashboardPlanningImageState extends State<DashboardPlanningImage> {
   @override
   void initState() {
     // TODO: implement initState
-    planningURL = g.appSetting.getPlanningURL;
-    linkImg = MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
+    // planningURL = g.appSetting.getPlanningURL;
+    planningURL =
+        'https://drive.google.com/file/d/1HXvonYzgHAzFqC3FTEfTHjDQcSn5Poe9/view?usp=drive_link';
+    linkImg = MyFuntions.getLinkImage(planningURL);
     buildImage(linkImg);
 
-    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
-        (timer) async {
-      if (mounted) {
-        g.sqlProductionDB.getAppSetting().then((value) => {
-              g.appSetting = value,
-              if (planningURL != g.appSetting.getPlanningURL)
-                setState(() {
-                  linkImg =
-                      MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
-                  buildImage(linkImg);
-                })
-            });
+    // Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
+    //     (timer) async {
+    //   if (mounted) {
+    //     g.sqlProductionDB.getAppSetting().then((value) => {
+    //           g.appSetting = value,
+    //           if (planningURL != g.appSetting.getPlanningURL)
+    //             setState(() {
+    //               linkImg =
+    //                   MyFuntions.getLinkImage(g.appSetting.getPlanningURL);
+    //               buildImage(linkImg);
+    //             })
+    //         });
 
-        if (DateTime.now().hour >= 17) exit(0);
-      }
-    });
+    //     if (DateTime.now().hour >= 17) exit(0);
+    //   }
+    // });
 
     super.initState();
   }

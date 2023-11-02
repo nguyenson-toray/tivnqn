@@ -331,21 +331,24 @@ class MyFuntions {
     // -> https://drive.google.com/uc?export=view&id=<FILE_ID>
     // https://drive.google.com/uc?export=view&id=1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
 
-    String link = 'https://drive.google.com/uc?export=view&id=';
+    // https://drive.google.com/file/d/11HhYkZ00h6HwiUnXatTXUMUIuiVvrENK/view?usp=drive_link
+    String link =
+        // 'https://drive.google.com/uc?export=view&id=';
+        'https://drive.google.com/uc?export=download&id=';
     try {
-      // String fileId = orgLink.substring(32, 65);
-      String fileId = orgLink
-          .split('https://drive.google.com/file/d/')[1]
-          .toString()
-          .split('/view?usp=drive_link')[0]
-          .toString()
-          .split('/view?usp=sharing')[0];
+      String fileId = orgLink.substring(32, 65);
+      // String fileId = orgLink
+      //     .split('https://drive.google.com/file/d/')[0]
+      //     .toString()
+      //     .split('/view?usp=drive_link')[0]
+      //     .toString();
       link += fileId;
       print('org link : $orgLink');
       print('fileId : $fileId');
-      print('-> : $link');
+      print('direct link -> : $link');
       return link;
     } catch (e) {
+      print(e);
       return 'https://drive.google.com/uc?export=view&id=1-L3t8Rwj2DsVEeNzyGLgI7U7v06jaciL';
     }
   }
