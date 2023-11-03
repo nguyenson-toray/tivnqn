@@ -6,12 +6,17 @@ import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
+import 'package:tivnqn/model/preparation/chartDataPInspection.dart';
+import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
+import 'package:tivnqn/ui/dashboardPCutting.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
 import 'package:tivnqn/ui/dashboardPlanningImage.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboardSewing.dart';
+import 'package:tivnqn/ui/dashboardPInspectionRelaxation.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -80,23 +85,55 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.68';
+        g.ip = '192.168.1.62';
       });
     }
 
     print('g.ip : ${g.ip} ');
+    connected = await g.sqlApp.initConnection();
     switch (g.ip) {
       case '192.168.1.61':
         {
-          imgLinkOrg =
-              'https://drive.google.com/file/d/1XQ_bjXdpaUupiq8k8kHpsYqCgM_Kwtpq/view?usp=drive_link';
+          g.pInspectionFabrics = await g.sqlApp.sellectPInspectionFabric();
+          g.pInspectionFabrics.forEach((element) {
+            var a = element.planQty as num;
+            var b = element.actualQty as num;
+            ChartDataPInspection temp = ChartDataPInspection(
+                name:
+                    '${element.kindOfFabric} - ${element.customer}\nArtNo: ${element.artNo} - LotNo: ${element.lotNo}\n🎨 ${element.color} #️⃣ Process:${element.actualQty}/${element.planQty}',
+                actual: element.actualQty as num,
+                remain: a - b);
+            g.chartDataPInspection.add(temp);
+          });
+
+          g.pRelaxationFabrics = await g.sqlApp.sellectPRelaxationFabric();
+          g.pRelaxationFabrics.forEach((element) {
+            var a = element.planQty as num;
+            var b = element.actualQty as num;
+            ChartDataPRelaxation temp = ChartDataPRelaxation(
+                name:
+                    '${element.kindOfFabric} - ${element.customer}\nArtNo: ${element.artNo} - LotNo: ${element.lotNo}\n🎨 ${element.color} #️⃣ Process:${element.actualQty}/${element.planQty}',
+                actual: element.actualQty as num,
+                remain: a - b);
+            g.chartDataPRelaxation.add(temp);
+          });
           g.tvName = 'preparation1';
         }
         break;
       case '192.168.1.62':
         {
-          imgLinkOrg =
-              'https://drive.google.com/file/d/1FVqBg-Pm2OQEZgXTPgQghviorrfenEdu/view?usp=drive_link';
+          g.pCuttings = await g.sqlApp.sellectPCutting();
+          g.pCuttings.forEach((element) {
+            var a = element.planQty as num;
+            var b = element.actualQty as num;
+            ChartDataPCutting temp = ChartDataPCutting(
+                name:
+                    'Line: ${element.line} - ${element.band} - Style:${element.styleNo} - Color: ${element.color} - Size: ${element.size} #️⃣ Process: ${element.actualQty}/${element.planQty}',
+                actual: element.actualQty as num,
+                remain: a - b);
+            g.chartDataPCuttings.add(temp);
+          });
+
           g.tvName = 'preparation2';
         }
         break;
@@ -195,6 +232,23 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
           );
         }
         break;
+      case 'preparation1':
+        {
+          Loader.hide();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DashBoardPInspectionRelaxation()),
+          );
+        }
+      case 'preparation2':
+        {
+          Loader.hide();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardPCutting()),
+          );
+        }
       default:
         {
           g.imgDashboardLink = MyFuntions.getLinkImage(imgLinkOrg);

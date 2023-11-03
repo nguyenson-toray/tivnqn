@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tivnqn/connection/sqlApp.dart';
 import 'package:tivnqn/connection/sqlETSDB.dart';
 import 'package:tivnqn/connection/sqlProductionDB.dart';
 import 'package:tivnqn/model/chartData.dart';
 import 'package:tivnqn/model/moDetail.dart';
 import 'package:tivnqn/model/planning.dart';
+import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
+import 'package:tivnqn/model/preparation/chartDataPInspection.dart';
+import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
+import 'package:tivnqn/model/preparation/pCutting.dart';
+import 'package:tivnqn/model/preparation/pDispatch.dart';
+import 'package:tivnqn/model/preparation/pInspectionFabric.dart';
+import 'package:tivnqn/model/preparation/pRelaxationFabric.dart';
 import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlCummulativeNoQty.dart';
@@ -15,6 +23,7 @@ import 'package:tivnqn/model/sqlSumNoQty.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/sqlT01Full.dart';
 import 'package:tivnqn/model/workSummary.dart';
+import 'package:tivnqn/ui/dashboardPInspectionRelaxation.dart';
 
 class g {
   static DateTime today = DateTime.now();
@@ -57,6 +66,15 @@ class g {
   static var sqlProductionDB = SqlProductionDB();
   static var sqlETSDB = SqlETSDB();
 
+  static var sqlApp = SqlApp();
+  static List<PCutting> pCuttings = [];
+  static List<ChartDataPCutting> chartDataPCuttings = [];
+  static List<PDispatch> pDispatchs = [];
+  static List<PInspectionFabric> pInspectionFabrics = [];
+  static List<PRelaxationFabric> pRelaxationFabrics = [];
+  static List<ChartDataPInspection> chartDataPInspection = [];
+  static List<ChartDataPRelaxation> chartDataPRelaxation = [];
+
   static List<SqlEmployee> sqlEmployees = [];
   static List<MoDetail> moDetails = [];
   static late MoDetail currentMoDetail;
@@ -83,4 +101,6 @@ class g {
   //---------------- planning chart
   static bool enablePercentComplete = false;
   static List<Planning> sqlPlanning = [];
+
+  static int refreshMinute = 1;
 }
