@@ -31,7 +31,7 @@ class _DashboardImageState extends State<DashboardImage> {
           refresh = false;
         });
 
-        if (DateTime.now().hour >= 17) exit(0);
+        if (DateTime.now().hour > 16 && DateTime.now().minute > 55) exit(0);
       }
     });
 

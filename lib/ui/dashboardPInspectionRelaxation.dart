@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/connection/sqlApp.dart';
@@ -83,6 +83,7 @@ class _DashBoardPInspectionRelaxationState
     // TODO: implement initState
     Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
       refreshData();
+      if (DateTime.now().hour > 16 && DateTime.now().minute > 55) exit(0);
     });
     super.initState();
   }

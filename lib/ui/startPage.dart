@@ -12,6 +12,7 @@ import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPCutting.dart';
+import 'package:tivnqn/ui/dashboardPDispatch.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
 import 'package:tivnqn/ui/dashboardPlanningImage.dart';
 import 'package:tivnqn/ui/chartUI.dart';
@@ -85,7 +86,7 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.62';
+        g.ip = '192.168.1.63';
       });
     }
 
@@ -139,8 +140,8 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
         break;
       case '192.168.1.63':
         {
-          imgLinkOrg =
-              'https://drive.google.com/file/d/1PJ0EhproXnoBN2QSBx8QTigTltKC0WgN/view?usp=drive_link';
+          g.pDispatchs = await g.sqlApp.sellectPDispatch();
+
           g.tvName = 'preparation3';
         }
         break;
@@ -247,6 +248,14 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => DashboardPCutting()),
+          );
+        }
+      case 'preparation3':
+        {
+          Loader.hide();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardPDispatch()),
           );
         }
       default:
