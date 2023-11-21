@@ -30,7 +30,7 @@ class PDispatchDataSource extends DataGridSource {
               DataGridCell<String>(
                   columnName: 'total',
                   value:
-                      '${((e.actualQty1! + e.actualQty2! + e.actualQty3!) / (e.planQty1! + e.planQty1! + e.planQty1!) * 100).toStringAsFixed(0)}%'),
+                      '${((e.actualQty1! + e.actualQty2! + e.actualQty3!) / (e.planQty1! + e.planQty2! + e.planQty3!) * 100).toStringAsFixed(0)}%'),
             ]))
         .toList();
   }
