@@ -22,6 +22,7 @@ import 'package:tivnqn/model/sqlSumEmpQty.dart';
 import 'package:tivnqn/model/sqlSumNoQty.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/sqlT01Full.dart';
+import 'package:tivnqn/model/sqlWorkLayer.dart';
 import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/ui/dashboardPInspectionRelaxation.dart';
 
@@ -75,6 +76,10 @@ class g {
   static List<ChartDataPInspection> chartDataPInspection = [];
   static List<ChartDataPRelaxation> chartDataPRelaxation = [];
 
+  static List<Worklayer> workLayers = [];
+  static List<String> workLayerNames = [];
+  static List<ProcessDetailQty> processDetailQtys = [];
+  static List<List<ProcessDetailQty>> workLayerQtys = [];
   static List<SqlEmployee> sqlEmployees = [];
   static List<MoDetail> moDetails = [];
   static late MoDetail currentMoDetail;
@@ -96,6 +101,8 @@ class g {
   static ValueNotifier<String> reloadType = ValueNotifier('');
   //--------------------
   static late Widget chartUi;
+  static late Widget chartUiWorkLayer;
+  static late List<Widget> chartUiWorkLayers = [];
   static List<ChartData> chartData = [];
 
   //---------------- planning chart

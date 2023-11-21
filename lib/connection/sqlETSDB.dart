@@ -12,6 +12,7 @@ import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMoSetting.dart';
 import 'package:tivnqn/model/sqlSumEmpQty.dart';
 import 'package:tivnqn/model/sqlSumNoQty.dart';
+import 'package:tivnqn/model/sqlWorkLayer.dart';
 
 class SqlETSDB {
   var connection = ConnectToSqlServerDirectly();
@@ -369,6 +370,37 @@ ORDER BY GxNo ASC
           });
     } catch (e) {
       print(e.toString());
+    }
+    return result;
+  }
+
+  Future<List<Worklayer>> getWorklayer() async {
+    List<Worklayer> result = [];
+    List<Map<String, dynamic>> tempResult = [];
+
+    final String query =
+        '''SELECT [WorklayerNo], [WorkLayerName],[OperationBegin],[Operationend]  
+FROM [ETSDB_TI].[dbo].[tbbsWorkLayer]
+ORDER BY WorklayerNo ASC
+        ''';
+    print('Query : $query  ');
+    try {
+      var rowData;
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('=> ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    rowData = Worklayer.fromMap(element),
+                    result.add(rowData),
+                  }
+              }
+          });
+    } catch (e) {
+      print('getWorklayer --> Exception : ' + e.toString());
     }
     return result;
   }

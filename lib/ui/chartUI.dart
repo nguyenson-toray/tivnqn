@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/model/chartData.dart';
+import 'package:tivnqn/model/workSummary.dart';
+import 'package:tivnqn/myFuntions.dart';
 
 class ChartUI {
   static Legend myLegend = const Legend(
@@ -10,6 +12,14 @@ class ChartUI {
       textStyle: TextStyle(
           fontSize: 18, fontWeight: FontWeight.normal, color: Colors.black),
       position: LegendPosition.bottom,
+      isVisible: true,
+      overflowMode: LegendItemOverflowMode.wrap);
+  static Legend myLegendEts = const Legend(
+      iconWidth: 0,
+      itemPadding: 3,
+      textStyle: TextStyle(
+          fontSize: 10, fontWeight: FontWeight.normal, color: Colors.black),
+      position: LegendPosition.right,
       isVisible: true,
       overflowMode: LegendItemOverflowMode.wrap);
   late String catalogue;
@@ -107,6 +117,53 @@ class ChartUI {
           name: '補修後不良率 - TL lỗi sau sửa',
           color: Colors.green,
           width: 2)
+    ];
+  }
+
+//--------------
+  static Widget createChartUIWorkLayer(
+      List<ProcessDetailQty> dataInput, String title) {
+    return SfCartesianChart(
+      margin: const EdgeInsets.all(5),
+      backgroundColor: Colors.white, 
+      legend: myLegendEts,
+      axes: <ChartAxis>[
+        NumericAxis(
+            opposedPosition: true,
+            name: 'yAxis1',
+            majorGridLines: const MajorGridLines(width: 0),
+            interval: 10)
+      ],
+      primaryXAxis: CategoryAxis(
+        interval: 1,
+        majorGridLines: const MajorGridLines(width: 0),
+        // labelRotation: -45
+      ),
+      primaryYAxis: NumericAxis(
+        majorGridLines: const MajorGridLines(width: 0),
+        // opposedPosition: false,
+        minimum: 0,
+      ),
+      series: getSeriesWorkLayer(dataInput, title),
+      tooltipBehavior: TooltipBehavior(enable: true),
+    );
+  }
+
+  static getSeriesWorkLayer(List<ProcessDetailQty> dataInput, String name) {
+    var myDataLabelSettings = const DataLabelSettings(
+      labelAlignment: ChartDataLabelAlignment.middle,
+      isVisible: true,
+    );
+    return <ChartSeries<ProcessDetailQty, String>>[
+      ColumnSeries<ProcessDetailQty, String>(
+        dataSource: dataInput,
+        xValueMapper: (ProcessDetailQty data, _) => data.getGxNo.toString(),
+        yValueMapper: (ProcessDetailQty data, _) => data.getQty,
+        dataLabelSettings: myDataLabelSettings,
+        name: name,
+        color: MyFuntions.getColorByWorklayer(name),
+        isVisible: true,
+      )
     ];
   }
 }

@@ -393,4 +393,52 @@ class MyFuntions {
         random.nextInt(50) + 150);
     return color;
   }
+
+  static Color getColorByWorklayer(String name) {
+    Color color = Colors.yellow;
+    switch (name) {
+      case 'Than truoc':
+      case 'Hoan thanh':
+        color = Colors.yellow;
+        break;
+      case 'Non':
+        color = Colors.blue;
+        break;
+      case 'Tay':
+        color = Colors.green;
+        break;
+      default:
+    }
+    return color;
+  }
+
+  static void createDataChartEtsWorkLayer() {
+    g.workSummary.forEach((element) {
+      element.getProcessDetailQtys.forEach((processDetailQty) {
+        g.processDetailQtys.add(processDetailQty);
+      });
+    });
+    g.processNotScan.forEach((element) {
+      g.processDetailQtys
+          .add(ProcessDetailQty(GxNo: element, GxName: 'GxName', qty: 0));
+    });
+    g.processDetailQtys.sort((a, b) => a.getGxNo.compareTo(b.getGxNo));
+    g.workLayerNames.clear();
+    for (int i = 1; i <= 9; i++) {
+      List<ProcessDetailQty> processDetailQtyLayer = [];
+      String layerName = '';
+      g.processDetailQtys.forEach((element) {
+        if ((element.getGxNo >= g.workLayers[i].getPperationBegin) &
+            (element.getGxNo <= g.workLayers[i].getOperationEnd)) {
+          processDetailQtyLayer.add(element);
+          layerName = g.workLayers[i].getWorkLayerName;
+        }
+      });
+
+      if (processDetailQtyLayer.length > 0) {
+        g.workLayerNames.add(layerName);
+        g.workLayerQtys.add(processDetailQtyLayer);
+      }
+    }
+  }
 }

@@ -8,9 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/screen2EtsName.dart';
 import 'package:tivnqn/ui/screen3EtsProcess.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/ui/screen4ETSWorkLayer.dart';
 
 class DashboardSewing extends StatefulWidget {
   const DashboardSewing({super.key});
@@ -49,12 +51,12 @@ class _DashboardSewingState extends State<DashboardSewing>
         DateTime.now().isBefore(chartEndTime)) {
       g.screenType = 1;
     } else {
-      g.screenType = 2;
+      g.screenType = 4;
     }
     if (g.appSetting.getEnableETS == 0) {
       g.screenType = 1;
     } else {
-      g.screenType = 2;
+      g.screenType = 4;
     }
     Timer.periodic(Duration(minutes: g.appSetting.getTimeChangeLine), (timer) {
       if (g.autochangeLine) {
@@ -82,8 +84,14 @@ class _DashboardSewingState extends State<DashboardSewing>
       } else {
         Loader.hide();
       }
-
-      if (DateTime.now().hour >= 17) exit(0);
+      if (DateTime.now().hour >= 9 &&
+          DateTime.now().minute >= 0 &&
+          DateTime.now().minute <= 15) {
+        g.screenType = 4;
+      } else {
+        g.screenType = 1;
+      }
+      if (DateTime.now().hour >= 17 && DateTime.now().minute >= 50) exit(0);
     });
 
     // TODO: implement initState
@@ -111,6 +119,18 @@ class _DashboardSewingState extends State<DashboardSewing>
           MyFuntions.loadDataSQL('changeLine');
           setState(() {
             g.workSummary = MyFuntions.summaryDailyDataETS();
+            var temp = g.workLayerQtys;
+            MyFuntions.createDataChartEtsWorkLayer();
+
+            if (temp != g.workLayerQtys) {
+              g.workLayerQtys.clear();
+              g.chartUiWorkLayers.clear();
+              for (int i = 0; i < g.workLayerNames.length; i++) {
+                var workLayerChart = ChartUI.createChartUIWorkLayer(
+                    g.workLayerQtys[i], g.workLayerNames[i]);
+                g.chartUiWorkLayers.add(workLayerChart);
+              }
+            }
           });
         }
         break;
@@ -124,6 +144,18 @@ class _DashboardSewingState extends State<DashboardSewing>
                       List<int>.generate(g.chartData.length, (i) => i + 1));
             } else {
               g.workSummary = MyFuntions.summaryDailyDataETS();
+              var temp = g.workLayerQtys;
+              MyFuntions.createDataChartEtsWorkLayer();
+
+              if (temp != g.workLayerQtys) {
+                g.workLayerQtys.clear();
+                g.chartUiWorkLayers.clear();
+                for (int i = 0; i < g.workLayerNames.length; i++) {
+                  var workLayerChart = ChartUI.createChartUIWorkLayer(
+                      g.workLayerQtys[i], g.workLayerNames[i]);
+                  g.chartUiWorkLayers.add(workLayerChart);
+                }
+              }
             }
           });
         }
@@ -166,10 +198,10 @@ class _DashboardSewingState extends State<DashboardSewing>
             child: g.screenType == 1
                 ? g.chartUi
                 : g.screenType == 2
-                    // ignore: prefer_const_constructors
                     ? Screen2EtsName()
-                    // ignore: prefer_const_constructors
-                    : Screen3EtsProcess()));
+                    : g.screenType == 3
+                        ? Screen3EtsProcess()
+                        : Screen4EtsWorkLayer()));
   }
 
   createAppBar() {
@@ -388,6 +420,12 @@ Change ''',
               ),
               Row(
                 children: [
+                  Image.asset('assets/list.png'),
+                  Text(' ${g.processScaned.length}/${g.processAll.length} ',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: g.fontSizeAppbar)),
                   Image.asset('assets/group.png'),
                   Text(
                     ''' ${g.idEmpScaneds.length} ''',
@@ -402,22 +440,14 @@ Change ''',
                   InkWell(
                     onTap: () {
                       setState(() {
-                        if (g.screenType == 2)
-                          g.screenType = 3;
-                        else if (g.screenType == 3) g.screenType = 2;
+                        g.screenType++;
+                        if (g.screenType == 5) g.screenType = 2;
                       });
                     },
                     child: Container(
                         height: g.appBarH,
-                        child: g.screenType == 2
-                            ? Image.asset('assets/sumQty.png')
-                            : Image.asset('assets/sumName.png')),
+                        child: Image.asset('assets/changeScreen.png')),
                   ),
-                  Text(' ${g.processScaned.length}/${g.processAll.length} ',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: g.fontSizeAppbar)),
                 ],
               ),
             ]),

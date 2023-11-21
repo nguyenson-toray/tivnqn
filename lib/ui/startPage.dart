@@ -9,6 +9,7 @@ import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
 import 'package:tivnqn/model/preparation/chartDataPInspection.dart';
 import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
+import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPCutting.dart';
@@ -187,8 +188,13 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
           connected = await g.sqlProductionDB.initConnection();
           g.appSetting = await g.sqlProductionDB.getAppSetting();
           g.enableMoney = MyFuntions.parseBool(g.appSetting.getEnableMoney);
-          await g.sqlETSDB.initConnection();
 
+          await g.sqlETSDB.initConnection();
+          if (g.ip == '192.168.1.73' || g.ip == '192.168.1.74') {
+            setState(() {
+              g.appSetting.setEnableETS = 1;
+            });
+          }
           g.isTVPlanning = false;
           if ((g.appSetting.getIpTvLine).toString().contains(g.ip)) {
             g.isTVLine = true;
@@ -225,6 +231,14 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
             g.sqlCummulativeNoQty =
                 await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
             g.workSummary = MyFuntions.summaryDailyDataETS();
+            //-----------
+            g.workLayers = await g.sqlETSDB.getWorklayer();
+            MyFuntions.createDataChartEtsWorkLayer();
+            for (int i = 0; i < g.workLayerNames.length; i++) {
+              var workLayerChart = ChartUI.createChartUIWorkLayer(
+                  g.workLayerQtys[i], g.workLayerNames[i]);
+              g.chartUiWorkLayers.add(workLayerChart);
+            }
           }
           Loader.hide();
           Navigator.pushReplacement(
