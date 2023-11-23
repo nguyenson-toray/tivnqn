@@ -30,6 +30,7 @@ class StartPage extends StatefulWidget {
 class _StartPageState extends State<StartPage> {
   bool isLoaded = false;
   String imgLinkOrg = '';
+  String title = '';
   FluWakeLock fluWakeLock = FluWakeLock();
   bool connected = true;
   var myTextStyle = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -158,6 +159,7 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
           imgLinkOrg =
               'https://drive.google.com/file/d/13dT544GH46HJwXVIKApW_Wyrz21gBZkc/view?usp=drive_link';
           g.tvName = 'sample';
+          title = 'SAMPLE PLANNING';
         }
         break;
       case '192.168.1.66':
@@ -166,6 +168,7 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
           imgLinkOrg =
               'https://drive.google.com/file/d/1VT4_93iB2n8U1WqBFSSitVdAYT7vEvvg/view?usp=drive_link';
           g.tvName = 'control4';
+          title = 'QC';
         }
         break;
       case '192.168.1.68':
@@ -174,6 +177,7 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
           imgLinkOrg =
               'https://drive.google.com/file/d/1DTBn5-HIKOw6vwitmKk3v85Fmo5MgaEH/view?usp=drive_link';
           g.tvName = 'control3';
+          title = 'PRODUCTION PLANNING';
         }
         break;
 
@@ -274,11 +278,13 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
         }
       default:
         {
-          g.imgDashboardLink = MyFuntions.getLinkImage(imgLinkOrg);
           Loader.hide();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DashboardImage()),
+            MaterialPageRoute(
+                builder: (context) => DashboardImage(
+                    title: title,
+                    linkImageDirectly: MyFuntions.getLinkImage(imgLinkOrg))),
           );
         }
     }

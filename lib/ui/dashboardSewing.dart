@@ -91,7 +91,7 @@ class _DashboardSewingState extends State<DashboardSewing>
       } else {
         g.screenType = 1;
       }
-      if (DateTime.now().hour >= 17 && DateTime.now().minute >= 50) exit(0);
+      if (DateTime.now().hour == 16 && DateTime.now().minute >= 55) exit(0);
     });
 
     // TODO: implement initState

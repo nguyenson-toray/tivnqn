@@ -6,33 +6,24 @@ import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
 
 class DashboardImage extends StatefulWidget {
-  const DashboardImage({super.key});
-
+  const DashboardImage(
+      {super.key, required this.title, required this.linkImageDirectly});
+  final String title;
+  final String linkImageDirectly;
   @override
   State<DashboardImage> createState() => _DashboardImageState();
 }
 
 class _DashboardImageState extends State<DashboardImage> {
-  String linkImage = '';
   late Image imageDashboard;
-  late bool refresh = false;
-  late Uri uriFS;
-  late File file;
 
   @override
   void initState() {
     // TODO: implement initState
-    initImage(g.imgDashboardLink);
+    initImage(widget.linkImageDirectly);
     Timer.periodic(Duration(minutes: 1), (timer) async {
-      if (mounted) {
-        setState(() {
-          refresh = true;
-          updateImmage();
-          refresh = false;
-        });
-
-        if (DateTime.now().hour > 16 && DateTime.now().minute > 55) exit(0);
-      }
+      g.today = DateTime.now();
+      if (DateTime.now().hour == 16 && DateTime.now().minute >= 55) exit(0);
     });
 
     super.initState();
@@ -56,33 +47,32 @@ class _DashboardImageState extends State<DashboardImage> {
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
+            ),
+            InkWell(
+              child: Icon(Icons.refresh_outlined),
+              onTap: () {
+                updateImmage();
+              },
             )
           ],
           leading: Image.asset(
             'assets/logo_white.png',
           ),
           centerTitle: true,
-          // title: const Text(
-          //   'PRODUCTION PLANNING',
-          //   style: TextStyle(
-          //       fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          // ),
+          title: Text(
+            widget.title.toUpperCase(),
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
         ),
-        body: Stack(alignment: Alignment.topCenter, children: [
-          imageDashboard,
-          Container(
-            height: refresh ? 5 : 0,
-            width: g.screenWidth,
-            child: LinearProgressIndicator(),
-          )
-        ]));
+        body: imageDashboard);
   }
 
   updateImmage() async {
     print('updateImmage');
     Uint8List bytes = (await NetworkAssetBundle(
-      Uri.parse(g.imgDashboardLink),
-    ).load(g.imgDashboardLink))
+      Uri.parse(widget.linkImageDirectly),
+    ).load(widget.linkImageDirectly))
         .buffer
         .asUint8List();
     if (bytes.isNotEmpty) {

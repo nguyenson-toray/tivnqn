@@ -83,7 +83,7 @@ class _DashBoardPInspectionRelaxationState
     // TODO: implement initState
     Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
       refreshData();
-      if (DateTime.now().hour > 16 && DateTime.now().minute > 55) exit(0);
+      if (DateTime.now().hour == 16 && DateTime.now().minute >= 55) exit(0);
     });
     super.initState();
   }
