@@ -72,26 +72,28 @@ class _DashboardSewingState extends State<DashboardSewing>
       }
     });
     Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
-      setState(() {
-        g.reloadType.value = 'refresh';
-        g.reloadType.notifyListeners();
-      });
-      if (g.isTVLine &&
-          g.appSetting.getShowNotification != 0 &&
-          DateTime.now().isAfter(notificationBeginTime) &&
-          DateTime.now().isBefore(notificationEndTime)) {
-        showNotification();
-      } else {
-        Loader.hide();
+      DateTime time = DateTime.now();
+      if (time.hour == 16 && time.minute >= 55)
+        exit(0);
+      else {
+        setState(() {
+          g.reloadType.value = 'refresh';
+          g.reloadType.notifyListeners();
+        });
+        if (g.isTVLine &&
+            g.appSetting.getShowNotification != 0 &&
+            time.isAfter(notificationBeginTime) &&
+            time.isBefore(notificationEndTime)) {
+          showNotification();
+        } else {
+          Loader.hide();
+        }
+        if (time.hour >= 9 && time.minute >= 0 && time.minute <= 15) {
+          g.screenType = 4;
+        } else {
+          g.screenType = 1;
+        }
       }
-      if (DateTime.now().hour >= 9 &&
-          DateTime.now().minute >= 0 &&
-          DateTime.now().minute <= 15) {
-        g.screenType = 4;
-      } else {
-        g.screenType = 1;
-      }
-      if (DateTime.now().hour == 16 && DateTime.now().minute >= 55) exit(0);
     });
 
     // TODO: implement initState

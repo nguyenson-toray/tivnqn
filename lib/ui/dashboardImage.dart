@@ -21,9 +21,9 @@ class _DashboardImageState extends State<DashboardImage> {
   void initState() {
     // TODO: implement initState
     initImage(widget.linkImageDirectly);
-    Timer.periodic(Duration(minutes: 1), (timer) async {
-      g.today = DateTime.now();
-      if (DateTime.now().hour == 16 && DateTime.now().minute >= 55) exit(0);
+    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
+      DateTime time = DateTime.now();
+      if (time.hour == 16 && time.minute >= 55) exit(0);
     });
 
     super.initState();
