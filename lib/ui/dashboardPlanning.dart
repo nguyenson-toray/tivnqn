@@ -363,8 +363,6 @@ E''',
             itemCount: dayCount,
             itemBuilder: (context, index) {
               DateTime date = startChartDate.add(Duration(days: index));
-              bool isToday = date.toString().substring(0, 10) ==
-                  DateTime.now().toString().substring(0, 10);
               if (eventIndex < lineEvents.length - 1 &&
                   date.isAfter(lineEvent.getEndDate)) {
                 eventIndex++;

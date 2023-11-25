@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/global.dart';
@@ -34,12 +33,11 @@ class _DashboardPCuttingState extends State<DashboardPCutting> {
   @override
   void initState() {
     // TODO: implement initState
-    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
+    refreshData();
+    Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
       DateTime time = DateTime.now();
-      if (time.hour == 16 && time.minute >= 55)
-        exit(0);
-      else
-        refreshData();
+      if (time.hour == 16 && time.minute >= 55) exit(0);
+      refreshData();
     });
     super.initState();
   }

@@ -20,12 +20,11 @@ class _DashboardPDispatchState extends State<DashboardPDispatch> {
   @override
   void initState() {
     pDispatchDataSource = PDispatchDataSource(pDispatch: g.pDispatchs);
-    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
+
+    Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
       DateTime time = DateTime.now();
-      if (time.hour == 16 && time.minute >= 55)
-        exit(0);
-      else
-        refreshData();
+      if (time.hour == 16 && time.minute >= 55) exit(0);
+      refreshData();
     });
     super.initState();
   }

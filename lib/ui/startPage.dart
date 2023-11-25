@@ -88,7 +88,7 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.63';
+        g.ip = '192.168.1.68';
       });
     }
 

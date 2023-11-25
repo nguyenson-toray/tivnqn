@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tivnqn/global.dart';
-import 'package:tivnqn/myFuntions.dart';
 
 class DashboardImage extends StatefulWidget {
   const DashboardImage(
@@ -21,7 +20,7 @@ class _DashboardImageState extends State<DashboardImage> {
   void initState() {
     // TODO: implement initState
     initImage(widget.linkImageDirectly);
-    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
+    Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
       DateTime time = DateTime.now();
       if (time.hour == 16 && time.minute >= 55) exit(0);
     });
