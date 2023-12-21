@@ -5,6 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/ui/tPlayer.dart';
 import 'package:tivnqn/ui/startPage.dart';
 import 'package:flutter/services.dart';
 
@@ -74,7 +75,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: const StartPage(),
+        // home: const StartPage(),
+        home: TPlayer(),
       ),
     );
   }

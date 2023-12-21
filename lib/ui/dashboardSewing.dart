@@ -75,6 +75,11 @@ class _DashboardSewingState extends State<DashboardSewing>
       if (time.hour == 16 && time.minute >= 55)
         exit(0);
       else {
+        if (time.hour >= 9 && time.minute >= 0 && time.minute <= 15) {
+          g.screenType = 4;
+        } else {
+          g.screenType = 1;
+        }
         setState(() {
           g.reloadType.value = 'refresh';
           g.reloadType.notifyListeners();
@@ -86,11 +91,6 @@ class _DashboardSewingState extends State<DashboardSewing>
           showNotification();
         } else {
           Loader.hide();
-        }
-        if (time.hour >= 9 && time.minute >= 0 && time.minute <= 15) {
-          g.screenType = 4;
-        } else {
-          g.screenType = 1;
         }
       }
     });
@@ -145,17 +145,13 @@ class _DashboardSewingState extends State<DashboardSewing>
                       List<int>.generate(g.chartData.length, (i) => i + 1));
             } else {
               g.workSummary = MyFuntions.summaryDailyDataETS();
-              var temp = g.workLayerQtys;
+              g.workLayerQtys.clear();
+              g.chartUiWorkLayers.clear();
               MyFuntions.createDataChartEtsWorkLayer();
-
-              if (temp != g.workLayerQtys) {
-                g.workLayerQtys.clear();
-                g.chartUiWorkLayers.clear();
-                for (int i = 0; i < g.workLayerNames.length; i++) {
-                  var workLayerChart = ChartUI.createChartUIWorkLayer(
-                      g.workLayerQtys[i], g.workLayerNames[i]);
-                  g.chartUiWorkLayers.add(workLayerChart);
-                }
+              for (int i = 0; i < g.workLayerNames.length; i++) {
+                var workLayerChart = ChartUI.createChartUIWorkLayer(
+                    g.workLayerQtys[i], g.workLayerNames[i]);
+                g.chartUiWorkLayers.add(workLayerChart);
               }
             }
           });
