@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tivnqn/ui/startPage.dart';
@@ -14,42 +15,51 @@ class TPlayer extends StatefulWidget {
 }
 
 class _TPlayerState extends State<TPlayer> {
+  FluWakeLock fluWakeLock = FluWakeLock();
   late YoutubePlayerController controller;
   bool isPlaying = false;
   String linkDoExercise =
       'https://www.youtube.com/watch?v=Sv7bkD9t9zU&t=8s&ab_channel=%E6%9D%B1%E6%80%A5%E5%BB%BA%E8%A8%AD%E5%85%AC%E5%BC%8F';
 
   String videoID = '';
-
+  late DateTime exceriseBegin;
+  late DateTime exceriseEnd;
+  int timerPeriodic = 100;
   @override
   void initState() {
+    fluWakeLock.enable();
     DateTime currentTime = DateTime.now();
+    exceriseBegin = DateTime.parse("${g.todayString} " + "07:44:57");
+    exceriseEnd = exceriseBegin.add(Duration(seconds: 215));
     videoID = YoutubePlayer.convertUrlToId(linkDoExercise)!;
     controller = YoutubePlayerController(
       initialVideoId: videoID,
       flags: YoutubePlayerFlags(
+        loop: false,
         mute: true,
         autoPlay: false,
       ),
     );
-    Timer.periodic(Duration(milliseconds: 500), (timer) {
-      currentTime = DateTime.now();
-      print('currentTime : ' + currentTime.toIso8601String());
-      print('isPlaying : ' + isPlaying.toString());
-      if (currentTime.hour == 7) {
-        if (currentTime.minute == 45 && !isPlaying) {
+    if (currentTime.isAfter(exceriseEnd)) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => StartPage()),
+      );
+    } else {
+      Timer.periodic(Duration(milliseconds: timerPeriodic), (timer) {
+        currentTime = DateTime.now();
+        if (currentTime.isAfter(exceriseBegin) &&
+            currentTime.isBefore(exceriseEnd) &&
+            !isPlaying) {
           {
             controller.play();
             isPlaying = true;
+            print('PLAY AT : ' + DateTime.now().toString());
           }
         }
-        if (currentTime.minute >= 49) {
-          changeNextpage();
-        }
-      } else {
-        changeNextpage();
-      }
-    });
+      });
+    }
+
     super.initState();
   }
 
@@ -81,6 +91,14 @@ class _TPlayerState extends State<TPlayer> {
         ),
         onReady: () {
           print('Player is ready.');
+        },
+        onEnded: (metaData) {
+          controller.pause();
+          controller.dispose();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => StartPage()),
+          );
         },
       ),
     );

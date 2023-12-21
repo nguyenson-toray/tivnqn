@@ -31,7 +31,7 @@ class _StartPageState extends State<StartPage> {
   bool isLoaded = false;
   String imgLinkOrg = '';
   String title = '';
-  FluWakeLock fluWakeLock = FluWakeLock();
+
   bool connected = true;
   var myTextStyle = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   @override
@@ -62,7 +62,7 @@ class _StartPageState extends State<StartPage> {
 
   Future<void> initData() async {
     print('Start Page - initData');
-    fluWakeLock.enable();
+
     if (!connected) {
       Loader.hide();
       Loader.show(context,
