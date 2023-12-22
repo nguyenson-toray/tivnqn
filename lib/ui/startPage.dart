@@ -2,23 +2,20 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
-import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
 import 'package:tivnqn/model/preparation/chartDataPInspection.dart';
 import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
-import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPCutting.dart';
 import 'package:tivnqn/ui/dashboardPDispatch.dart';
-import 'package:tivnqn/ui/dashboardPlanning.dart';
-import 'package:tivnqn/ui/dashboardPlanningImage.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboardSewing.dart';
 import 'package:tivnqn/ui/dashboardPInspectionRelaxation.dart';
+import 'dart:io';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -275,6 +272,10 @@ HÃY TẮT APP (Bấm phím BACK) => KIỂM TRA CÀI ĐẶT KẾT NỐI WIFI => 
             context,
             MaterialPageRoute(builder: (context) => DashboardPDispatch()),
           );
+        }
+      case 'cad':
+        {
+          exit(0);
         }
       default:
         {
