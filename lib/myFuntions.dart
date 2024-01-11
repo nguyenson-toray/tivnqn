@@ -7,6 +7,7 @@ import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:tivnqn/ui/chartUI.dart';
+import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 class MyFuntions {
   static List<WorkSummary> summaryDailyDataETS() {
@@ -104,6 +105,9 @@ class MyFuntions {
       case 'refresh': // load line data , setting
         {
           g.appSetting = await g.sqlProductionDB.getAppSetting();
+          if (g.ip == '192.168.1.73' || g.ip == '192.168.1.74') {
+            g.appSetting.setEnableETS = 1;
+          }
           g.lines.clear();
           g.appSetting.getLines.toString().split(',').forEach((element) {
             g.lines.add(int.parse(element));
@@ -440,5 +444,33 @@ class MyFuntions {
         g.workLayerQtys.add(processDetailQtyLayer);
       }
     }
+  }
+
+  static Widget getClock(BuildContext context) {
+    return Container(
+      width: 110,
+      height: 40,
+      child: DigitalClock(
+        digitAnimationStyle: Curves.fastOutSlowIn,
+        areaDecoration: BoxDecoration(color: Colors.black12),
+        hourMinuteDigitTextStyle: Theme.of(context)
+            .textTheme
+            .headline4!
+            .copyWith(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 20),
+        secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
+              color: Colors.teal,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+        colon: Text(
+          ":",
+          style: Theme.of(context).textTheme.subtitle1!.copyWith(
+              color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+      ),
+    );
   }
 }

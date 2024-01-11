@@ -4,9 +4,11 @@ import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/startPage.dart';
 import 'package:youtube_player_flutter_quill/youtube_player_flutter_quill.dart';
 import 'package:tivnqn/global.dart';
+import 'package:cron/cron.dart';
 
 class TPlayer extends StatefulWidget {
   const TPlayer({super.key});
@@ -18,6 +20,7 @@ class TPlayer extends StatefulWidget {
 class _TPlayerState extends State<TPlayer> {
   FluWakeLock fluWakeLock = FluWakeLock();
   late YoutubePlayerController controller;
+  var cron = new Cron();
   String debugText = '';
   bool isPlaying = false;
   String linkDoExercise =
@@ -29,19 +32,27 @@ class _TPlayerState extends State<TPlayer> {
 
   late DateTime exceriseBegin;
   late DateTime exceriseEnd;
-  int timerPeriodic = 50;
   late DateTime currentTime;
+  Duration seekTime = Duration(milliseconds: 0);
+  late int hour;
+  late int minute;
+  String hourString = "07";
+  String minuteString = "45";
   @override
   void initState() {
-    exceriseBegin = DateTime.parse("${g.todayString} " + "07:45:00.500");
+    hour = int.parse(hourString);
+    minute = int.parse(minuteString);
+    exceriseBegin =
+        DateTime.parse("${g.todayString} " + "$hourString:$minuteString:00");
     exceriseEnd = exceriseBegin.add(Duration(seconds: 215));
     videoID = YoutubePlayer.convertUrlToId(linkDoExercise)!;
     fluWakeLock.enable();
     controller = YoutubePlayerController(
       initialVideoId: videoID,
       flags: YoutubePlayerFlags(
+        hideControls: true,
         loop: false,
-        mute: true,
+        mute: false,
         autoPlay: false,
       ),
     );
@@ -55,31 +66,18 @@ class _TPlayerState extends State<TPlayer> {
         );
       });
     } else {
-      debugText = "Start app: ${currentTime} - Set play time: ${exceriseBegin}";
+      debugText = "Start app: ${currentTime}   Set play at $hour: $minute";
+      cron.schedule(Schedule.parse("${minute} $hour * * * "), () async {
+        //30 2 * * * [command]This will run once a day, at 2:30 am.
 
-      Timer.periodic(Duration(milliseconds: timerPeriodic), (timer) {
-        currentTime = DateTime.now();
-        if (currentTime.isAfter(exceriseBegin) &&
-            currentTime.isBefore(exceriseEnd) &&
-            !isPlaying &&
-            playerIsReady) {
-          {
-            print("---------Jump to second :" +
-                Duration(
-                        seconds:
-                            playerReadyTime.difference(exceriseBegin).inSeconds)
-                    .toString());
-            playerReadyTime.isAfter(exceriseBegin)
-                ? controller.seekTo(Duration(
-                    seconds:
-                        playerReadyTime.difference(exceriseBegin).inSeconds))
-                : controller.play();
+        if (!isPlaying && playerIsReady) {
+          controller.play();
+          setState(() {
+            currentTime = DateTime.now();
             isPlaying = true;
-            setState(() {
-              currentTime = DateTime.now();
-              debugText += " - Actual play at: ${currentTime}";
-            });
-          }
+            currentTime = DateTime.now();
+            debugText += " - Actual play at: ${currentTime}";
+          });
         }
       });
     }
@@ -115,26 +113,42 @@ class _TPlayerState extends State<TPlayer> {
             onReady: () {
               print('Player is ready.');
               playerReadyTime = DateTime.now();
+              debugText += " - Player Ready at: ${playerReadyTime}";
               setState(() {
                 playerIsReady = true;
-                debugText += " - Player ready at: ${playerReadyTime}";
+                if (playerReadyTime.isAfter(exceriseBegin)) {
+                  seekTime = Duration(
+                      milliseconds: playerReadyTime
+                          .difference(exceriseBegin)
+                          .inMilliseconds);
+                  debugText +=
+                      " - seekTime (inMilliseconds): ${seekTime.inMilliseconds}  (inSeconds): ${seekTime.inSeconds}";
+                  controller.seekTo(seekTime);
+                  setState(() {
+                    currentTime = DateTime.now();
+                    isPlaying = true;
+                    currentTime = DateTime.now();
+                    debugText += " - Actual play at: ${currentTime}";
+                  });
+                }
               });
             },
             onEnded: (metaData) {
-              controller.pause();
-              controller.dispose();
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => StartPage()),
+                MaterialPageRoute(builder: (context) => const StartPage()),
               );
             },
           ),
-          Text(
-            (currentTime.day <= 26 && currentTime.year == 2023)
-                ? debugText
-                : "",
-            style: TextStyle(fontSize: 10),
-          ),
+          Positioned(
+              top: 10,
+              left: 10,
+              child: Text(
+                debugText,
+                style: TextStyle(fontSize: 10),
+              )),
+          Positioned(
+              bottom: 10, right: 10, child: MyFuntions.getClock(context)),
         ],
       ),
     );

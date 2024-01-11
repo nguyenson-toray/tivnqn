@@ -75,7 +75,10 @@ class _DashboardSewingState extends State<DashboardSewing>
       if (time.hour == 16 && time.minute >= 55)
         exit(0);
       else {
-        if (time.hour >= 9 && time.minute >= 0 && time.minute <= 15) {
+        if (time.hour >= 9 &&
+            time.minute >= 0 &&
+            time.minute <= 15 &&
+            g.appSetting.getEnableETS != 0) {
           g.screenType = 4;
         } else {
           g.screenType = 1;
@@ -190,15 +193,21 @@ class _DashboardSewingState extends State<DashboardSewing>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: createAppBar(),
-        body: Container(
-            // padding: EdgeInsets.all(1),
-            child: g.screenType == 1
-                ? g.chartUi
-                : g.screenType == 2
-                    ? Screen2EtsName()
-                    : g.screenType == 3
-                        ? Screen3EtsProcess()
-                        : Screen4EtsWorkLayer()));
+        body: Stack(
+          children: [
+            Container(
+                // padding: EdgeInsets.all(1),
+                child: g.screenType == 1
+                    ? g.chartUi
+                    : g.screenType == 2
+                        ? Screen2EtsName()
+                        : g.screenType == 3
+                            ? Screen3EtsProcess()
+                            : Screen4EtsWorkLayer()),
+            Positioned(
+                bottom: 30, right: 10, child: MyFuntions.getClock(context)),
+          ],
+        ));
   }
 
   createAppBar() {

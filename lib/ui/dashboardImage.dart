@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/myFuntions.dart';
 
 class DashboardImage extends StatefulWidget {
   const DashboardImage(
@@ -64,7 +65,13 @@ class _DashboardImageState extends State<DashboardImage> {
                 fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: imageDashboard);
+        body: Stack(
+          children: [
+            imageDashboard,
+            Positioned(
+                bottom: 10, right: 10, child: MyFuntions.getClock(context)),
+          ],
+        ));
   }
 
   updateImmage() async {

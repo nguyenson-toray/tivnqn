@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
+import 'package:tivnqn/myFuntions.dart';
 
 class DashboardPCutting extends StatefulWidget {
   const DashboardPCutting({super.key});
@@ -36,8 +37,10 @@ class _DashboardPCuttingState extends State<DashboardPCutting> {
     refreshData();
     Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
       DateTime time = DateTime.now();
-      if (time.hour == 16 && time.minute >= 55) exit(0);
-      refreshData();
+      if (time.hour == 16 && time.minute >= 55)
+        exit(0);
+      else
+        refreshData();
     });
     super.initState();
   }
@@ -95,39 +98,47 @@ class _DashboardPCuttingState extends State<DashboardPCutting> {
               fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: Container(
-          padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
-          child: SfCartesianChart(
-              // title: ChartTitle(text: 'CUTTING'),
-              legend: myLegend,
-              primaryXAxis: CategoryAxis(
-                labelPosition: ChartDataLabelPosition.inside,
-                labelStyle: TextStyle(
-                  // fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              series: <ChartSeries>[
-                StackedBar100Series<ChartDataPCutting, String>(
-                    color: Colors.blue[300],
-                    dataSource: g.chartDataPCuttings,
-                    dataLabelSettings: myDataLabelSettings,
-                    xValueMapper: (ChartDataPCutting data, _) => data.name,
-                    yValueMapper: (ChartDataPCutting data, _) => data.actual,
-                    name: "Actual",
-                    width: 0.8,
-                    spacing: 0.2),
-                StackedBar100Series<ChartDataPCutting, String>(
-                    color: Colors.black12,
-                    dataSource: g.chartDataPCuttings,
-                    dataLabelSettings: myDataLabelSettings,
-                    xValueMapper: (ChartDataPCutting data, _) => data.name,
-                    yValueMapper: (ChartDataPCutting data, _) => data.remain,
-                    name: "Remain",
-                    width: 0.8,
-                    spacing: 0.2)
-              ])),
+      body: Stack(
+        children: [
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: SfCartesianChart(
+                  // title: ChartTitle(text: 'CUTTING'),
+                  legend: myLegend,
+                  primaryXAxis: CategoryAxis(
+                    labelPosition: ChartDataLabelPosition.inside,
+                    labelStyle: TextStyle(
+                      // fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  series: <ChartSeries>[
+                    StackedBar100Series<ChartDataPCutting, String>(
+                        color: Colors.blue[300],
+                        dataSource: g.chartDataPCuttings,
+                        dataLabelSettings: myDataLabelSettings,
+                        xValueMapper: (ChartDataPCutting data, _) => data.name,
+                        yValueMapper: (ChartDataPCutting data, _) =>
+                            data.actual,
+                        name: "Actual",
+                        width: 0.8,
+                        spacing: 0.2),
+                    StackedBar100Series<ChartDataPCutting, String>(
+                        color: Colors.black12,
+                        dataSource: g.chartDataPCuttings,
+                        dataLabelSettings: myDataLabelSettings,
+                        xValueMapper: (ChartDataPCutting data, _) => data.name,
+                        yValueMapper: (ChartDataPCutting data, _) =>
+                            data.remain,
+                        name: "Remain",
+                        width: 0.8,
+                        spacing: 0.2)
+                  ])),
+          Positioned(
+              bottom: 10, right: 10, child: MyFuntions.getClock(context)),
+        ],
+      ),
     );
   }
 }
