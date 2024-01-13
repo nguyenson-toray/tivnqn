@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
+import 'package:tivnqn/model/configs.dart';
 import 'package:tivnqn/model/preparation/pCutting.dart';
 import 'package:tivnqn/model/preparation/pDispatch.dart';
 import 'package:tivnqn/model/preparation/pInspectionFabric.dart';
@@ -12,7 +13,6 @@ class SqlApp {
   var connection = ConnectToSqlServerDirectly();
   final String ipLAN = '192.168.1.11';
   final String dbName = 'App';
-  final int port = 1433;
   final String instanceSql = 'MSSQLSERVER';
   final user = 'app';
   final pass = 'Toray@123';
@@ -51,6 +51,32 @@ class SqlApp {
     }
     print('Sql-App-DB initConnection : $isConnected');
     return isConnected;
+  }
+
+  Future<List<Configs>> sellectConfigs() async {
+    List<Configs> result = [];
+    List<Map<String, dynamic>> tempResult = [];
+    final String query = '''select * from [App].[dbo].[Configs] ''';
+    print('Query : $query  ');
+    try {
+      var rowData;
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('=> ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    rowData = Configs.fromMap(element),
+                    result.add(rowData),
+                  }
+              }
+          });
+    } catch (e) {
+      print('sellectConfigs --> Exception : ' + e.toString());
+    }
+    return result;
   }
 
   Future<List<PCutting>> sellectPCutting() async {

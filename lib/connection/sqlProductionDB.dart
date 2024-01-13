@@ -68,7 +68,7 @@ class SqlProductionDB {
     List<SqlT01> result = [];
     final String query = '''SELECT X02, X06, X07, X08, X09
 FROM [Production].[dbo].[T01_1st inspection data]
-WHERE X01 = $line and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.appSetting.getRangeDays}, getdate()) )
+WHERE X01 = $line and [2nd] =1 AND ( X02 >= DATEADD (day,-14, getdate()) )
 ORDER BY X02 ASC
     ''';
     print('getT01InspectionData $line ');

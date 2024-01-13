@@ -5,6 +5,7 @@ import 'package:tivnqn/connection/sqlApp.dart';
 import 'package:tivnqn/connection/sqlETSDB.dart';
 import 'package:tivnqn/connection/sqlProductionDB.dart';
 import 'package:tivnqn/model/chartData.dart';
+import 'package:tivnqn/model/configs.dart';
 import 'package:tivnqn/model/moDetail.dart';
 import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
@@ -27,6 +28,7 @@ import 'package:tivnqn/model/workSummary.dart';
 
 class g {
   static DateTime today = DateTime.now();
+  static int ntpTimeOffsetMilliseconds = 0;
   static DateTime pickedDate = DateTime.now();
   static int processNoFinishBegin = 71;
   static int processNoFinishEnd = 150;
@@ -56,9 +58,9 @@ class g {
   static var currencyFormat =
       NumberFormat.currency(locale: "vi_VN", symbol: "đ");
   static int screenType = 1; //1 :chart , 2: name, 3: process
-  static bool autochangeLine = true;
+  static bool autochangeLine = false;
   static bool isLoading = false;
-  static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   static int currentLine = 1;
   static int currentIndexLine = 0;
   static String dashboardGeneralType = 'general';
@@ -95,6 +97,8 @@ class g {
   static List<SqlT01> sqlT01 = [];
   static List<SqlT01Full> sqlT01s = [];
   static late AppSetting appSetting;
+  static List<Configs> configs = [];
+  static Configs config = Configs();
   List<Map<int, String>> defectCodeNames = [];
 
   static ValueNotifier<String> reloadType = ValueNotifier('');

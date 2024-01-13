@@ -64,6 +64,7 @@ dependencies:
   youtube_player_flutter_quill: ^8.2.2
   cron: ^0.6.0 
   slide_digital_clock: ^1.0.3
+  ntp: ^2.0.0
 
   # flutter pub run change_app_package_name:main com.new.package.name
 

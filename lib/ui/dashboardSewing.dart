@@ -36,13 +36,13 @@ class _DashboardSewingState extends State<DashboardSewing>
   @override
   void initState() {
     DateTime chartBeginTime =
-        DateTime.parse("${g.todayString} " + g.appSetting.getChartBegin);
-    DateTime chartEndTime =
-        chartBeginTime.add(Duration(minutes: g.appSetting.getChartDuration));
+        DateTime.parse("${g.todayString} " + g.config.getProductionChartBegin);
+    DateTime chartEndTime = chartBeginTime
+        .add(Duration(minutes: g.config.getEtsChartDurationMinute));
     DateTime notificationBeginTime =
-        DateTime.parse("${g.todayString} " + g.appSetting.getShowBegin);
+        DateTime.parse("${g.todayString} " + g.config.getNotificationBegin);
     DateTime notificationEndTime = notificationBeginTime
-        .add(Duration(minutes: g.appSetting.getShowDuration));
+        .add(Duration(minutes: g.config.getNotificationDurationMinute));
 
     g.reloadType.addListener(refreshDataUI);
     if (!g.isTVLine &&
@@ -52,12 +52,12 @@ class _DashboardSewingState extends State<DashboardSewing>
     } else {
       g.screenType = 4;
     }
-    if (g.appSetting.getEnableETS == 0) {
+    if (g.config.getEtsChart == 0) {
       g.screenType = 1;
     } else {
       g.screenType = 4;
     }
-    Timer.periodic(Duration(minutes: g.appSetting.getTimeChangeLine), (timer) {
+    Timer.periodic(Duration(minutes: 5), (timer) {
       if (g.autochangeLine) {
         setState(() {
           g.currentIndexLine < g.lines.length - 1
@@ -70,7 +70,7 @@ class _DashboardSewingState extends State<DashboardSewing>
         g.sharedPreferences.setInt('currentLine', g.currentLine);
       }
     });
-    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload), (timer) {
+    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) {
       DateTime time = DateTime.now();
       if (time.hour == 16 && time.minute >= 55)
         exit(0);
@@ -78,7 +78,7 @@ class _DashboardSewingState extends State<DashboardSewing>
         if (time.hour >= 9 &&
             time.minute >= 0 &&
             time.minute <= 15 &&
-            g.appSetting.getEnableETS != 0) {
+            g.config.getEtsChart != 0) {
           g.screenType = 4;
         } else {
           g.screenType = 1;
@@ -88,7 +88,7 @@ class _DashboardSewingState extends State<DashboardSewing>
           g.reloadType.notifyListeners();
         });
         if (g.isTVLine &&
-            g.appSetting.getShowNotification != 0 &&
+            g.config.getNotification != 0 &&
             time.isAfter(notificationBeginTime) &&
             time.isBefore(notificationEndTime)) {
           showNotification();
@@ -172,14 +172,14 @@ class _DashboardSewingState extends State<DashboardSewing>
     if (Loader.isShown) {
       return;
     } else {
-      print(MyFuntions.getLinkImage(g.appSetting.getNotificationURL));
+      print(MyFuntions.getLinkImage(g.config.getNotificationLink));
       MyFuntions.playAudio();
       return Loader.show(context,
           overlayColor: Colors.white,
           progressIndicator: Scaffold(
             body: Center(
                 child: Image.network(
-              MyFuntions.getLinkImage(g.appSetting.getNotificationURL),
+              MyFuntions.getLinkImage(g.config.getNotificationLink),
               errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.warning,
                 size: 50,
@@ -248,7 +248,7 @@ class _DashboardSewingState extends State<DashboardSewing>
                     }
                   });
                 },
-                child: g.appSetting.getEnableETS != 0
+                child: g.config.getEtsChart != 0
                     ? Container(
                         height: g.appBarH,
                         width: g.appBarH,

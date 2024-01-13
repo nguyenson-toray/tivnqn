@@ -448,28 +448,42 @@ class MyFuntions {
 
   static Widget getClock(BuildContext context) {
     return Container(
-      width: 110,
-      height: 40,
-      child: DigitalClock(
-        digitAnimationStyle: Curves.fastOutSlowIn,
-        areaDecoration: BoxDecoration(color: Colors.black12),
-        hourMinuteDigitTextStyle: Theme.of(context)
-            .textTheme
-            .headline4!
-            .copyWith(
-                color: Colors.blueAccent,
-                fontWeight: FontWeight.bold,
-                fontSize: 20),
-        secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
-              color: Colors.teal,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+      width: 120,
+      color: const Color.fromRGBO(0, 0, 0, 0.122),
+      height: 55,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          DigitalClock(
+            digitAnimationStyle: Curves.fastOutSlowIn,
+            areaDecoration: BoxDecoration(color: Colors.transparent),
+            hourMinuteDigitTextStyle: Theme.of(context)
+                .textTheme
+                .headline4!
+                .copyWith(
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+            secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
+                  color: Colors.teal,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+            colon: Text(
+              ":",
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  color: Colors.teal,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20),
             ),
-        colon: Text(
-          ":",
-          style: Theme.of(context).textTheme.subtitle1!.copyWith(
-              color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 20),
-        ),
+          ),
+          Text(
+            g.ntpTimeOffsetMilliseconds > 0
+                ? "+ ${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time"
+                : "${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time",
+            style: TextStyle(fontSize: 7),
+          )
+        ],
       ),
     );
   }

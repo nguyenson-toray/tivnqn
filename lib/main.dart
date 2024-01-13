@@ -5,11 +5,19 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/ui/InitialPage.dart';
 import 'package:tivnqn/ui/tPlayer.dart';
 import 'package:tivnqn/ui/startPage.dart';
 import 'package:flutter/services.dart';
+import 'package:ntp/ntp.dart';
 
 Future<void> main() async {
+  [
+    'pool.ntp.org',
+    // 'time.facebook.com',
+    // 'time.euro.apple.com',
+    // 'pool.ntp.org',
+  ].forEach(_checkTime);
   WidgetsFlutterBinding.ensureInitialized();
   initializeDateFormatting('vi');
   await getsharedPreferences();
@@ -59,6 +67,28 @@ getsharedPreferences() async {
   // }
 }
 
+Future<void> _checkTime(String lookupAddress) async {
+  DateTime _myTime;
+  DateTime _ntpTime;
+
+  /// Or you could get NTP current (It will call DateTime.now() and add NTP offset to it)
+  _myTime = DateTime.now();
+
+  /// Or get NTP offset (in milliseconds) and add it yourself
+  g.ntpTimeOffsetMilliseconds =
+      await NTP.getNtpOffset(localTime: _myTime, lookUpAddress: lookupAddress);
+
+  _ntpTime = _myTime.add(Duration(milliseconds: g.ntpTimeOffsetMilliseconds));
+
+  print('\n==== $lookupAddress ====');
+  print('Device time: $_myTime');
+  print('NTP time: $_ntpTime');
+  print(
+      'Difference: ${_myTime.difference(_ntpTime).inMilliseconds}  Milliseconds');
+
+  return;
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
@@ -75,8 +105,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        // home: const StartPage(),
-        home: TPlayer(),
+        home: InitialPgae(),
       ),
     );
   }
