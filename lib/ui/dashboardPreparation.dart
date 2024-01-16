@@ -92,7 +92,7 @@ class _DashboardPreparationState extends State<DashboardPreparation> {
                       color: Colors.black,
                       fontSize: 6,
                       fontWeight: FontWeight.normal),
-                ))
+                )),
           ],
         ));
   }

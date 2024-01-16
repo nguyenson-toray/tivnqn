@@ -188,7 +188,7 @@ class _DashboardSewingState extends State<DashboardSewing>
                       color: Colors.black,
                       fontSize: 6,
                       fontWeight: FontWeight.normal),
-                ))
+                )),
           ],
         ));
   }
@@ -232,34 +232,14 @@ class _DashboardSewingState extends State<DashboardSewing>
                     }
                   });
                 },
-                child: g.config.getEtsChart != 0
+                child: g.config.getEtsChart == 1
                     ? Container(
                         height: g.appBarH,
                         width: g.appBarH,
                         child: g.screenType == 1
                             ? Image.asset('assets/ets.png')
                             : Image.asset('assets/chart.png'))
-                    : Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                            child: Row(
-                              children: [
-                                MyFuntions.clockAppBar(context),
-                                Text(
-                                  DateFormat(g.dateFormat2).format(
-                                    g.today,
-                                  ),
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
+                    : Container()),
             MyFuntions.clockAppBar(context),
             Text(
               DateFormat(g.dateFormat2).format(

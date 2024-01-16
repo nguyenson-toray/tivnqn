@@ -461,14 +461,14 @@ class MyFuntions {
                     fontWeight: FontWeight.bold,
                     fontSize: 17),
             secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
-                  color: Colors.orangeAccent,
+                  color: Colors.tealAccent,
                   fontWeight: FontWeight.bold,
                   fontSize: 17,
                 ),
             colon: Text(
               ":",
               style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                  color: Colors.orangeAccent,
+                  color: Colors.tealAccent,
                   fontWeight: FontWeight.bold,
                   fontSize: 17),
             ),
@@ -480,9 +480,9 @@ class MyFuntions {
 
   static Widget getClock(BuildContext context) {
     return Container(
-      width: 120,
+      width: 160,
       color: const Color.fromRGBO(0, 0, 0, 0.122),
-      height: g.enableNtpCheck ? 55 : 45,
+      height: g.enableNtpCheck ? 75 : 65,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -495,18 +495,18 @@ class MyFuntions {
                 .copyWith(
                     color: Colors.blueAccent,
                     fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                    fontSize: 34),
             secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
-                  color: Colors.teal,
+                  color: Colors.tealAccent,
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 34,
                 ),
             colon: Text(
               ":",
               style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                  color: Colors.teal,
+                  color: Colors.tealAccent,
                   fontWeight: FontWeight.bold,
-                  fontSize: 20),
+                  fontSize: 34),
             ),
           ),
           g.enableNtpCheck

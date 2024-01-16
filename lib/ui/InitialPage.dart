@@ -197,7 +197,7 @@ class _InitialPgaeState extends State<InitialPgae> {
                   },
                 ),
                 Positioned(
-                    bottom: 10, right: 10, child: MyFuntions.getClock(context)),
+                    bottom: 5, right: 5, child: MyFuntions.getClock(context)),
               ],
             ),
     );
@@ -213,7 +213,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.61';
+        g.ip = '192.168.1.73';
       });
     }
     await g.sqlProductionDB.initConnection();
