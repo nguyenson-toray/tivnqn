@@ -8,6 +8,7 @@ import 'package:tivnqn/global.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class MyFuntions {
   static List<WorkSummary> summaryDailyDataETS() {
@@ -460,14 +461,14 @@ class MyFuntions {
                     fontWeight: FontWeight.bold,
                     fontSize: 17),
             secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
-                  color: Colors.black26,
+                  color: Colors.orangeAccent,
                   fontWeight: FontWeight.bold,
                   fontSize: 17,
                 ),
             colon: Text(
               ":",
               style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                  color: Colors.black,
+                  color: Colors.orangeAccent,
                   fontWeight: FontWeight.bold,
                   fontSize: 17),
             ),
@@ -555,5 +556,37 @@ class MyFuntions {
         ],
       ),
     );
+  }
+
+  static Widget showNotification() {
+    playAudio();
+    return FittedBox(
+      child: Container(
+        width: g.screenWidth,
+        height: g.screenHeight - g.appBarH,
+        color: Colors.tealAccent[100],
+        child: AutoSizeText(
+          textAlign: TextAlign.start,
+          softWrap: true,
+          maxFontSize: 70,
+          overflow: TextOverflow.ellipsis,
+          minFontSize: 40,
+          g.config.getNotificationLink.toString(),
+          style: TextStyle(fontSize: 70),
+          maxLines: 9,
+        ),
+      ),
+    );
+  }
+
+  static bool checkShowNotification() {
+    DateTime now = DateTime.now();
+    DateTime begin = DateTime.parse(
+        "${g.todayString} " + "${g.config.getNotificationBegin}");
+    DateTime end =
+        begin.add(Duration(minutes: g.config.getNotificationDurationMinute));
+    return g.config.getNotification == 1 &&
+        now.isAfter(begin) &&
+        now.isBefore(end);
   }
 }

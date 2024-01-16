@@ -160,15 +160,8 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
             SizedBox(
               height: g.footerH,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    DateFormat('hh:mm').format(DateTime.now()),
-                    style: const TextStyle(
-                        color: Colors.blue,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
                   g.processNotScan.isNotEmpty
                       ? Image.asset('assets/warning2.gif')
                       : Image.asset('assets/firework.png'),
@@ -195,13 +188,6 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                         ),
-                  Text(
-                    'Version : ${g.version}',
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 8,
-                        fontWeight: FontWeight.normal),
-                  )
                 ],
               ),
             )

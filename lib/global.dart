@@ -113,4 +113,5 @@ class g {
   static int refreshMinute = 1;
 
   static bool enableNtpCheck = false;
+  static bool showNotification = false;
 }

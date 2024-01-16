@@ -39,10 +39,6 @@ class _DashboardSewingState extends State<DashboardSewing>
         DateTime.parse("${g.todayString} " + g.config.getProductionChartBegin);
     DateTime chartEndTime = chartBeginTime
         .add(Duration(minutes: g.config.getEtsChartDurationMinute));
-    DateTime notificationBeginTime =
-        DateTime.parse("${g.todayString} " + g.config.getNotificationBegin);
-    DateTime notificationEndTime = notificationBeginTime
-        .add(Duration(minutes: g.config.getNotificationDurationMinute));
 
     g.reloadType.addListener(refreshDataUI);
     if (!g.isTVLine &&
@@ -70,7 +66,7 @@ class _DashboardSewingState extends State<DashboardSewing>
         g.sharedPreferences.setInt('currentLine', g.currentLine);
       }
     });
-    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) {
+    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
       DateTime time = DateTime.now();
       if (time.hour == 16 && time.minute >= 55)
         exit(0);
@@ -87,14 +83,10 @@ class _DashboardSewingState extends State<DashboardSewing>
           g.reloadType.value = 'refresh';
           g.reloadType.notifyListeners();
         });
-        if (g.isTVLine &&
-            g.config.getNotification != 0 &&
-            time.isAfter(notificationBeginTime) &&
-            time.isBefore(notificationEndTime)) {
-          showNotification();
-        } else {
-          Loader.hide();
-        }
+        g.configs = await g.sqlApp.sellectConfigs();
+        setState(() {
+          g.showNotification = MyFuntions.checkShowNotification();
+        });
       }
     });
 
@@ -168,28 +160,6 @@ class _DashboardSewingState extends State<DashboardSewing>
   }
 
   @override
-  showNotification() async {
-    if (Loader.isShown) {
-      return;
-    } else {
-      print(MyFuntions.getLinkImage(g.config.getNotificationLink));
-      MyFuntions.playAudio();
-      return Loader.show(context,
-          overlayColor: Colors.white,
-          progressIndicator: Scaffold(
-            body: Center(
-                child: Image.network(
-              MyFuntions.getLinkImage(g.config.getNotificationLink),
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.warning,
-                size: 50,
-              ),
-            )),
-          ));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: createAppBar(),
@@ -206,8 +176,19 @@ class _DashboardSewingState extends State<DashboardSewing>
                         : g.screenType == 3
                             ? Screen3EtsProcess()
                             : Screen4EtsWorkLayer()),
+            g.showNotification
+                ? Positioned(child: MyFuntions.showNotification())
+                : Container(),
             Positioned(
-                bottom: 30, right: 10, child: MyFuntions.getClock(context)),
+                right: 2,
+                bottom: 2,
+                child: Text(
+                  'Version : ${g.version}',
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 6,
+                      fontWeight: FontWeight.normal),
+                ))
           ],
         ));
   }
@@ -277,17 +258,18 @@ class _DashboardSewingState extends State<DashboardSewing>
                               ],
                             ),
                           ),
-                          Container(
-                            child: Text(
-                              'Version : ${g.version}',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 6,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          ),
                         ],
                       )),
+            MyFuntions.clockAppBar(context),
+            Text(
+              DateFormat(g.dateFormat2).format(
+                g.today,
+              ),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
           ],
         ),
         const SizedBox(

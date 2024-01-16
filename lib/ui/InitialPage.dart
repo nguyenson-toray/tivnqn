@@ -213,7 +213,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.71';
+        g.ip = '192.168.1.61';
       });
     }
     await g.sqlProductionDB.initConnection();
@@ -379,6 +379,7 @@ class _InitialPgaeState extends State<InitialPgae> {
 
   void goToPreparation() {
     print("------------------> goToPreparation");
+    g.showNotification = MyFuntions.checkShowNotification();
     Loader.hide();
     Navigator.pushReplacement(
       context,
@@ -387,6 +388,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   }
 
   void goToDashboardImage(String title, String imgLinkOrg) {
+    g.showNotification = MyFuntions.checkShowNotification();
     print("------------------> goToDashboardImage");
     Navigator.pushReplacement(
       context,
@@ -398,6 +400,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   }
 
   void goToSewingPage() async {
+    g.showNotification = MyFuntions.checkShowNotification();
     print("------------------> goToSewingPage");
     g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
