@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/myFuntions.dart';
 
 class Screen4EtsWorkLayer extends StatefulWidget {
   const Screen4EtsWorkLayer({super.key});
@@ -13,18 +14,7 @@ class _Screen4EtsWorkLayerState extends State<Screen4EtsWorkLayer> {
   @override
   Widget build(BuildContext context) {
     return g.workSummary.isEmpty
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Center(
-                child: Image.asset('assets/noData.png'),
-              ),
-              const Text(
-                'KHÔNG CÓ DỮ LIỆU !',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              )
-            ],
-          )
+        ? MyFuntions.noData()
         : SizedBox(
             height: g.screenHeight - g.appBarH,
             width: g.screenWidth,

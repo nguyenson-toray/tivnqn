@@ -67,8 +67,7 @@ class _Screen3EtsProcessState extends State<Screen3EtsProcess> {
                     Text(
                       '$qty',
                       style: TextStyle(
-                          color: MyFuntions.getColorByQty2(
-                              qty, g.currentMoDetail.getTargetDay),
+                          color: MyFuntions.getColorByQty2(qty, 100),
                           fontWeight:
                               qty == 0 ? FontWeight.bold : FontWeight.normal),
                     ),

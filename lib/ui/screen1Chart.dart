@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tivnqn/global.dart';
+import 'package:tivnqn/myFuntions.dart';
 
 class Screen1Chart extends StatefulWidget {
   const Screen1Chart({super.key});

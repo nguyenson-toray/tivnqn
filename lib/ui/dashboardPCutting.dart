@@ -62,7 +62,7 @@ class _DashboardPCuttingState extends State<DashboardPCutting> {
         setState(() {
           chartControllerCutting?.updateDataSource(
               updatedDataIndexes: List<int>.generate(
-                  g.chartDataPInspection.length, (i) => i + 1));
+                  g.chartDataPCuttings.length, (i) => i + 1));
         });
       });
     }
@@ -70,75 +70,40 @@ class _DashboardPCuttingState extends State<DashboardPCutting> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 24,
-        backgroundColor: Colors.blue,
-        elevation: 6.0,
-        leadingWidth: 95,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Text(
-              g.todayString,
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-          )
-        ],
-        leading: Image.asset(
-          'assets/logo_white.png',
-        ),
-        centerTitle: true,
-        title: const Text(
-          'CUTTING',
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-      ),
-      body: Stack(
-        children: [
-          Container(
-              padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: SfCartesianChart(
-                  // title: ChartTitle(text: 'CUTTING'),
-                  legend: myLegend,
-                  primaryXAxis: CategoryAxis(
-                    labelPosition: ChartDataLabelPosition.inside,
-                    labelStyle: TextStyle(
-                      // fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+    return g.chartDataPCuttings.isEmpty
+        ? MyFuntions.noData()
+        : Container(
+            padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: SfCartesianChart(
+                // title: ChartTitle(text: 'CUTTING'),
+                legend: myLegend,
+                primaryXAxis: CategoryAxis(
+                  labelPosition: ChartDataLabelPosition.inside,
+                  labelStyle: TextStyle(
+                    // fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                  series: <ChartSeries>[
-                    StackedBar100Series<ChartDataPCutting, String>(
-                        color: Colors.blue[300],
-                        dataSource: g.chartDataPCuttings,
-                        dataLabelSettings: myDataLabelSettings,
-                        xValueMapper: (ChartDataPCutting data, _) => data.name,
-                        yValueMapper: (ChartDataPCutting data, _) =>
-                            data.actual,
-                        name: "Actual",
-                        width: 0.8,
-                        spacing: 0.2),
-                    StackedBar100Series<ChartDataPCutting, String>(
-                        color: Colors.black12,
-                        dataSource: g.chartDataPCuttings,
-                        dataLabelSettings: myDataLabelSettings,
-                        xValueMapper: (ChartDataPCutting data, _) => data.name,
-                        yValueMapper: (ChartDataPCutting data, _) =>
-                            data.remain,
-                        name: "Remain",
-                        width: 0.8,
-                        spacing: 0.2)
-                  ])),
-          Positioned(
-              bottom: 10, right: 10, child: MyFuntions.getClock(context)),
-        ],
-      ),
-    );
+                ),
+                series: <ChartSeries>[
+                  StackedBar100Series<ChartDataPCutting, String>(
+                      color: Colors.blue[300],
+                      dataSource: g.chartDataPCuttings,
+                      dataLabelSettings: myDataLabelSettings,
+                      xValueMapper: (ChartDataPCutting data, _) => data.name,
+                      yValueMapper: (ChartDataPCutting data, _) => data.actual,
+                      name: "Actual",
+                      width: 0.8,
+                      spacing: 0.2),
+                  StackedBar100Series<ChartDataPCutting, String>(
+                      color: Colors.black12,
+                      dataSource: g.chartDataPCuttings,
+                      dataLabelSettings: myDataLabelSettings,
+                      xValueMapper: (ChartDataPCutting data, _) => data.name,
+                      yValueMapper: (ChartDataPCutting data, _) => data.remain,
+                      name: "Remain",
+                      width: 0.8,
+                      spacing: 0.2)
+                ]));
   }
 }

@@ -6,8 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/ui/InitialPage.dart';
-import 'package:tivnqn/ui/tPlayer.dart';
-import 'package:tivnqn/ui/startPage.dart';
 import 'package:flutter/services.dart';
 import 'package:ntp/ntp.dart';
 

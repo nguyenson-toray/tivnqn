@@ -94,123 +94,91 @@ class _DashBoardPInspectionRelaxationState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 24,
-          backgroundColor: Colors.blue,
-          elevation: 6.0,
-          leadingWidth: 95,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text(
-                g.todayString,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+    return g.chartDataPInspection.isEmpty
+        ? MyFuntions.noData()
+        : Row(
+            children: [
+              Container(
+                  padding: EdgeInsets.all(2),
+                  width: g.screenWidth / 2 - 12,
+                  child: SfCartesianChart(
+                      title: ChartTitle(text: 'INSPECTION FABRIC'),
+                      legend: myLegend,
+                      primaryXAxis: CategoryAxis(
+                        labelAlignment: LabelAlignment.center,
+                        labelPosition: ChartDataLabelPosition.inside,
+                        labelStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      series: <ChartSeries>[
+                        StackedBar100Series<ChartDataPInspection, String>(
+                            dataSource: g.chartDataPInspection,
+                            dataLabelSettings: myDataLabelSettings,
+                            xValueMapper: (ChartDataPInspection data, _) =>
+                                data.name,
+                            yValueMapper: (ChartDataPInspection data, _) =>
+                                data.actual,
+                            name: "Actual",
+                            width: 0.8,
+                            spacing: 0.2),
+                        StackedBar100Series<ChartDataPInspection, String>(
+                            color: Colors.black12,
+                            dataSource: g.chartDataPInspection,
+                            dataLabelSettings: myDataLabelSettings,
+                            xValueMapper: (ChartDataPInspection data, _) =>
+                                data.name,
+                            yValueMapper: (ChartDataPInspection data, _) =>
+                                data.remain,
+                            name: "Remain",
+                            width: 0.8,
+                            spacing: 0.2)
+                      ])),
+              VerticalDivider(
+                thickness: 2,
               ),
-            )
-          ],
-          leading: Image.asset(
-            'assets/logo_white.png',
-          ),
-          centerTitle: true,
-          title: const Text(
-            'PREPARATION',
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-        ),
-        body: Stack(
-          children: [
-            Row(
-              children: [
-                Container(
-                    padding: EdgeInsets.all(2),
-                    width: g.screenWidth / 2 - 12,
-                    child: SfCartesianChart(
-                        title: ChartTitle(text: 'INSPECTION FABRIC'),
-                        legend: myLegend,
-                        primaryXAxis: CategoryAxis(
-                          labelAlignment: LabelAlignment.center,
-                          labelPosition: ChartDataLabelPosition.inside,
-                          labelStyle: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+              Container(
+                  padding: EdgeInsets.all(2),
+                  width: g.screenWidth / 2 - 12,
+                  child: SfCartesianChart(
+                      title: ChartTitle(text: 'RELAXATION FABRIC'),
+                      legend: myLegend,
+                      primaryXAxis: CategoryAxis(
+                        labelAlignment: LabelAlignment.center,
+                        labelPosition: ChartDataLabelPosition.inside,
+                        labelStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        series: <ChartSeries>[
-                          StackedBar100Series<ChartDataPInspection, String>(
-                              dataSource: g.chartDataPInspection,
-                              dataLabelSettings: myDataLabelSettings,
-                              xValueMapper: (ChartDataPInspection data, _) =>
-                                  data.name,
-                              yValueMapper: (ChartDataPInspection data, _) =>
-                                  data.actual,
-                              name: "Actual",
-                              width: 0.8,
-                              spacing: 0.2),
-                          StackedBar100Series<ChartDataPInspection, String>(
-                              color: Colors.black12,
-                              dataSource: g.chartDataPInspection,
-                              dataLabelSettings: myDataLabelSettings,
-                              xValueMapper: (ChartDataPInspection data, _) =>
-                                  data.name,
-                              yValueMapper: (ChartDataPInspection data, _) =>
-                                  data.remain,
-                              name: "Remain",
-                              width: 0.8,
-                              spacing: 0.2)
-                        ])),
-                VerticalDivider(
-                  thickness: 2,
-                ),
-                Container(
-                    padding: EdgeInsets.all(2),
-                    width: g.screenWidth / 2 - 12,
-                    child: SfCartesianChart(
-                        title: ChartTitle(text: 'RELAXATION FABRIC'),
-                        legend: myLegend,
-                        primaryXAxis: CategoryAxis(
-                          labelAlignment: LabelAlignment.center,
-                          labelPosition: ChartDataLabelPosition.inside,
-                          labelStyle: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        series: <ChartSeries>[
-                          StackedBar100Series<ChartDataPRelaxation, String>(
-                              dataSource: g.chartDataPRelaxation,
-                              color: Colors.blue[200],
-                              dataLabelSettings: myDataLabelSettings,
-                              xValueMapper: (ChartDataPRelaxation data, _) =>
-                                  data.name,
-                              yValueMapper: (ChartDataPRelaxation data, _) =>
-                                  data.actual,
-                              name: "Actual",
-                              width: 0.8,
-                              spacing: 0.2),
-                          StackedBar100Series<ChartDataPRelaxation, String>(
-                              dataSource: g.chartDataPRelaxation,
-                              color: Colors.black12,
-                              dataLabelSettings: myDataLabelSettings,
-                              xValueMapper: (ChartDataPRelaxation data, _) =>
-                                  data.name,
-                              yValueMapper: (ChartDataPRelaxation data, _) =>
-                                  data.remain,
-                              name: "Remain",
-                              width: 0.8,
-                              spacing: 0.2)
-                        ])),
-              ],
-            ),
-            Positioned(
-                bottom: 10, right: 10, child: MyFuntions.getClock(context)),
-          ],
-        ));
+                      ),
+                      series: <ChartSeries>[
+                        StackedBar100Series<ChartDataPRelaxation, String>(
+                            dataSource: g.chartDataPRelaxation,
+                            color: Colors.blue[200],
+                            dataLabelSettings: myDataLabelSettings,
+                            xValueMapper: (ChartDataPRelaxation data, _) =>
+                                data.name,
+                            yValueMapper: (ChartDataPRelaxation data, _) =>
+                                data.actual,
+                            name: "Actual",
+                            width: 0.8,
+                            spacing: 0.2),
+                        StackedBar100Series<ChartDataPRelaxation, String>(
+                            dataSource: g.chartDataPRelaxation,
+                            color: Colors.black12,
+                            dataLabelSettings: myDataLabelSettings,
+                            xValueMapper: (ChartDataPRelaxation data, _) =>
+                                data.name,
+                            yValueMapper: (ChartDataPRelaxation data, _) =>
+                                data.remain,
+                            name: "Remain",
+                            width: 0.8,
+                            spacing: 0.2)
+                      ])),
+            ],
+          );
   }
 }

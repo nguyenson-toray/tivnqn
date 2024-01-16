@@ -198,7 +198,9 @@ class _DashboardSewingState extends State<DashboardSewing>
             Container(
                 // padding: EdgeInsets.all(1),
                 child: g.screenType == 1
-                    ? g.chartUi
+                    ? g.chartData.length == 0
+                        ? MyFuntions.noData()
+                        : g.chartUi
                     : g.screenType == 2
                         ? Screen2EtsName()
                         : g.screenType == 3
@@ -212,8 +214,9 @@ class _DashboardSewingState extends State<DashboardSewing>
 
   createAppBar() {
     return AppBar(
-      backgroundColor: Colors.lightBlue,
-      // leading: Image.asset('assets/logo_white.png'),
+      backgroundColor: Colors.blue,
+      elevation: 6.0,
+      leadingWidth: 95,
       leading: Padding(
         padding: const EdgeInsets.all(2.0),
         child: CircleAvatar(
@@ -255,14 +258,35 @@ class _DashboardSewingState extends State<DashboardSewing>
                         child: g.screenType == 1
                             ? Image.asset('assets/ets.png')
                             : Image.asset('assets/chart.png'))
-                    : Container(
-                        child: Text(
-                          'Version : ${g.version}',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 6,
-                              fontWeight: FontWeight.normal),
-                        ),
+                    : Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                            child: Row(
+                              children: [
+                                MyFuntions.clockAppBar(context),
+                                Text(
+                                  DateFormat(g.dateFormat2).format(
+                                    g.today,
+                                  ),
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Text(
+                              'Version : ${g.version}',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 6,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                        ],
                       )),
           ],
         ),

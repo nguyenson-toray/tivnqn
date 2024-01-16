@@ -6,7 +6,6 @@ import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'package:tivnqn/model/moDetail.dart';
 import 'package:tivnqn/model/processDetail.dart';
-import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlCummulativeNoQty.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlMoSetting.dart';
@@ -176,11 +175,17 @@ ORDER BY CODE ASC''';
   Future<List<MoDetail>> getAllMoDetails() async {
     List<SqlMoSetting> moSettings = [];
     List<MoDetail> result = [];
-    moSettings = await getMoSetting();
+    // moSettings = await getMoSetting();
     List<String> moNames = [];
-    for (var moSetting in moSettings) {
-      moNames.add(moSetting.getMo);
-    }
+    // for (var moSetting in moSettings) {
+    //   moNames.add(moSetting.getMo);
+    // }
+    g.configs.forEach((element) {
+      if (element.getEtsMO.toString().length == 10) {
+        moNames.add(element.getEtsMO.toString());
+      }
+    });
+    print("moNames : ${moNames}");
     List<String> cnids = [];
     cnids = await g.sqlETSDB.getCnids(moNames);
 
@@ -190,20 +195,14 @@ ORDER BY CODE ASC''';
     }
     where = where.substring(0, where.length - 4);
     String query = '''SELECT ZDCODE, STYLE_NO, MY_COUNT, XM
-FROM T_SCZZD
+FROM  [ETSDB_TI].[dbo].T_SCZZD 
 $where ''';
     var tempResult;
     print('getAllMoDetailFromT_SCZZD : $query');
-    // MoDetail modetail = MoDetail(
-    //     line: 1,
-    //     mo: 'TESTAPP',
-    //     style: 'TESTAPPSTYLE',
-    //     desc: 'TESTAPP',
-    //     qty: 100,
-    //     cnid: 'cnid',
-    //     targetDay: 100,
-    //     lastProcess: 150);
     MoDetail modetail;
+    int line = 1;
+    String lineString = '';
+    String zdcode = '';
     try {
       await connection.getRowsOfQueryResult(query).then((value) async => {
             if (value.runtimeType == String)
@@ -215,17 +214,26 @@ $where ''';
                   {
                     for (int i = 0; i < moNames.length; i++)
                       {
-                        if (element['ZDCODE'] == moNames[i])
+                        zdcode = element['ZDCODE'].toString(),
+                        if (zdcode == moNames[i])
                           {
+                            lineString = g.configs
+                                .firstWhere((element) =>
+                                    element.getEtsMO.contains(zdcode))
+                                .getSection
+                                .toString(),
+                            line = int.tryParse(
+                                lineString.replaceAll('line', ''))!,
                             modetail = MoDetail(
-                                line: moSettings[i].getLine,
-                                mo: element['ZDCODE'],
-                                style: element['STYLE_NO'],
-                                desc: element['XM'] ?? '',
-                                qty: element['MY_COUNT'],
-                                cnid: cnids[i],
-                                lastProcess: moSettings[i].getLastProcess,
-                                targetDay: moSettings[i].getTargetDay),
+                              line: line,
+                              mo: element['ZDCODE'],
+                              style: element['STYLE_NO'],
+                              desc: element['XM'] ?? '',
+                              qty: element['MY_COUNT'],
+                              cnid: cnids[i],
+                              // lastProcess: moSettings[i].getLastProcess,
+                              // targetDay: moSettings[i].getTargetDay
+                            ),
                             result.add(modetail)
                           }
                       }
@@ -234,39 +242,6 @@ $where ''';
           });
       print(
           '''getAllMoDetailFromT_SCZZD ======> result.length = ${result.length})''');
-    } catch (e) {
-      print(e.toString());
-    }
-
-    return result;
-  }
-
-  Future<List<SqlMoSetting>> getMoSetting() async {
-    String query = '''SELECT line, mo, targetDay, lastProcess
-FROM A_MoSetting''';
-    List<SqlMoSetting> result = [];
-    var tempResult;
-    print('getMoInfo : $query');
-    try {
-      await connection.getRowsOfQueryResult(query).then((value) => {
-            if (value.runtimeType == String)
-              {print('Query : $query => ERROR ')}
-            else
-              {
-                tempResult = value.cast<Map<String, dynamic>>(),
-                for (var element in tempResult)
-                  {
-                    result.add(
-                      SqlMoSetting(
-                          line: element['line'],
-                          mo: element['mo'],
-                          targetDay: element['targetDay'],
-                          lastProcess: element['lastProcess']),
-                    )
-                  }
-              }
-          });
-      print(result);
     } catch (e) {
       print(e.toString());
     }

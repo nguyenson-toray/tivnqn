@@ -18,6 +18,8 @@ import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPCutting.dart';
 import 'package:tivnqn/ui/dashboardPDispatch.dart';
 import 'package:tivnqn/ui/dashboardPInspectionRelaxation.dart';
+import 'package:tivnqn/ui/dashboardPlanning.dart';
+import 'package:tivnqn/ui/dashboardPreparation.dart';
 import 'package:tivnqn/ui/dashboardSewing.dart';
 import 'package:youtube_player_flutter_quill/youtube_player_flutter_quill.dart';
 
@@ -88,7 +90,6 @@ class _InitialPgaeState extends State<InitialPgae> {
   }
 
   void checkAndPlay() async {
-    print("checkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     g.sqlApp.sellectConfigs().then((value) => {
           if (value[0].getDoExercise == 1)
             {
@@ -221,6 +222,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.configs.forEach((element) {
       if (g.ip == element.getIp) {
         g.config = element;
+        imgLinkOrg = element.getImageLink;
       }
     });
     switch (g.config.getSection) {
@@ -239,14 +241,12 @@ class _InitialPgaeState extends State<InitialPgae> {
       case 'line3':
         {
           g.currentLine = 3;
-          g.config.setEtsChart = 1;
           goToSewingPage();
         }
         break;
       case 'line4':
         {
           g.currentLine = 4;
-          g.config.setEtsChart = 1;
           goToSewingPage();
         }
         break;
@@ -293,6 +293,7 @@ class _InitialPgaeState extends State<InitialPgae> {
         break;
       case 'preparation1':
         {
+          g.title = 'INSPECTION FABRIC';
           g.pInspectionFabrics = await g.sqlApp.sellectPInspectionFabric();
           g.pInspectionFabrics.forEach((element) {
             var a = element.planQty as num;
@@ -316,11 +317,12 @@ class _InitialPgaeState extends State<InitialPgae> {
                 remain: a - b);
             g.chartDataPRelaxation.add(temp);
           });
-          goToPreparation1();
+          goToPreparation();
         }
         break;
       case 'preparation2':
         {
+          g.title = 'CUTTING';
           g.pCuttings = await g.sqlApp.sellectPCutting();
           g.pCuttings.forEach((element) {
             var a = element.planQty as num;
@@ -332,40 +334,41 @@ class _InitialPgaeState extends State<InitialPgae> {
                 remain: a - b);
             g.chartDataPCuttings.add(temp);
           });
-          goToPreparation2();
+          goToPreparation();
         }
         break;
       case 'preparation3':
         {
+          g.title = 'DISPATCH TO SEWING LINE PLAN';
           g.pDispatchs = await g.sqlApp.sellectPDispatch();
-          goToPreparation3();
+          goToPreparation();
         }
         break;
       case 'sample':
         {
-          imgLinkOrg =
-              'https://drive.google.com/file/d/13dT544GH46HJwXVIKApW_Wyrz21gBZkc/view?usp=drive_link';
-
           appBarTitle = 'SAMPLE PLANNING';
           goToDashboardImage(appBarTitle, imgLinkOrg);
         }
         break;
       case 'qc':
         {
-          imgLinkOrg =
-              'https://drive.google.com/file/d/1VT4_93iB2n8U1WqBFSSitVdAYT7vEvvg/view?usp=drive_link';
-
           appBarTitle = 'QC';
           goToDashboardImage(appBarTitle, imgLinkOrg);
         }
         break;
       case 'planning':
         {
-          imgLinkOrg =
-              'https://drive.google.com/file/d/1jwLa-cadcjk80SACLTIMwYATF8o5fBOr/view?usp=drive_link';
-          g.tvName = 'control3';
           appBarTitle = 'PRODUCTION PLANNING';
-          goToDashboardImage(appBarTitle, imgLinkOrg);
+          if (g.config.getImageLink.toString().contains('https://')) {
+            goToDashboardImage(appBarTitle, imgLinkOrg);
+          } else {
+            g.sqlPlanning = await g.sqlApp.getPlanning();
+            Loader.hide();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => DashboardPlanning()),
+            );
+          }
         }
       default:
         {
@@ -374,31 +377,17 @@ class _InitialPgaeState extends State<InitialPgae> {
     }
   }
 
-  void goToPreparation1() {
+  void goToPreparation() {
+    print("------------------> goToPreparation");
     Loader.hide();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DashBoardPInspectionRelaxation()),
-    );
-  }
-
-  void goToPreparation2() {
-    Loader.hide();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => DashboardPCutting()),
-    );
-  }
-
-  void goToPreparation3() {
-    Loader.hide();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => DashboardPDispatch()),
+      MaterialPageRoute(builder: (context) => DashboardPreparation()),
     );
   }
 
   void goToDashboardImage(String title, String imgLinkOrg) {
+    print("------------------> goToDashboardImage");
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -416,7 +405,6 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.chartUi = ChartUI.createChartUI(
         g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
     if (g.config.getEtsChart != 0) {
-      print('**********************************************');
       g.moDetails = await g.sqlETSDB.getAllMoDetails();
       g.sqlEmployees = await g.sqlETSDB.getEmployees();
       g.currentMoDetail =

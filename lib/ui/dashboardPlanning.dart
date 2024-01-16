@@ -56,10 +56,9 @@ class _DashboardPlanningState extends State<DashboardPlanning> {
       scrollController.jumpTo(currentOffset);
       _getOffset(keyOffsetToday);
     });
-    Timer.periodic(Duration(seconds: g.appSetting.getTimeReload),
-        (timer) async {
+    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
       if (mounted) {
-        g.sqlProductionDB.getPlanning().then((value) => {
+        g.sqlApp.getPlanning().then((value) => {
               setState(() {
                 g.sqlPlanning = value;
                 initData();
@@ -99,10 +98,15 @@ class _DashboardPlanningState extends State<DashboardPlanning> {
         centerTitle: true,
         leadingWidth: 95,
         actions: [
-          Text(
-            g.todayString,
-            style: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              g.todayString,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
           )
         ],
         leading: Image.asset(

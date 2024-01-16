@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 import 'package:tivnqn/model/configs.dart';
+import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/preparation/pCutting.dart';
 import 'package:tivnqn/model/preparation/pDispatch.dart';
 import 'package:tivnqn/model/preparation/pInspectionFabric.dart';
@@ -51,6 +52,51 @@ class SqlApp {
     }
     print('Sql-App-DB initConnection : $isConnected');
     return isConnected;
+  }
+
+  Future<List<Planning>> getPlanning() async {
+    String query =
+        '''SELECT line,brand, style, quantity, beginDate, endDate, comment, description
+        FROM [App].[dbo].[Planning]''';
+    List<Planning> result = [];
+    var tempResult;
+    print('getPlanning : $query');
+    try {
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('Query : $query => ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                for (var element in tempResult)
+                  {
+                    result.add(
+                      Planning(
+                        line: element['line'],
+                        brand: element['brand'] != null ? element['brand'] : '',
+                        style: element['style'] != null ? element['style'] : '',
+                        desc: element['description'] != null
+                            ? element['description']
+                            : '',
+                        quantity: element['quantity'] != null
+                            ? element['quantity']
+                            : 0,
+                        beginDate: DateTime.parse(element['beginDate']),
+                        endDate: DateTime.parse(element['endDate']),
+                        comment: element['comment'] != null
+                            ? element['comment']
+                            : '',
+                      ),
+                    )
+                  }
+              }
+          });
+      print(result);
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return result;
   }
 
   Future<List<Configs>> sellectConfigs() async {

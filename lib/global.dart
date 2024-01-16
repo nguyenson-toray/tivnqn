@@ -16,7 +16,6 @@ import 'package:tivnqn/model/preparation/pDispatch.dart';
 import 'package:tivnqn/model/preparation/pInspectionFabric.dart';
 import 'package:tivnqn/model/preparation/pRelaxationFabric.dart';
 import 'package:tivnqn/model/processDetail.dart';
-import 'package:tivnqn/model/appSetting.dart';
 import 'package:tivnqn/model/sqlCummulativeNoQty.dart';
 import 'package:tivnqn/model/sqlEmployee.dart';
 import 'package:tivnqn/model/sqlSumEmpQty.dart';
@@ -96,7 +95,6 @@ class g {
   static List<String> idEmpScaneds = [];
   static List<SqlT01> sqlT01 = [];
   static List<SqlT01Full> sqlT01s = [];
-  static late AppSetting appSetting;
   static List<Configs> configs = [];
   static Configs config = Configs();
   List<Map<int, String>> defectCodeNames = [];
@@ -113,4 +111,6 @@ class g {
   static List<Planning> sqlPlanning = [];
 
   static int refreshMinute = 1;
+
+  static bool enableNtpCheck = false;
 }

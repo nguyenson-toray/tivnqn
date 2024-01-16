@@ -6,8 +6,8 @@ class MoDetail {
   String desc;
   int qty;
   String cnid;
-  int targetDay;
-  int lastProcess;
+  // int targetDay;
+  // int lastProcess;
   get getLine => line;
 
   set setLine(line) => this.line = line;
@@ -32,13 +32,13 @@ class MoDetail {
 
   set setCnid(cnid) => this.cnid = cnid;
 
-  get getTargetDay => targetDay;
+  // get getTargetDay => targetDay;
 
-  set setTargetDay(targetDay) => this.targetDay = targetDay;
+  // set setTargetDay(targetDay) => this.targetDay = targetDay;
 
-  get getLastProcess => lastProcess;
+  // get getLastProcess => lastProcess;
 
-  set setLastProcess(lastProcess) => this.lastProcess = lastProcess;
+  // set setLastProcess(lastProcess) => this.lastProcess = lastProcess;
   MoDetail({
     required this.line,
     required this.mo,
@@ -46,12 +46,12 @@ class MoDetail {
     required this.desc,
     required this.qty,
     required this.cnid,
-    required this.targetDay,
-    required this.lastProcess,
+    // required this.targetDay,
+    // required this.lastProcess,
   });
 
   @override
   String toString() {
-    return 'MoDetail(line: $line, mo: $mo, style: $style, desc: $desc, qty: $qty, cnid: $cnid, targetDay: $targetDay, lastProcess: $lastProcess)';
+    return 'MoDetail(line: $line, mo: $mo, style: $style, desc: $desc, qty: $qty, cnid: $cnid)';
   }
 }

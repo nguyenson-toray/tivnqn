@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/myFuntions.dart';
 
@@ -33,23 +34,26 @@ class _DashboardImageState extends State<DashboardImage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 24,
+          toolbarHeight: g.appBarH,
           backgroundColor: Colors.blue,
           elevation: 6.0,
           leadingWidth: 95,
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text(
-                g.todayString,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+            MyFuntions.clockAppBar(context),
+            Text(
+              DateFormat(g.dateFormat2).format(
+                g.today,
               ),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             InkWell(
-              child: Icon(Icons.refresh_outlined),
+              child: Icon(
+                Icons.refresh_sharp,
+                color: Colors.amberAccent,
+              ),
               onTap: () {
                 updateImmage();
               },
@@ -65,13 +69,7 @@ class _DashboardImageState extends State<DashboardImage> {
                 fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: Stack(
-          children: [
-            imageDashboard,
-            Positioned(
-                bottom: 10, right: 10, child: MyFuntions.getClock(context)),
-          ],
-        ));
+        body: imageDashboard);
   }
 
   updateImmage() async {
@@ -117,7 +115,6 @@ class _DashboardImageState extends State<DashboardImage> {
             ),
           );
         },
-        errorBuilder: (context, error, stackTrace) =>
-            Text('Load failed ! Check URL & restart App'));
+        errorBuilder: (context, error, stackTrace) => MyFuntions.loadFail());
   }
 }

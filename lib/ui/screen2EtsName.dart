@@ -84,9 +84,7 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           // fontSize: 10,
-                                          color: process[index2].getGxNo ==
-                                                  g.currentMoDetail
-                                                      .getLastProcess
+                                          color: process[index2].getGxNo == 150
                                               ? Colors.deepPurpleAccent
                                               : Colors.black,
                                           fontWeight: process[index2].getGxNo >=
@@ -112,14 +110,14 @@ class _Screen2EtsNameState extends State<Screen2EtsName> {
                       Container(
                         width: g.screenWidth / 6,
                         decoration: BoxDecoration(
-                          color: MyFuntions.getColorByQty(process[0].getQty,
-                              g.currentMoDetail.getTargetDay),
+                          color:
+                              MyFuntions.getColorByQty(process[0].getQty, 100),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            process[0].getQty > g.currentMoDetail.getTargetDay
+                            process[0].getQty > 100
                                 ?
                                 // SizedBox(
                                 //     height: 17, child: Image.asset('assets/star.gif'))

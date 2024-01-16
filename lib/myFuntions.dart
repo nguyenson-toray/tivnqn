@@ -88,10 +88,7 @@ class MyFuntions {
               .firstWhere((element) => element.getLine == g.currentLine);
           g.processDetail =
               await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-          g.lines.clear();
-          g.appSetting.getLines.toString().split(',').forEach((element) {
-            g.lines.add(int.parse(element));
-          });
+
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
 
           g.sqlSumEmpQty = await g.sqlETSDB
@@ -104,13 +101,11 @@ class MyFuntions {
         break;
       case 'refresh': // load line data , setting
         {
-          g.appSetting = await g.sqlProductionDB.getAppSetting();
-          if (g.ip == '192.168.1.73' || g.ip == '192.168.1.74') {
-            g.appSetting.setEnableETS = 1;
-          }
-          g.lines.clear();
-          g.appSetting.getLines.toString().split(',').forEach((element) {
-            g.lines.add(int.parse(element));
+          g.configs = await g.sqlApp.sellectConfigs();
+          g.configs.forEach((element) {
+            if (g.ip == element.getIp) {
+              g.config = element;
+            }
           });
 
           g.currentIndexLine = g.lines.indexOf(g.currentLine);
@@ -194,10 +189,10 @@ class MyFuntions {
   }
 
   static Color getColorByLine(int line) {
-    // if (line % 2 == 0)
-    return Color.fromARGB(50, 100, 150, 150);
-    // else
-    //   return Color.fromARGB(80, 100, 150, 150);
+    // // if (line % 2 == 0)
+    // return Color.fromARGB(50, 100, 150, 150);
+    // // else
+    // //   return Color.fromARGB(80, 100, 150, 150);
     Color result = Colors.blueAccent;
     switch (line) {
       case 1:
@@ -446,11 +441,47 @@ class MyFuntions {
     }
   }
 
+  static Widget clockAppBar(BuildContext context) {
+    return Container(
+      width: 120,
+      color: Colors.transparent,
+      // height: g.appBarH ,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          DigitalClock(
+            digitAnimationStyle: Curves.fastOutSlowIn,
+            areaDecoration: BoxDecoration(color: Colors.transparent),
+            hourMinuteDigitTextStyle: Theme.of(context)
+                .textTheme
+                .headline4!
+                .copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17),
+            secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
+                  color: Colors.black26,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+            colon: Text(
+              ":",
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   static Widget getClock(BuildContext context) {
     return Container(
       width: 120,
       color: const Color.fromRGBO(0, 0, 0, 0.122),
-      height: 55,
+      height: g.enableNtpCheck ? 55 : 45,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -477,11 +508,49 @@ class MyFuntions {
                   fontSize: 20),
             ),
           ),
-          Text(
-            g.ntpTimeOffsetMilliseconds > 0
-                ? "+ ${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time"
-                : "${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time",
-            style: TextStyle(fontSize: 7),
+          g.enableNtpCheck
+              ? Text(
+                  g.ntpTimeOffsetMilliseconds > 0
+                      ? "+ ${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time"
+                      : "${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time",
+                  style: TextStyle(fontSize: 7),
+                )
+              : Container()
+        ],
+      ),
+    );
+  }
+
+  static Widget noData() {
+    return Container(
+      color: Colors.black12,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Center(
+            child: Image.asset('assets/noData.png'),
+          ),
+          const Text(
+            'KHÔNG CÓ DỮ LIỆU !',
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          )
+        ],
+      ),
+    );
+  }
+
+  static Widget loadFail() {
+    return Container(
+      color: Colors.black12,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Center(
+            child: Image.asset('assets/noData.png'),
+          ),
+          const Text(
+            'Load failed ! Check wifi & restart App',
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           )
         ],
       ),
