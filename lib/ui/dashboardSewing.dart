@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:intl/intl.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -63,7 +62,7 @@ class _DashboardSewingState extends State<DashboardSewing>
           g.reloadType.value = 'changeLine';
           g.reloadType.notifyListeners();
         });
-        g.sharedPreferences.setInt('currentLine', g.currentLine);
+        // g.sharedPreferences.setInt('currentLine', g.currentLine);
       }
     });
     Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {

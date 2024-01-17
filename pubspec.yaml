@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.0.8+1
+version: 2.0.9+1
 
 environment:
   sdk: '>=3.0.2 <4.0.0'
@@ -35,36 +35,36 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  device_info_plus: ^9.0.2
+  # device_info_plus: ^9.0.2
   intl: ^0.18.1
-  shared_preferences: ^2.1.1
-  package_info_plus: ^4.0.2
+  # shared_preferences: ^2.1.1
+  package_info_plus: ^5.0.1
   network_info_plus: ^4.0.1
   flutter_layout_grid: ^2.0.3
   connect_to_sql_server_directly: ^0.0.1
-  fluttertoast: ^8.2.2
-  flutter_overlay_loader: ^2.0.0
+  # fluttertoast: ^8.2.2
+  # flutter_overlay_loader: ^2.0.0
   flu_wake_lock: ^0.0.2
   scroll_loop_auto_scroll: ^0.0.5
   flutter_staggered_grid_view: ^0.6.2
   
   const_date_time: ^1.0.2
-  icons_launcher: ^2.1.2
+  # icons_launcher: ^2.1.2
   marquee: ^2.2.3
   # change_app_package_name: ^1.1.0 
   assets_audio_player: ^3.0.6 
   date_picker_timeline: ^1.2.5
   ndialog: ^4.3.0  
   flutter_custom_clippers: ^2.1.0  #custom shapes
-  quiver: ^3.2.1
+  # quiver: ^3.2.1
   # radio_group_v2: ^1.0.2
-  restart_app: ^1.2.1
+  # restart_app: ^1.2.1
   syncfusion_flutter_charts: ^23.1.44
   syncfusion_flutter_datagrid: ^23.1.44 
   youtube_player_flutter_quill: ^8.2.2
   cron: ^0.6.0 
   slide_digital_clock: ^1.0.3
-  ntp: ^2.0.0
+  # ntp: ^2.0.0
   auto_size_text: ^3.0.0
 
   # flutter pub run change_app_package_name:main com.new.package.name
@@ -123,8 +123,7 @@ flutter:
     - assets/sum.png
     - assets/error.png
     - assets/ets.png
-    - assets/list.png 
-    - assets/planning.jpg 
+    - assets/list.png  
     - assets/changeScreen.png 
 
   # To add custom fonts to your application, add a fonts section here,

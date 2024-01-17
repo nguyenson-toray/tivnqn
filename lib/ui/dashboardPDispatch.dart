@@ -22,7 +22,7 @@ class _DashboardPDispatchState extends State<DashboardPDispatch> {
   void initState() {
     pDispatchDataSource = PDispatchDataSource(pDispatch: g.pDispatchs);
 
-    Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
+    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) {
       DateTime time = DateTime.now();
       if (time.hour == 16 && time.minute >= 55)
         exit(0);

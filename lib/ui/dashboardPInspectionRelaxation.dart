@@ -82,7 +82,7 @@ class _DashBoardPInspectionRelaxationState
   void initState() {
     // TODO: implement initState
     refreshData();
-    Timer.periodic(Duration(minutes: g.refreshMinute), (timer) {
+    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) {
       refreshData();
     });
     super.initState();

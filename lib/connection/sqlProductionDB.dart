@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
@@ -45,16 +44,6 @@ class SqlProductionDB {
           pass,
           instance: instanceSql,
         );
-      }
-      if (!isConnected) {
-        Fluttertoast.showToast(
-            msg: "SQL Server not available !",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
       }
     } catch (e) {
       print(e);

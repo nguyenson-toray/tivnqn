@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tivnqn/connection/sqlApp.dart';
 import 'package:tivnqn/connection/sqlETSDB.dart';
 import 'package:tivnqn/connection/sqlProductionDB.dart';
@@ -63,7 +62,7 @@ class g {
   static int currentLine = 1;
   static int currentIndexLine = 0;
   static String dashboardGeneralType = 'general';
-  static late SharedPreferences sharedPreferences;
+  // static late SharedPreferences sharedPreferences;
   static var sqlProductionDB = SqlProductionDB();
   static var sqlETSDB = SqlETSDB();
 
@@ -110,8 +109,5 @@ class g {
   static bool enablePercentComplete = false;
   static List<Planning> sqlPlanning = [];
 
-  static int refreshMinute = 1;
-
-  static bool enableNtpCheck = false;
   static bool showNotification = false;
 }

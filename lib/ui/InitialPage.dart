@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:tivnqn/global.dart';
 import 'package:cron/cron.dart';
@@ -15,9 +14,6 @@ import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
-import 'package:tivnqn/ui/dashboardPCutting.dart';
-import 'package:tivnqn/ui/dashboardPDispatch.dart';
-import 'package:tivnqn/ui/dashboardPInspectionRelaxation.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
 import 'package:tivnqn/ui/dashboardPreparation.dart';
 import 'package:tivnqn/ui/dashboardSewing.dart';
@@ -51,6 +47,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   late int minute;
   String hourString = "07";
   String minuteString = "45";
+  bool showVideo = false;
   @override
   initState() {
     // TODO: implement initState
@@ -85,7 +82,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   @override
   void dispose() {
     controller.dispose();
-    Loader.hide();
+
     super.dispose();
   }
 
@@ -120,6 +117,10 @@ class _InitialPgaeState extends State<InitialPgae> {
             return;
           });
         } else {
+          setState(() {
+            showVideo = true;
+          });
+
           cron.schedule(Schedule.parse("${minute - 1} $hour * * * "), () async {
             //// 30 2 * * * [command]This will run once a day, at 2:30 am.
             Timer.periodic(Duration(milliseconds: 200), (timer) {
@@ -128,12 +129,9 @@ class _InitialPgaeState extends State<InitialPgae> {
           });
         }
       });
-
-      Loader.hide();
     } else {
       Future.delayed(const Duration(seconds: 10), () {
         setState(() {
-          Loader.hide();
           textLoading =
               "Có lỗi xảy ra ! Bấm phím BACK trên điều khiển từ xa để tắt ứng dụng & mở lại !";
         });
@@ -141,40 +139,13 @@ class _InitialPgaeState extends State<InitialPgae> {
     }
   }
 
-  showLoading(String textLoading) {
-    return Loader.show(
-      isAppbarOverlay: false,
-      context,
-      overlayColor: Colors.white,
-      progressIndicator: SizedBox(
-          width: 100,
-          height: 200,
-          child: Column(children: [
-            Image.asset('assets/logo.png'),
-            Image.asset('assets/loading.gif'),
-          ])),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: isLoading ? 24 * 1.5 : 0,
-        backgroundColor: Colors.blue,
-        elevation: 6.0,
-        title: Text(
-          textLoading,
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        centerTitle: true,
-      ),
-      body: isLoading
-          ? showLoading(textLoading)
-          : Stack(
-              children: [
-                YoutubePlayer(
+      body: Stack(
+        children: [
+          showVideo
+              ? YoutubePlayer(
                   controller: controller,
                   showVideoProgressIndicator: true,
                   progressIndicatorColor: Colors.amber,
@@ -195,11 +166,12 @@ class _InitialPgaeState extends State<InitialPgae> {
                     });
                     loadDataGoToNextPage();
                   },
-                ),
-                Positioned(
-                    bottom: 5, right: 5, child: MyFuntions.getClock(context)),
-              ],
-            ),
+                )
+              : Container(),
+          Positioned(bottom: 5, right: 5, child: MyFuntions.getClock(context)),
+          isLoading ? MyFuntions.showLoading() : Container()
+        ],
+      ),
     );
   }
 
@@ -213,7 +185,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.73';
+        g.ip = '192.168.1.61';
       });
     }
     await g.sqlProductionDB.initConnection();
@@ -363,7 +335,7 @@ class _InitialPgaeState extends State<InitialPgae> {
             goToDashboardImage(appBarTitle, imgLinkOrg);
           } else {
             g.sqlPlanning = await g.sqlApp.getPlanning();
-            Loader.hide();
+            // Loader.hide();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => DashboardPlanning()),
@@ -380,7 +352,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   void goToPreparation() {
     print("------------------> goToPreparation");
     g.showNotification = MyFuntions.checkShowNotification();
-    Loader.hide();
+    // Loader.hide();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => DashboardPreparation()),
@@ -430,7 +402,7 @@ class _InitialPgaeState extends State<InitialPgae> {
         g.chartUiWorkLayers.add(workLayerChart);
       }
     }
-    Loader.hide();
+    // Loader.hide();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => DashboardSewing()),

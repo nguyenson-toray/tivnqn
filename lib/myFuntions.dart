@@ -482,7 +482,7 @@ class MyFuntions {
     return Container(
       width: 160,
       color: const Color.fromRGBO(0, 0, 0, 0.122),
-      height: g.enableNtpCheck ? 75 : 65,
+      height: 65,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -509,14 +509,6 @@ class MyFuntions {
                   fontSize: 34),
             ),
           ),
-          g.enableNtpCheck
-              ? Text(
-                  g.ntpTimeOffsetMilliseconds > 0
-                      ? "+ ${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time"
-                      : "${g.ntpTimeOffsetMilliseconds} ms = pool.ntp.org Time",
-                  style: TextStyle(fontSize: 7),
-                )
-              : Container()
         ],
       ),
     );
@@ -588,5 +580,21 @@ class MyFuntions {
     return g.config.getNotification == 1 &&
         now.isAfter(begin) &&
         now.isBefore(end);
+  }
+
+  static Widget showLoading() {
+    return Container(
+        alignment: Alignment.center,
+        color: Colors.white,
+        width: g.screenWidth,
+        height: g.screenHeight,
+        child: SizedBox(
+          width: 100,
+          height: 200,
+          child: Column(children: [
+            Image.asset('assets/logo.png'),
+            Image.asset('assets/loading.gif'),
+          ]),
+        ));
   }
 }
