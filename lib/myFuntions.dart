@@ -554,26 +554,67 @@ class MyFuntions {
     playAudio();
 
     return FittedBox(
-      child: Container(
-        padding: EdgeInsets.all(10),
-        width: g.screenWidth,
-        height: g.screenHeight - g.appBarH,
-        color: Colors.amberAccent[100],
-        child: AutoSizeText(
-          textAlign: TextAlign.start,
-          softWrap: true,
-          maxFontSize: 70,
-          overflow: TextOverflow.ellipsis,
-          minFontSize: 16,
-          g.thongbao.getNoidung.toString(),
-          style: TextStyle(
-              fontSize: 70,
-              color: Colors.blue[900],
-              fontWeight: FontWeight.bold),
-          maxLines: 25,
-        ),
+      child: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            width: g.screenWidth,
+            height: g.screenHeight - g.appBarH,
+            color: Colors.amberAccent[100],
+            child: AutoSizeText(
+              textAlign: TextAlign.start,
+              softWrap: true,
+              maxFontSize: 70,
+              overflow: TextOverflow.ellipsis,
+              minFontSize: 16,
+              g.thongbao.getNoidung.toString(),
+              style: TextStyle(
+                  fontSize: 70,
+                  color: Colors.blue[900],
+                  fontWeight: FontWeight.bold),
+              maxLines: 25,
+            ),
+          ),
+          Positioned(
+            child: SizedBox(
+                width: 100,
+                height: 100,
+                child: Image.asset('assets/speaker.gif')),
+            right: 0,
+            top: 0,
+          )
+        ],
       ),
     );
+  }
+
+  static bool checkThongBao() {
+    print(g.thongbao);
+    DateTime time = DateTime.now();
+    bool result = false;
+    if (!g.thongbao.getOnOff) {
+      g.title = "Sản lượng & tỉ lệ lỗi".toUpperCase();
+      result = false;
+    } else {
+      DateTime timeBegin1 = g.thongbao.getThoigian1;
+      DateTime timeEnd1 =
+          timeBegin1.add(Duration(minutes: g.thongbao.getThoiluongPhut));
+      DateTime timeBegin2 = g.thongbao.getThoigian2;
+      DateTime timeEnd2 =
+          timeBegin2.add(Duration(minutes: g.thongbao.getThoiluongPhut));
+      DateTime timeBegin3 = g.thongbao.getThoigian3;
+      DateTime timeEnd3 =
+          timeBegin3.add(Duration(minutes: g.thongbao.getThoiluongPhut));
+
+      if ((time.isAfter(timeBegin1) && time.isBefore(timeEnd1)) ||
+          (time.isAfter(timeBegin2) && time.isBefore(timeEnd2)) ||
+          (time.isAfter(timeBegin3) && time.isBefore(timeEnd3))) {
+        g.title = g.thongbao.getTieude;
+        result = true;
+      }
+    }
+    print('checkThongBao : ' + result.toString());
+    return result;
   }
 
   static Widget showLoading() {

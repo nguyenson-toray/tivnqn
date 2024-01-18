@@ -65,12 +65,12 @@ class ThongBao {
       tieude: map['tieude'] as String,
       noidung: map['noidung'] as String,
       thoiluongPhut: map['thoiluongPhut'] as int,
-      thoigian1: DateTime.parse(
-          g.todayString + " " + map['thoigian1'].toString().substring(0, 8)),
-      thoigian2: DateTime.parse(
-          g.todayString + " " + map['thoigian2'].toString().substring(0, 8)),
-      thoigian3: DateTime.parse(
-          g.todayString + " " + map['thoigian3'].toString().substring(0, 8)),
+      thoigian1:
+          DateTime.parse(g.todayString + " " + map['thoigian1']) as DateTime,
+      thoigian2:
+          DateTime.parse(g.todayString + " " + map['thoigian2']) as DateTime,
+      thoigian3:
+          DateTime.parse(g.todayString + " " + map['thoigian3']) as DateTime,
     );
   }
 
@@ -81,7 +81,7 @@ class ThongBao {
 
   @override
   String toString() {
-    return 'ThongBao(onOff: $onOff, tieude: $tieude, noidung: $noidung, thoiluongPhut: $thoiluongPhut, thoigian1: $thoigian1, thoigian2: $thoigian2, thoigian3: $thoigian3)';
+    return 'ThongBao(onOff: $onOff, tieude: $tieude , thoiluongPhut: $thoiluongPhut, thoigian1: $thoigian1, thoigian2: $thoigian2, thoigian3: $thoigian3)';
   }
 
   @override

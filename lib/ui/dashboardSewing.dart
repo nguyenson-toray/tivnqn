@@ -86,26 +86,9 @@ class _DashboardSewingState extends State<DashboardSewing>
         });
         g.configs = await g.sqlApp.sellectConfigs();
         g.thongbao = await g.sqlApp.sellectThongBao();
-
-        if (!g.thongbao.getOnOff) {
-          setState(() {
-            g.title = "Sản lượng & tỉ lệ lỗi".toUpperCase();
-          });
-        } else {
-          if ((time.isAfter(g.thongbao.getThoigian1) &&
-                  time.isBefore(g.thongbao.getThoigian1
-                      .add(Duration(minutes: g.thongbao.getThoiluongPhut)))) ||
-              (time.isAfter(g.thongbao.getThoigian2) &&
-                  time.isBefore(g.thongbao.getThoigian2
-                      .add(Duration(minutes: g.thongbao.getThoiluongPhut)))) ||
-              (time.isAfter(g.thongbao.getThoigian3) &&
-                  time.isBefore(g.thongbao.getThoigian3
-                      .add(Duration(minutes: g.thongbao.getThoiluongPhut))))) {
-            setState(() {
-              g.title = g.thongbao.getTieude;
-            });
-          }
-        }
+        setState(() {
+          g.showThongBao = MyFuntions.checkThongBao();
+        });
       }
     });
 
@@ -195,7 +178,7 @@ class _DashboardSewingState extends State<DashboardSewing>
                         : g.screenType == 3
                             ? Screen3EtsProcess()
                             : Screen4EtsWorkLayer()),
-            g.thongbao.getOnOff
+            g.showThongBao
                 ? Positioned(child: MyFuntions.showNotification())
                 : Positioned(
                     right: 2,

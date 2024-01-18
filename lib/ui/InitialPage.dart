@@ -375,6 +375,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   void goToSewingPage() async {
     print("------------------> goToSewingPage");
     g.thongbao = await g.sqlApp.sellectThongBao();
+    g.showThongBao = MyFuntions.checkThongBao();
     g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
 

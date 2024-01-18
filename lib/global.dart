@@ -110,4 +110,5 @@ class g {
   static bool enablePercentComplete = false;
   static List<Planning> sqlPlanning = [];
   static late ThongBao thongbao;
+  static bool showThongBao = false;
 }
