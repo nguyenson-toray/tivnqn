@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class Configs {
@@ -9,10 +10,6 @@ class Configs {
   int? doExercise;
   String? doExerciseTime;
   int? reloadSeconds;
-  int? notification;
-  String? notificationLink;
-  String? notificationBegin;
-  int? notificationDurationMinute;
   int? productionChart;
   String? productionChartBegin;
   int? productionChartDurationMinute;
@@ -21,31 +18,9 @@ class Configs {
   String? etsChartBegin;
   int? etsChartDurationMinute;
   String? etsMO;
-  Configs({
-    this.id,
-    this.section,
-    this.ip,
-    this.mac,
-    this.imageLink,
-    this.doExercise,
-    this.doExerciseTime,
-    this.reloadSeconds,
-    this.notification,
-    this.notificationLink,
-    this.notificationBegin,
-    this.notificationDurationMinute,
-    this.productionChart,
-    this.productionChartBegin,
-    this.productionChartDurationMinute,
-    this.productionChartRangeDay,
-    this.etsChart,
-    this.etsChartBegin,
-    this.etsChartDurationMinute,
-    this.etsMO,
-  });
-  get getId => this.id;
+  int? get getId => this.id;
 
-  set setId(id) => this.id = id;
+  set setId(int? id) => this.id = id;
 
   get getSection => this.section;
 
@@ -74,25 +49,6 @@ class Configs {
   get getReloadSeconds => this.reloadSeconds;
 
   set setReloadSeconds(reloadSeconds) => this.reloadSeconds = reloadSeconds;
-
-  get getNotification => this.notification;
-
-  set setNotification(notification) => this.notification = notification;
-
-  get getNotificationLink => this.notificationLink;
-
-  set setNotificationLink(notificationLink) =>
-      this.notificationLink = notificationLink;
-
-  get getNotificationBegin => this.notificationBegin;
-
-  set setNotificationBegin(notificationBegin) =>
-      this.notificationBegin = notificationBegin;
-
-  get getNotificationDurationMinute => this.notificationDurationMinute;
-
-  set setNotificationDurationMinute(notificationDurationMinute) =>
-      this.notificationDurationMinute = notificationDurationMinute;
 
   get getProductionChart => this.productionChart;
 
@@ -130,6 +86,24 @@ class Configs {
   get getEtsMO => this.etsMO;
 
   set setEtsMO(etsMO) => this.etsMO = etsMO;
+  Configs({
+    this.id,
+    this.section,
+    this.ip,
+    this.mac,
+    this.imageLink,
+    this.doExercise,
+    this.doExerciseTime,
+    this.reloadSeconds,
+    this.productionChart,
+    this.productionChartBegin,
+    this.productionChartDurationMinute,
+    this.productionChartRangeDay,
+    this.etsChart,
+    this.etsChartBegin,
+    this.etsChartDurationMinute,
+    this.etsMO,
+  });
 
   Configs copyWith({
     int? id,
@@ -140,10 +114,6 @@ class Configs {
     int? doExercise,
     String? doExerciseTime,
     int? reloadSeconds,
-    int? notification,
-    String? notificationLink,
-    String? notificationBegin,
-    int? notificationDurationMinute,
     int? productionChart,
     String? productionChartBegin,
     int? productionChartDurationMinute,
@@ -162,11 +132,6 @@ class Configs {
       doExercise: doExercise ?? this.doExercise,
       doExerciseTime: doExerciseTime ?? this.doExerciseTime,
       reloadSeconds: reloadSeconds ?? this.reloadSeconds,
-      notification: notification ?? this.notification,
-      notificationLink: notificationLink ?? this.notificationLink,
-      notificationBegin: notificationBegin ?? this.notificationBegin,
-      notificationDurationMinute:
-          notificationDurationMinute ?? this.notificationDurationMinute,
       productionChart: productionChart ?? this.productionChart,
       productionChartBegin: productionChartBegin ?? this.productionChartBegin,
       productionChartDurationMinute:
@@ -191,10 +156,6 @@ class Configs {
       'doExercise': doExercise,
       'doExerciseTime': doExerciseTime,
       'reloadSeconds': reloadSeconds,
-      'notification': notification,
-      'notificationLink': notificationLink,
-      'notificationBegin': notificationBegin,
-      'notificationDurationMinute': notificationDurationMinute,
       'productionChart': productionChart,
       'productionChartBegin': productionChartBegin,
       'productionChartDurationMinute': productionChartDurationMinute,
@@ -219,17 +180,6 @@ class Configs {
           : null,
       reloadSeconds:
           map['reloadSeconds'] != null ? map['reloadSeconds'] as int : null,
-      notification:
-          map['notification'] != null ? map['notification'] as int : null,
-      notificationLink: map['notificationLink'] != null
-          ? map['notificationLink'] as String
-          : null,
-      notificationBegin: map['notificationBegin'] != null
-          ? map['notificationBegin'] as String
-          : null,
-      notificationDurationMinute: map['notificationDurationMinute'] != null
-          ? map['notificationDurationMinute'] as int
-          : null,
       productionChart:
           map['productionChart'] != null ? map['productionChart'] as int : null,
       productionChartBegin: map['productionChartBegin'] != null
@@ -259,7 +209,7 @@ class Configs {
 
   @override
   String toString() {
-    return 'Configs(id: $id, section: $section, ip: $ip, mac: $mac, imageLink: $imageLink, doExercise: $doExercise, doExerciseTime: $doExerciseTime, reloadSeconds: $reloadSeconds, notification: $notification, notificationLink: $notificationLink, notificationBegin: $notificationBegin, notificationDurationMinute: $notificationDurationMinute, productionChart: $productionChart, productionChartBegin: $productionChartBegin, productionChartDurationMinute: $productionChartDurationMinute, productionChartRangeDay: $productionChartRangeDay, etsChart: $etsChart, etsChartBegin: $etsChartBegin, etsChartDurationMinute: $etsChartDurationMinute, etsMO: $etsMO)';
+    return 'Configs(id: $id, section: $section, ip: $ip, mac: $mac, imageLink: $imageLink, doExercise: $doExercise, doExerciseTime: $doExerciseTime, reloadSeconds: $reloadSeconds, productionChart: $productionChart, productionChartBegin: $productionChartBegin, productionChartDurationMinute: $productionChartDurationMinute, productionChartRangeDay: $productionChartRangeDay, etsChart: $etsChart, etsChartBegin: $etsChartBegin, etsChartDurationMinute: $etsChartDurationMinute, etsMO: $etsMO)';
   }
 
   @override
@@ -274,10 +224,6 @@ class Configs {
         other.doExercise == doExercise &&
         other.doExerciseTime == doExerciseTime &&
         other.reloadSeconds == reloadSeconds &&
-        other.notification == notification &&
-        other.notificationLink == notificationLink &&
-        other.notificationBegin == notificationBegin &&
-        other.notificationDurationMinute == notificationDurationMinute &&
         other.productionChart == productionChart &&
         other.productionChartBegin == productionChartBegin &&
         other.productionChartDurationMinute == productionChartDurationMinute &&
@@ -286,5 +232,25 @@ class Configs {
         other.etsChartBegin == etsChartBegin &&
         other.etsChartDurationMinute == etsChartDurationMinute &&
         other.etsMO == etsMO;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        section.hashCode ^
+        ip.hashCode ^
+        mac.hashCode ^
+        imageLink.hashCode ^
+        doExercise.hashCode ^
+        doExerciseTime.hashCode ^
+        reloadSeconds.hashCode ^
+        productionChart.hashCode ^
+        productionChartBegin.hashCode ^
+        productionChartDurationMinute.hashCode ^
+        productionChartRangeDay.hashCode ^
+        etsChart.hashCode ^
+        etsChartBegin.hashCode ^
+        etsChartDurationMinute.hashCode ^
+        etsMO.hashCode;
   }
 }

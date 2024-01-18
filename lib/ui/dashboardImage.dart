@@ -22,16 +22,12 @@ class _DashboardImageState extends State<DashboardImage> {
   void initState() {
     // TODO: implement initState
     initImage(widget.linkImageDirectly);
-    g.showNotification = MyFuntions.checkShowNotification();
     Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
       DateTime time = DateTime.now();
       if (time.hour == 16 && time.minute >= 55)
         exit(0);
       else {
         g.configs = await g.sqlApp.sellectConfigs();
-        setState(() {
-          g.showNotification = MyFuntions.checkShowNotification();
-        });
       }
     });
 
@@ -80,9 +76,6 @@ class _DashboardImageState extends State<DashboardImage> {
         body: Stack(
           children: [
             imageDashboard,
-            g.showNotification
-                ? Positioned(child: MyFuntions.showNotification())
-                : Container(),
             Positioned(
                 right: 2,
                 bottom: 2,

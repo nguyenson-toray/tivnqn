@@ -552,34 +552,28 @@ class MyFuntions {
 
   static Widget showNotification() {
     playAudio();
+
     return FittedBox(
       child: Container(
+        padding: EdgeInsets.all(10),
         width: g.screenWidth,
         height: g.screenHeight - g.appBarH,
-        color: Colors.tealAccent[100],
+        color: Colors.amberAccent[100],
         child: AutoSizeText(
           textAlign: TextAlign.start,
           softWrap: true,
           maxFontSize: 70,
           overflow: TextOverflow.ellipsis,
-          minFontSize: 40,
-          g.config.getNotificationLink.toString(),
-          style: TextStyle(fontSize: 70),
-          maxLines: 9,
+          minFontSize: 16,
+          g.thongbao.getNoidung.toString(),
+          style: TextStyle(
+              fontSize: 70,
+              color: Colors.blue[900],
+              fontWeight: FontWeight.bold),
+          maxLines: 25,
         ),
       ),
     );
-  }
-
-  static bool checkShowNotification() {
-    DateTime now = DateTime.now();
-    DateTime begin = DateTime.parse(
-        "${g.todayString} " + "${g.config.getNotificationBegin}");
-    DateTime end =
-        begin.add(Duration(minutes: g.config.getNotificationDurationMinute));
-    return g.config.getNotification == 1 &&
-        now.isAfter(begin) &&
-        now.isBefore(end);
   }
 
   static Widget showLoading() {

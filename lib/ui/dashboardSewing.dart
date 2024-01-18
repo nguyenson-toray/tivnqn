@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:tivnqn/connection/sqlApp.dart';
 import 'package:tivnqn/myFuntions.dart';
 import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/screen2EtsName.dart';
@@ -67,6 +68,7 @@ class _DashboardSewingState extends State<DashboardSewing>
     });
     Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
       DateTime time = DateTime.now();
+
       if (time.hour == 16 && time.minute >= 55)
         exit(0);
       else {
@@ -83,9 +85,27 @@ class _DashboardSewingState extends State<DashboardSewing>
           g.reloadType.notifyListeners();
         });
         g.configs = await g.sqlApp.sellectConfigs();
-        setState(() {
-          g.showNotification = MyFuntions.checkShowNotification();
-        });
+        g.thongbao = await g.sqlApp.sellectThongBao();
+
+        if (!g.thongbao.getOnOff) {
+          setState(() {
+            g.title = "Sản lượng & tỉ lệ lỗi".toUpperCase();
+          });
+        } else {
+          if ((time.isAfter(g.thongbao.getThoigian1) &&
+                  time.isBefore(g.thongbao.getThoigian1
+                      .add(Duration(minutes: g.thongbao.getThoiluongPhut)))) ||
+              (time.isAfter(g.thongbao.getThoigian2) &&
+                  time.isBefore(g.thongbao.getThoigian2
+                      .add(Duration(minutes: g.thongbao.getThoiluongPhut)))) ||
+              (time.isAfter(g.thongbao.getThoigian3) &&
+                  time.isBefore(g.thongbao.getThoigian3
+                      .add(Duration(minutes: g.thongbao.getThoiluongPhut))))) {
+            setState(() {
+              g.title = g.thongbao.getTieude;
+            });
+          }
+        }
       }
     });
 
@@ -175,19 +195,18 @@ class _DashboardSewingState extends State<DashboardSewing>
                         : g.screenType == 3
                             ? Screen3EtsProcess()
                             : Screen4EtsWorkLayer()),
-            g.showNotification
+            g.thongbao.getOnOff
                 ? Positioned(child: MyFuntions.showNotification())
-                : Container(),
-            Positioned(
-                right: 2,
-                bottom: 2,
-                child: Text(
-                  'Version : ${g.version}',
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 6,
-                      fontWeight: FontWeight.normal),
-                )),
+                : Positioned(
+                    right: 2,
+                    bottom: 2,
+                    child: Text(
+                      'Version : ${g.version}',
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 6,
+                          fontWeight: FontWeight.normal),
+                    )),
           ],
         ));
   }
@@ -321,7 +340,7 @@ Change ''',
       ],
       title: g.screenType == 1
           ? Text(
-              'SẢN LƯỢNG & TỈ LỆ LỖI',
+              g.title.toString(),
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

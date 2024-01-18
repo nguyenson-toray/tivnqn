@@ -28,9 +28,6 @@ class _DashboardPreparationState extends State<DashboardPreparation> {
         exit(0);
       else {
         g.configs = await g.sqlApp.sellectConfigs();
-        setState(() {
-          g.showNotification = MyFuntions.checkShowNotification();
-        });
       }
     });
     super.initState();
@@ -80,9 +77,6 @@ class _DashboardPreparationState extends State<DashboardPreparation> {
                 : g.config.getSection == 'preparation2'
                     ? DashboardPCutting()
                     : DashboardPDispatch(),
-            g.showNotification
-                ? Positioned(child: MyFuntions.showNotification())
-                : Container(),
             Positioned(
                 right: 2,
                 bottom: 2,

@@ -22,6 +22,7 @@ import 'package:tivnqn/model/sqlSumNoQty.dart';
 import 'package:tivnqn/model/sqlT01.dart';
 import 'package:tivnqn/model/sqlT01Full.dart';
 import 'package:tivnqn/model/sqlWorkLayer.dart';
+import 'package:tivnqn/model/thongbao.dart';
 import 'package:tivnqn/model/workSummary.dart';
 
 class g {
@@ -108,6 +109,5 @@ class g {
   //---------------- planning chart
   static bool enablePercentComplete = false;
   static List<Planning> sqlPlanning = [];
-
-  static bool showNotification = false;
+  static late ThongBao thongbao;
 }

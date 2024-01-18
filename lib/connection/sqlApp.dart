@@ -9,6 +9,7 @@ import 'package:tivnqn/model/preparation/pCutting.dart';
 import 'package:tivnqn/model/preparation/pDispatch.dart';
 import 'package:tivnqn/model/preparation/pInspectionFabric.dart';
 import 'package:tivnqn/model/preparation/pRelaxationFabric.dart';
+import 'package:tivnqn/model/thongbao.dart';
 
 class SqlApp {
   var connection = ConnectToSqlServerDirectly();
@@ -121,6 +122,36 @@ class SqlApp {
           });
     } catch (e) {
       print('sellectConfigs --> Exception : ' + e.toString());
+    }
+    return result;
+  }
+
+  Future<ThongBao> sellectThongBao() async {
+    DateTime now = DateTime.now();
+    ThongBao result = ThongBao(
+        onOff: false,
+        tieude: 'tieude',
+        noidung: 'noidung',
+        thoiluongPhut: 10,
+        thoigian1: now,
+        thoigian2: now,
+        thoigian3: now);
+    List<Map<String, dynamic>> tempResult = [];
+    final String query = '''select * from [App].[dbo].[thongbao] ''';
+    print('Query : $query  ');
+    try {
+      var rowData;
+      await connection.getRowsOfQueryResult(query).then((value) => {
+            if (value.runtimeType == String)
+              {print('=> ERROR ')}
+            else
+              {
+                tempResult = value.cast<Map<String, dynamic>>(),
+                result = ThongBao.fromMap(tempResult.first),
+              }
+          });
+    } catch (e) {
+      print('sellectThongBao --> Exception : ' + e.toString());
     }
     return result;
   }

@@ -48,6 +48,7 @@ class _InitialPgaeState extends State<InitialPgae> {
   String hourString = "07";
   String minuteString = "45";
   bool showVideo = false;
+  String imgLinkOrg = '';
   @override
   initState() {
     // TODO: implement initState
@@ -57,13 +58,8 @@ class _InitialPgaeState extends State<InitialPgae> {
       print('screen size : ${g.screenWidth} x ${g.screenHeight}');
     });
     fluWakeLock.enable();
+
     initSQLConfigsDoExcerise();
-    if (kDebugMode) {
-      setState(() {
-        // hourString = "14";
-        // minuteString = "32";
-      });
-    }
 
     videoID = YoutubePlayer.convertUrlToId(linkDoExercise)!;
     controller = YoutubePlayerController(
@@ -99,10 +95,22 @@ class _InitialPgaeState extends State<InitialPgae> {
   }
 
   Future<void> initSQLConfigsDoExcerise() async {
+    g.ip = (await NetworkInfo().getWifiIP())!;
+    if (kDebugMode) {
+      setState(() {
+        g.ip = '192.168.1.71';
+      });
+    }
     isConnectedSqlAppTiqn = await g.sqlApp.initConnection();
     isLoading = false;
     if (isConnectedSqlAppTiqn) {
       g.configs = await g.sqlApp.sellectConfigs();
+      g.configs.forEach((element) {
+        if (g.ip == element.getIp) {
+          g.config = element;
+          imgLinkOrg = element.getImageLink;
+        }
+      });
       setState(() {
         isLoading = false;
         textLoading = '';
@@ -111,7 +119,8 @@ class _InitialPgaeState extends State<InitialPgae> {
         hour = exceriseBegin.hour;
         minute = exceriseBegin.minute;
         print('exceriseBegin :' + exceriseBegin.toString());
-        if (DateTime.now().isAfter(exceriseBegin)) {
+        if (g.config.getDoExercise == 0 ||
+            DateTime.now().isAfter(exceriseBegin)) {
           Future.delayed(const Duration(milliseconds: 200)).then((val) {
             loadDataGoToNextPage();
             return;
@@ -121,12 +130,15 @@ class _InitialPgaeState extends State<InitialPgae> {
             showVideo = true;
           });
 
-          cron.schedule(Schedule.parse("${minute - 1} $hour * * * "), () async {
-            //// 30 2 * * * [command]This will run once a day, at 2:30 am.
-            Timer.periodic(Duration(milliseconds: 200), (timer) {
-              if (!isPlaying && playerIsReady) checkAndPlay();
-            });
+          // cron.schedule(Schedule.parse("${minute - 1} $hour * * * "), () async {
+          //// 30 2 * * * [command]This will run once a day, at 2:30 am.
+          Timer.periodic(Duration(milliseconds: 200), (timer) {
+            if (!isPlaying && playerIsReady) checkAndPlay();
+            if (isPlaying) {
+              timer.cancel();
+            }
           });
+          // });
         }
       });
     } else {
@@ -151,14 +163,16 @@ class _InitialPgaeState extends State<InitialPgae> {
                   progressIndicatorColor: Colors.amber,
                   progressColors: ProgressBarColors(
                     playedColor: Colors.amber,
-                    handleColor: Colors.amberAccent,
+                    handleColor: Colors.tealAccent,
                   ),
                   onReady: () {
                     print('Player is ready.');
-
-                    setState(() {
-                      playerIsReady = true;
-                    });
+                    if (DateTime.now().isAfter(exceriseBegin)) {
+                      loadDataGoToNextPage();
+                    } else
+                      setState(() {
+                        playerIsReady = true;
+                      });
                   },
                   onEnded: (metaData) {
                     setState(() {
@@ -179,24 +193,14 @@ class _InitialPgaeState extends State<InitialPgae> {
     setState(() {
       isLoading = true;
     });
-    String imgLinkOrg = '';
+
     String appBarTitle = '';
     g.currentIndexLine = g.lines.indexOf(g.currentLine);
-    g.ip = (await NetworkInfo().getWifiIP())!;
-    if (kDebugMode) {
-      setState(() {
-        g.ip = '192.168.1.61';
-      });
-    }
+
     await g.sqlProductionDB.initConnection();
     await g.sqlETSDB.initConnection();
     print('g.ip : ${g.ip} ');
-    g.configs.forEach((element) {
-      if (g.ip == element.getIp) {
-        g.config = element;
-        imgLinkOrg = element.getImageLink;
-      }
-    });
+
     switch (g.config.getSection) {
       case 'line1':
         {
@@ -351,8 +355,6 @@ class _InitialPgaeState extends State<InitialPgae> {
 
   void goToPreparation() {
     print("------------------> goToPreparation");
-    g.showNotification = MyFuntions.checkShowNotification();
-    // Loader.hide();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => DashboardPreparation()),
@@ -360,7 +362,6 @@ class _InitialPgaeState extends State<InitialPgae> {
   }
 
   void goToDashboardImage(String title, String imgLinkOrg) {
-    g.showNotification = MyFuntions.checkShowNotification();
     print("------------------> goToDashboardImage");
     Navigator.pushReplacement(
       context,
@@ -372,8 +373,8 @@ class _InitialPgaeState extends State<InitialPgae> {
   }
 
   void goToSewingPage() async {
-    g.showNotification = MyFuntions.checkShowNotification();
     print("------------------> goToSewingPage");
+    g.thongbao = await g.sqlApp.sellectThongBao();
     g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
     g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
 
