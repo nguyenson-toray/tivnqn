@@ -16,7 +16,7 @@ import 'package:tivnqn/ui/chartUI.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
 import 'package:tivnqn/ui/dashboardPreparation.dart';
-import 'package:tivnqn/ui/dashboardSewing.dart';
+import 'package:tivnqn/ui/dashboardProduction.dart';
 import 'package:youtube_player_flutter_quill/youtube_player_flutter_quill.dart';
 
 class InitialPgae extends StatefulWidget {
@@ -98,7 +98,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.71';
+        g.ip = '192.168.1.73';
       });
     }
     isConnectedSqlAppTiqn = await g.sqlApp.initConnection();
@@ -195,7 +195,6 @@ class _InitialPgaeState extends State<InitialPgae> {
     });
 
     String appBarTitle = '';
-    g.currentIndexLine = g.lines.indexOf(g.currentLine);
 
     await g.sqlProductionDB.initConnection();
     await g.sqlETSDB.initConnection();
@@ -205,66 +204,84 @@ class _InitialPgaeState extends State<InitialPgae> {
       case 'line1':
         {
           g.currentLine = 1;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line2':
         {
           g.currentLine = 2;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line3':
         {
           g.currentLine = 3;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line4':
         {
           g.currentLine = 4;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line5':
         {
           g.currentLine = 5;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line6':
         {
           g.currentLine = 6;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line7':
         {
           g.currentLine = 7;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line8':
         {
           g.currentLine = 8;
-          goToSewingPage();
+          goDashboardProduction();
         }
       case 'line9':
         {
           g.currentLine = 9;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line10':
         {
           g.currentLine = 10;
-          goToSewingPage();
+          goDashboardProduction();
         }
         break;
       case 'line11':
         {
           g.currentLine = 11;
-          goToSewingPage();
+          goDashboardProduction();
+        }
+        break;
+      case 'lineControl3':
+        {
+          ;
+          g.currentIndexLine = 0;
+          g.isTVControl = true;
+          g.configs.forEach((element) {
+            if (element.getEtsMO != 'no') {
+              String section = element.getSection;
+              g.linesETS.add(int.parse(section.replaceFirst('line', '')));
+            }
+          });
+          g.currentLine = g.linesETS.first;
+          if (g.linesETS.length > 1) {
+            g.autochangeLine = true;
+          }
+          goDashboardProduction();
         }
         break;
       case 'preparation1':
@@ -372,8 +389,8 @@ class _InitialPgaeState extends State<InitialPgae> {
     );
   }
 
-  void goToSewingPage() async {
-    print("------------------> goToSewingPage");
+  void goDashboardProduction() async {
+    print("------------------> goDashboardProduction");
     g.thongbao = await g.sqlApp.sellectThongBao();
     g.showThongBao = MyFuntions.checkThongBao();
     g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
@@ -388,26 +405,15 @@ class _InitialPgaeState extends State<InitialPgae> {
           g.moDetails.firstWhere((element) => element.getLine == g.currentLine);
       g.processDetail =
           await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-      g.sqlSumEmpQty = await g.sqlETSDB
-          .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
       g.sqlSumNoQty = await g.sqlETSDB
           .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
       g.sqlCummulativeNoQty =
           await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-      g.workSummary = MyFuntions.summaryDailyDataETS();
-      //-----------
-      g.workLayers = await g.sqlETSDB.getWorklayer();
-      MyFuntions.createDataChartEtsWorkLayer();
-      for (int i = 0; i < g.workLayerNames.length; i++) {
-        var workLayerChart = ChartUI.createChartUIWorkLayer(
-            g.workLayerQtys[i], g.workLayerNames[i]);
-        g.chartUiWorkLayers.add(workLayerChart);
-      }
+      MyFuntions.summaryDataETS();
     }
-    // Loader.hide();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DashboardSewing()),
+      MaterialPageRoute(builder: (context) => DashboardProduction()),
     );
   }
 }

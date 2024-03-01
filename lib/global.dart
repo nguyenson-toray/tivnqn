@@ -28,10 +28,15 @@ import 'package:tivnqn/model/workSummary.dart';
 class g {
   static DateTime today = DateTime.now();
   static int ntpTimeOffsetMilliseconds = 0;
-  static DateTime pickedDate = DateTime.now();
+  static DateTime pickedDate = DateTime.now(); //.add(Duration(days: 0));
   static int processNoFinishBegin = 71;
   static int processNoFinishEnd = 150;
   static String title = 'SẢN LƯỢNG & TỈ LỆ LỖI';
+  static Widget titleAppBar = Text('SẢN LƯỢNG & TỈ LỆ LỖI',
+      style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: g.fontSizeAppbar));
   static late String todayString;
   static const String dateFormat = 'yyyy-MM-dd';
   static const String dateFormat2 = 'dd/MM/yyyy';
@@ -49,21 +54,20 @@ class g {
   static double fontSizeAppbar = 20;
 
   static String ip = '';
-  static bool isTVLine = true;
-  static bool isTVPlanning = true;
-  static String tvName = '';
+  static bool isTVControl = false;
   static String imgDashboardLink = '';
-  static bool enableMoney = false;
   static var currencyFormat =
       NumberFormat.currency(locale: "vi_VN", symbol: "đ");
   static int screenType = 1; //1 :chart , 2: name, 3: process
+  static String screenMode = 'chartProduction'; // 'chartETS',
   static bool autochangeLine = false;
   static bool isLoading = false;
   static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  static List<int> linesETS = [];
   static int currentLine = 1;
+  static int currentLineETS = 1;
   static int currentIndexLine = 0;
   static String dashboardGeneralType = 'general';
-  // static late SharedPreferences sharedPreferences;
   static var sqlProductionDB = SqlProductionDB();
   static var sqlETSDB = SqlETSDB();
 
@@ -86,13 +90,13 @@ class g {
   static List<SqlSumEmpQty> sqlSumEmpQty = [];
   static List<SqlSumNoQty> sqlSumNoQty = [];
   static List<SqlCummulativeNoQty> sqlCummulativeNoQty = [];
-  static List<WorkSummary> workSummary = [];
-  static List<SqlEmployee> employeesScaned = [];
+  // static List<WorkSummary> workSummary = [];
+  // static List<SqlEmployee> employeesScaned = [];
   static List<ProcessDetail> processDetail = [];
-  static List<int> processAll = [];
-  static List<int> processScaned = [];
-  static List<int> processNotScan = [];
-  static List<String> idEmpScaneds = [];
+  // static List<int> processAll = [];
+  // static List<int> processScaned = [];
+  // static List<int> processNotScan = [];
+  // static List<String> idEmpScaneds = [];
   static List<SqlT01> sqlT01 = [];
   static List<SqlT01Full> sqlT01s = [];
   static List<Configs> configs = [];

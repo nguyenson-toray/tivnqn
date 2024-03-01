@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/ui/InitialPage.dart';
 import 'package:flutter/services.dart';
+import 'package:tivnqn/ui/dashboardETS.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

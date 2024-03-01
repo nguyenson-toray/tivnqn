@@ -11,63 +11,63 @@ import 'package:slide_digital_clock/slide_digital_clock.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class MyFuntions {
-  static List<WorkSummary> summaryDailyDataETS() {
-    g.processScaned.clear();
-    g.processNotScan.clear();
-    g.idEmpScaneds.clear();
+  // static List<WorkSummary> summaryDailyDataETS() {
+  //   g.processScaned.clear();
+  //   g.processNotScan.clear();
+  //   g.idEmpScaneds.clear();
 
-    List<WorkSummary> result = [];
-    for (var element in g.sqlSumEmpQty) {
-      g.idEmpScaneds.add(element.getEmpId);
-      g.processScaned.add(element.getGxNo);
-    }
-    g.idEmpScaneds = g.idEmpScaneds.toSet().toList();
-    g.processScaned = g.processScaned.toSet().toList();
-    g.processNotScan =
-        g.processAll.toSet().difference(g.processScaned.toSet()).toList();
-    for (var idEmpScaned in g.idEmpScaneds) {
-      double moneyEmp = 0;
-      final String currentName = g.sqlEmployees
-          .firstWhere((emp) => emp.getEmpId == idEmpScaned)
-          .getEmpName;
-      var names = currentName.split(' ');
-      final String currentEmpShortName =
-          "${names[names.length - 2]} ${names.last}";
-      WorkSummary workSummary = WorkSummary(
-          shortName: 'shortName',
-          processDetailQtys: [
-            ProcessDetailQty(GxNo: 0, GxName: 'GxName', qty: 0)
-          ],
-          money: 0);
-      List<ProcessDetailQty> processDetailQtys = [];
-      for (int i = 0; i < g.sqlSumEmpQty.length; i++) {
-        if (idEmpScaned == g.sqlSumEmpQty[i].EmpId) {
-          final int GxNo = g.sqlSumEmpQty[i].getGxNo;
-          final int qty = g.sqlSumEmpQty[i].getSumEmpQty;
+  //   List<WorkSummary> result = [];
+  //   for (var element in g.sqlSumEmpQty) {
+  //     g.idEmpScaneds.add(element.getEmpId);
+  //     g.processScaned.add(element.getGxNo);
+  //   }
+  //   g.idEmpScaneds = g.idEmpScaneds.toSet().toList();
+  //   g.processScaned = g.processScaned.toSet().toList();
+  //   g.processNotScan =
+  //       g.processAll.toSet().difference(g.processScaned.toSet()).toList();
+  //   for (var idEmpScaned in g.idEmpScaneds) {
+  //     double moneyEmp = 0;
+  //     final String currentName = g.sqlEmployees
+  //         .firstWhere((emp) => emp.getEmpId == idEmpScaned)
+  //         .getEmpName;
+  //     var names = currentName.split(' ');
+  //     final String currentEmpShortName =
+  //         "${names[names.length - 2]} ${names.last}";
+  //     WorkSummary workSummary = WorkSummary(
+  //         shortName: 'shortName',
+  //         processDetailQtys: [
+  //           ProcessDetailQty(GxNo: 0, GxName: 'GxName', qty: 0)
+  //         ],
+  //         money: 0);
+  //     List<ProcessDetailQty> processDetailQtys = [];
+  //     for (int i = 0; i < g.sqlSumEmpQty.length; i++) {
+  //       if (idEmpScaned == g.sqlSumEmpQty[i].EmpId) {
+  //         final int GxNo = g.sqlSumEmpQty[i].getGxNo;
+  //         final int qty = g.sqlSumEmpQty[i].getSumEmpQty;
 
-          final String GxName = g.processDetail
-              .firstWhere(
-                  (element) => element.getNo == g.sqlSumEmpQty[i].getGxNo)
-              .getName;
-          final processDetailQty =
-              ProcessDetailQty(GxNo: GxNo, GxName: GxName, qty: qty);
-          processDetailQtys.add(processDetailQty);
-          moneyEmp += qty *
-              g.processDetail
-                  .firstWhere(
-                      (element) => element.getNo == processDetailQty.getGxNo)
-                  .getUnitPrice;
-          workSummary = WorkSummary(
-              shortName: currentEmpShortName,
-              processDetailQtys: processDetailQtys,
-              money: moneyEmp);
-        }
-      }
-      result.add(workSummary);
-    }
-    print('summaryDailyDataETS => ${result.length}');
-    return result;
-  }
+  //         final String GxName = g.processDetail
+  //             .firstWhere(
+  //                 (element) => element.getNo == g.sqlSumEmpQty[i].getGxNo)
+  //             .getName;
+  //         final processDetailQty =
+  //             ProcessDetailQty(GxNo: GxNo, GxName: GxName, qty: qty);
+  //         processDetailQtys.add(processDetailQty);
+  //         moneyEmp += qty *
+  //             g.processDetail
+  //                 .firstWhere(
+  //                     (element) => element.getNo == processDetailQty.getGxNo)
+  //                 .getUnitPrice;
+  //         workSummary = WorkSummary(
+  //             shortName: currentEmpShortName,
+  //             processDetailQtys: processDetailQtys,
+  //             money: moneyEmp);
+  //       }
+  //     }
+  //     result.add(workSummary);
+  //   }
+  //   print('summaryDailyDataETS => ${result.length}');
+  //   return result;
+  // }
 
   static Future<bool> loadDataSQL(String type) async {
     print('loadDataSQL : $type');
@@ -85,19 +85,19 @@ class MyFuntions {
         break;
       case 'changeLine': // changeLine
         {
-          g.currentMoDetail = g.moDetails
-              .firstWhere((element) => element.getLine == g.currentLine);
-          g.processDetail =
-              await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-
-          g.currentIndexLine = g.lines.indexOf(g.currentLine);
-
-          g.sqlSumEmpQty = await g.sqlETSDB
-              .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
-          g.sqlSumNoQty = await g.sqlETSDB
-              .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-          g.sqlCummulativeNoQty =
-              await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+          if (g.screenMode == 'chartProduction') {
+          } else {
+            g.currentMoDetail = g.moDetails
+                .firstWhere((element) => element.getLine == g.currentLine);
+            g.processDetail =
+                await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
+            g.currentIndexLine = g.linesETS.indexOf(g.currentLine);
+            g.sqlSumNoQty = await g.sqlETSDB
+                .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
+            g.sqlCummulativeNoQty =
+                await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+            MyFuntions.summaryDataETS();
+          }
         }
         break;
       case 'refresh': // load line data , setting
@@ -108,10 +108,9 @@ class MyFuntions {
               g.config = element;
             }
           });
-
-          g.currentIndexLine = g.lines.indexOf(g.currentLine);
-          if (g.screenType == 1) {
+          if (g.screenMode == 'chartProduction') {
             //production
+            g.currentIndexLine = g.lines.indexOf(g.currentLine);
             g.sqlT01 =
                 await g.sqlProductionDB.getT01InspectionData(g.currentLine);
             g.chartData.clear();
@@ -120,12 +119,12 @@ class MyFuntions {
                 g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
           } else {
             //ETS
-            g.sqlSumEmpQty = await g.sqlETSDB
-                .getSqlSumEmpQty(g.currentMoDetail.getMo, g.pickedDate);
+            // g.sqlSumEmpQty = a
             g.sqlSumNoQty = await g.sqlETSDB
                 .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
             g.sqlCummulativeNoQty =
                 await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
+            MyFuntions.summaryDataETS();
           }
         }
         break;
@@ -412,39 +411,39 @@ class MyFuntions {
     return color;
   }
 
-  static void createDataChartEtsWorkLayer() {
-    g.workSummary.forEach((element) {
-      element.getProcessDetailQtys.forEach((processDetailQty) {
-        g.processDetailQtys.add(processDetailQty);
-      });
-    });
-    g.processNotScan.forEach((element) {
-      g.processDetailQtys
-          .add(ProcessDetailQty(GxNo: element, GxName: 'GxName', qty: 0));
-    });
-    g.processDetailQtys.sort((a, b) => a.getGxNo.compareTo(b.getGxNo));
-    g.workLayerNames.clear();
-    for (int i = 1; i <= 9; i++) {
-      List<ProcessDetailQty> processDetailQtyLayer = [];
-      String layerName = '';
-      g.processDetailQtys.forEach((element) {
-        if ((element.getGxNo >= g.workLayers[i].getPperationBegin) &
-            (element.getGxNo <= g.workLayers[i].getOperationEnd)) {
-          processDetailQtyLayer.add(element);
-          layerName = g.workLayers[i].getWorkLayerName;
-        }
-      });
+  // static void createDataChartEtsWorkLayer() {
+  //   g.workSummary.forEach((element) {
+  //     element.getProcessDetailQtys.forEach((processDetailQty) {
+  //       g.processDetailQtys.add(processDetailQty);
+  //     });
+  //   });
+  //   g.processNotScan.forEach((element) {
+  //     g.processDetailQtys
+  //         .add(ProcessDetailQty(GxNo: element, GxName: 'GxName', qty: 0));
+  //   });
+  //   g.processDetailQtys.sort((a, b) => a.getGxNo.compareTo(b.getGxNo));
+  //   g.workLayerNames.clear();
+  //   for (int i = 1; i <= 9; i++) {
+  //     List<ProcessDetailQty> processDetailQtyLayer = [];
+  //     String layerName = '';
+  //     g.processDetailQtys.forEach((element) {
+  //       if ((element.getGxNo >= g.workLayers[i].getPperationBegin) &
+  //           (element.getGxNo <= g.workLayers[i].getOperationEnd)) {
+  //         processDetailQtyLayer.add(element);
+  //         layerName = g.workLayers[i].getWorkLayerName;
+  //       }
+  //     });
 
-      if (processDetailQtyLayer.length > 0) {
-        g.workLayerNames.add(layerName);
-        g.workLayerQtys.add(processDetailQtyLayer);
-      }
-    }
-  }
+  //     if (processDetailQtyLayer.length > 0) {
+  //       g.workLayerNames.add(layerName);
+  //       g.workLayerQtys.add(processDetailQtyLayer);
+  //     }
+  //   }
+  // }
 
   static Widget clockAppBar(BuildContext context) {
     return Container(
-      width: 120,
+      width: 120, height: g.appBarH,
       color: Colors.transparent,
       // height: g.appBarH ,
       child: Column(
@@ -459,7 +458,7 @@ class MyFuntions {
                 .copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 17),
+                    fontSize: g.fontSizeAppbar),
             secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
                   color: Colors.tealAccent,
                   fontWeight: FontWeight.bold,
@@ -631,5 +630,26 @@ class MyFuntions {
             Image.asset('assets/loading.gif'),
           ]),
         ));
+  }
+
+  static summaryDataETS() {
+    g.processDetail.forEach((process) {
+      try {
+        process.setQtyDaily = g.sqlSumNoQty
+            .where((element) => element.getGxNo == process.getNo)
+            .first
+            .getSumNoQty;
+      } catch (e) {
+        process.setQtyDaily = 0;
+      }
+      try {
+        process.setQtyTotal = g.sqlCummulativeNoQty
+            .where((element) => element.getGxNo == process.getNo)
+            .first
+            .getCummulativeQty;
+      } catch (e) {
+        process.setQtyTotal = 0;
+      }
+    });
   }
 }

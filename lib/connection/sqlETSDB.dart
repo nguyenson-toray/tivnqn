@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tivnqn/global.dart';
@@ -99,7 +100,6 @@ ORDER BY CODE ASC''';
       if (value.runtimeType == String) {
         print('Query : $query => ERROR ');
       } else {
-        g.processAll.clear();
         tempResult = value.cast<Map<String, dynamic>>();
 
         for (var moName in moNames) {
@@ -124,12 +124,11 @@ ORDER BY CODE ASC''';
   Future<List<ProcessDetail>> getProcessDetail(String cnid) async {
     String query = '''  SELECT cnid, GxNO, GxCode, gxName, SamPrice
  FROM [ETSDB_TI].[dbo].tbSczzdGxDetail  
- WHERE cnid =  '$cnid' AND GxType = 'Sewing'
+ WHERE cnid =  '$cnid' 
  ORDER BY GxNO ASC ''';
-
+//  AND GxType = 'Sewing'
     List<ProcessDetail> result = [];
     var tempResult;
-    double money = 0;
     print('getProcessDetail : $query');
     try {
       await connection.getRowsOfQueryResult(query).then((value) => {
@@ -137,18 +136,18 @@ ORDER BY CODE ASC''';
               {print('Query : $query => ERROR ')}
             else
               {
-                g.processAll.clear(),
+                g.processDetail.clear(),
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    g.processAll.add(element['GxNO']),
-                    money = double.tryParse(element['SamPrice'].toString())!,
+                    // g.processDetail.add(element['GxNO']),
                     result.add(ProcessDetail(
                         cind: cnid,
                         no: element['GxNO'],
                         code: element['GxCode'],
                         name: element['gxName'],
-                        unitPrice: money))
+                        qtyDaily: 0,
+                        qtyTotal: 0))
                   }
               }
           });
@@ -168,6 +167,7 @@ ORDER BY CODE ASC''';
     // for (var moSetting in moSettings) {
     //   moNames.add(moSetting.getMo);
     // }
+
     g.configs.forEach((element) {
       if (element.getEtsMO.toString().length == 10) {
         moNames.add(element.getEtsMO.toString());

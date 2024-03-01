@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class ProcessDetail {
@@ -5,7 +6,16 @@ class ProcessDetail {
   int no;
   String code;
   String name;
-  double unitPrice;
+  int qtyDaily;
+  int qtyTotal;
+  ProcessDetail({
+    required this.cind,
+    required this.no,
+    required this.code,
+    required this.name,
+    required this.qtyDaily,
+    required this.qtyTotal,
+  });
   get getCind => this.cind;
 
   set setCind(cind) => this.cind = cind;
@@ -22,17 +32,31 @@ class ProcessDetail {
 
   set setName(name) => this.name = name;
 
-  get getUnitPrice => this.unitPrice;
+  get getQtyDaily => this.qtyDaily;
 
-  set setUnitPrice(unitPrice) => this.unitPrice = unitPrice;
+  set setQtyDaily(qtyDaily) => this.qtyDaily = qtyDaily;
 
-  ProcessDetail({
-    required this.cind,
-    required this.no,
-    required this.code,
-    required this.name,
-    required this.unitPrice,
-  });
+  get getQtyTotal => this.qtyTotal;
+
+  set setQtyTotal(qtyTotal) => this.qtyTotal = qtyTotal;
+
+  ProcessDetail copyWith({
+    String? cind,
+    int? no,
+    String? code,
+    String? name,
+    int? qtyDaily,
+    int? qtyTotal,
+  }) {
+    return ProcessDetail(
+      cind: cind ?? this.cind,
+      no: no ?? this.no,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      qtyDaily: qtyDaily ?? this.qtyDaily,
+      qtyTotal: qtyTotal ?? this.qtyTotal,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -40,7 +64,8 @@ class ProcessDetail {
       'no': no,
       'code': code,
       'name': name,
-      'unitPrice': unitPrice,
+      'qtyDaily': qtyDaily,
+      'qtyTotal': qtyTotal,
     };
   }
 
@@ -50,7 +75,8 @@ class ProcessDetail {
       no: map['no'] as int,
       code: map['code'] as String,
       name: map['name'] as String,
-      unitPrice: map['unitPrice'],
+      qtyDaily: map['qtyDaily'] as int,
+      qtyTotal: map['qtyTotal'] as int,
     );
   }
 
@@ -61,6 +87,28 @@ class ProcessDetail {
 
   @override
   String toString() {
-    return 'ProcessDetail(cind: $cind, no: $no, code: $code, name: $name, unitPrice: $unitPrice)';
+    return 'ProcessDetail(cind: $cind, no: $no, code: $code, name: $name, qtyDaily: $qtyDaily, qtyTotal: $qtyTotal)';
+  }
+
+  @override
+  bool operator ==(covariant ProcessDetail other) {
+    if (identical(this, other)) return true;
+
+    return other.cind == cind &&
+        other.no == no &&
+        other.code == code &&
+        other.name == name &&
+        other.qtyDaily == qtyDaily &&
+        other.qtyTotal == qtyTotal;
+  }
+
+  @override
+  int get hashCode {
+    return cind.hashCode ^
+        no.hashCode ^
+        code.hashCode ^
+        name.hashCode ^
+        qtyDaily.hashCode ^
+        qtyTotal.hashCode;
   }
 }
