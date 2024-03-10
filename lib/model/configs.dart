@@ -8,15 +8,12 @@ class Configs {
   String? mac;
   String? imageLink;
   int? doExercise;
-  String? doExerciseTime;
   int? reloadSeconds;
   int? productionChart;
   String? productionChartBegin;
   int? productionChartDurationMinute;
   int? productionChartRangeDay;
   int? etsChart;
-  String? etsChartBegin;
-  int? etsChartDurationMinute;
   String? etsMO;
   int? get getId => this.id;
 
@@ -41,10 +38,6 @@ class Configs {
   get getDoExercise => this.doExercise;
 
   set setDoExercise(doExercise) => this.doExercise = doExercise;
-
-  get getDoExerciseTime => this.doExerciseTime;
-
-  set setDoExerciseTime(doExerciseTime) => this.doExerciseTime = doExerciseTime;
 
   get getReloadSeconds => this.reloadSeconds;
 
@@ -74,15 +67,6 @@ class Configs {
 
   set setEtsChart(etsChart) => this.etsChart = etsChart;
 
-  get getEtsChartBegin => this.etsChartBegin;
-
-  set setEtsChartBegin(etsChartBegin) => this.etsChartBegin = etsChartBegin;
-
-  get getEtsChartDurationMinute => this.etsChartDurationMinute;
-
-  set setEtsChartDurationMinute(etsChartDurationMinute) =>
-      this.etsChartDurationMinute = etsChartDurationMinute;
-
   get getEtsMO => this.etsMO;
 
   set setEtsMO(etsMO) => this.etsMO = etsMO;
@@ -93,15 +77,12 @@ class Configs {
     this.mac,
     this.imageLink,
     this.doExercise,
-    this.doExerciseTime,
     this.reloadSeconds,
     this.productionChart,
     this.productionChartBegin,
     this.productionChartDurationMinute,
     this.productionChartRangeDay,
     this.etsChart,
-    this.etsChartBegin,
-    this.etsChartDurationMinute,
     this.etsMO,
   });
 
@@ -129,8 +110,6 @@ class Configs {
       ip: ip ?? this.ip,
       mac: mac ?? this.mac,
       imageLink: imageLink ?? this.imageLink,
-      doExercise: doExercise ?? this.doExercise,
-      doExerciseTime: doExerciseTime ?? this.doExerciseTime,
       reloadSeconds: reloadSeconds ?? this.reloadSeconds,
       productionChart: productionChart ?? this.productionChart,
       productionChartBegin: productionChartBegin ?? this.productionChartBegin,
@@ -139,9 +118,6 @@ class Configs {
       productionChartRangeDay:
           productionChartRangeDay ?? this.productionChartRangeDay,
       etsChart: etsChart ?? this.etsChart,
-      etsChartBegin: etsChartBegin ?? this.etsChartBegin,
-      etsChartDurationMinute:
-          etsChartDurationMinute ?? this.etsChartDurationMinute,
       etsMO: etsMO ?? this.etsMO,
     );
   }
@@ -154,15 +130,12 @@ class Configs {
       'mac': mac,
       'imageLink': imageLink,
       'doExercise': doExercise,
-      'doExerciseTime': doExerciseTime,
       'reloadSeconds': reloadSeconds,
       'productionChart': productionChart,
       'productionChartBegin': productionChartBegin,
       'productionChartDurationMinute': productionChartDurationMinute,
       'productionChartRangeDay': productionChartRangeDay,
       'etsChart': etsChart,
-      'etsChartBegin': etsChartBegin,
-      'etsChartDurationMinute': etsChartDurationMinute,
       'etsMO': etsMO,
     };
   }
@@ -175,9 +148,6 @@ class Configs {
       mac: map['mac'] != null ? map['mac'] as String : null,
       imageLink: map['imageLink'] != null ? map['imageLink'] as String : null,
       doExercise: map['doExercise'] != null ? map['doExercise'] as int : null,
-      doExerciseTime: map['doExerciseTime'] != null
-          ? map['doExerciseTime'] as String
-          : null,
       reloadSeconds:
           map['reloadSeconds'] != null ? map['reloadSeconds'] as int : null,
       productionChart:
@@ -193,11 +163,6 @@ class Configs {
           ? map['productionChartRangeDay'] as int
           : null,
       etsChart: map['etsChart'] != null ? map['etsChart'] as int : null,
-      etsChartBegin:
-          map['etsChartBegin'] != null ? map['etsChartBegin'] as String : null,
-      etsChartDurationMinute: map['etsChartDurationMinute'] != null
-          ? map['etsChartDurationMinute'] as int
-          : null,
       etsMO: map['etsMO'] != null ? map['etsMO'] as String : null,
     );
   }
@@ -209,7 +174,7 @@ class Configs {
 
   @override
   String toString() {
-    return 'Configs(id: $id, section: $section, ip: $ip, mac: $mac, imageLink: $imageLink, doExercise: $doExercise, doExerciseTime: $doExerciseTime, reloadSeconds: $reloadSeconds, productionChart: $productionChart, productionChartBegin: $productionChartBegin, productionChartDurationMinute: $productionChartDurationMinute, productionChartRangeDay: $productionChartRangeDay, etsChart: $etsChart, etsChartBegin: $etsChartBegin, etsChartDurationMinute: $etsChartDurationMinute, etsMO: $etsMO)';
+    return 'Configs(id: $id, section: $section, ip: $ip, mac: $mac, imageLink: $imageLink, doExercise: $doExercise, reloadSeconds: $reloadSeconds, productionChart: $productionChart, productionChartBegin: $productionChartBegin, productionChartDurationMinute: $productionChartDurationMinute, productionChartRangeDay: $productionChartRangeDay, etsChart: $etsChart, etsMO: $etsMO)';
   }
 
   @override
@@ -222,15 +187,12 @@ class Configs {
         other.mac == mac &&
         other.imageLink == imageLink &&
         other.doExercise == doExercise &&
-        other.doExerciseTime == doExerciseTime &&
         other.reloadSeconds == reloadSeconds &&
         other.productionChart == productionChart &&
         other.productionChartBegin == productionChartBegin &&
         other.productionChartDurationMinute == productionChartDurationMinute &&
         other.productionChartRangeDay == productionChartRangeDay &&
         other.etsChart == etsChart &&
-        other.etsChartBegin == etsChartBegin &&
-        other.etsChartDurationMinute == etsChartDurationMinute &&
         other.etsMO == etsMO;
   }
 
@@ -242,15 +204,12 @@ class Configs {
         mac.hashCode ^
         imageLink.hashCode ^
         doExercise.hashCode ^
-        doExerciseTime.hashCode ^
         reloadSeconds.hashCode ^
         productionChart.hashCode ^
         productionChartBegin.hashCode ^
         productionChartDurationMinute.hashCode ^
         productionChartRangeDay.hashCode ^
         etsChart.hashCode ^
-        etsChartBegin.hashCode ^
-        etsChartDurationMinute.hashCode ^
         etsMO.hashCode;
   }
 }

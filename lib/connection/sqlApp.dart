@@ -8,7 +8,7 @@ import 'package:tivnqn/model/planning.dart';
 import 'package:tivnqn/model/preparation/pCutting.dart';
 import 'package:tivnqn/model/preparation/pDispatch.dart';
 import 'package:tivnqn/model/preparation/pInspectionFabric.dart';
-import 'package:tivnqn/model/preparation/pRelaxationFabric.dart';
+import 'package:tivnqn/model/preparation/pRelaxationfabricTable.dart';
 import 'package:tivnqn/model/thongbao.dart';
 
 class SqlApp {
@@ -215,13 +215,11 @@ class SqlApp {
     return result;
   }
 
-  Future<List<PInspectionFabric>> sellectPInspectionFabric() async {
-    List<PInspectionFabric> result = [];
+  Future<List<PRelaxationFabricTable>> sellectPRelaxationFabricTable() async {
+    List<PRelaxationFabricTable> result = [];
     List<Map<String, dynamic>> tempResult = [];
-
-    final String query = '''select * from [App].[dbo].[PInspectionFabric]
-        WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE) 
-        ''';
+    final String query = '''select * from [App].[dbo].[PRelaxationFabricNew1]
+    ORDER BY Id ASC''';
     print('Query : $query  ');
     try {
       var rowData;
@@ -233,45 +231,14 @@ class SqlApp {
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    print(element),
-                    rowData = PInspectionFabric.fromMap(element),
+                    rowData = PRelaxationFabricTable.fromMap(element),
                     result.add(rowData),
                   }
               }
           });
     } catch (e) {
-      print('sellect PInspectionFabric --> Exception : ' + e.toString());
-    }
-    return result;
-  }
-
-  Future<List<PRelaxationFabric>> sellectPRelaxationFabric() async {
-    List<PRelaxationFabric> result = [];
-    List<Map<String, dynamic>> tempResult = [];
-
-    final String query = '''select * from [App].[dbo].[PRelaxationFabric]
-        WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE) 
-        ''';
-    print('Query : $query  ');
-    try {
-      var rowData;
-      await connection.getRowsOfQueryResult(query).then((value) => {
-            if (value.runtimeType == String)
-              {print('=> ERROR ')}
-            else
-              {
-                tempResult = value.cast<Map<String, dynamic>>(),
-                print(tempResult),
-                for (var element in tempResult)
-                  {
-                    // print(element),
-                    rowData = PRelaxationFabric.fromMap(element),
-                    result.add(rowData),
-                  }
-              }
-          });
-    } catch (e) {
-      print('sellect PRelaxationFabric --> Exception : ' + e.toString());
+      print('sellect sellectPRelaxationFabricTable --> Exception : ' +
+          e.toString());
     }
     return result;
   }

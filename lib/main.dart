@@ -1,13 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-// import 'package:device_info_plus/device_info_plus.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tivnqn/global.dart';
 import 'package:tivnqn/ui/InitialPage.dart';
 import 'package:flutter/services.dart';
-import 'package:tivnqn/ui/dashboardETS.dart';
+import 'package:cron/cron.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +19,15 @@ Future<void> main() async {
   g.todayString = DateFormat(g.dateFormat).format(
     g.today,
   );
+  final cron = Cron();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft // DeviceOrientation.portraitUp
   ]).then((_) async {
+    cron.schedule(Schedule.parse('55 16 * * *'), () async {
+      print('########### schedule exit app');
+      exit(0);
+    });
+
     runApp(const MyApp());
   });
 }

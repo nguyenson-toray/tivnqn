@@ -1,139 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tivnqn/model/chartData.dart';
-import 'package:tivnqn/model/sqlT01.dart';
-import 'package:tivnqn/model/workSummary.dart';
 import 'package:tivnqn/global.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:tivnqn/ui/chartUI.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class MyFuntions {
-  // static List<WorkSummary> summaryDailyDataETS() {
-  //   g.processScaned.clear();
-  //   g.processNotScan.clear();
-  //   g.idEmpScaneds.clear();
-
-  //   List<WorkSummary> result = [];
-  //   for (var element in g.sqlSumEmpQty) {
-  //     g.idEmpScaneds.add(element.getEmpId);
-  //     g.processScaned.add(element.getGxNo);
-  //   }
-  //   g.idEmpScaneds = g.idEmpScaneds.toSet().toList();
-  //   g.processScaned = g.processScaned.toSet().toList();
-  //   g.processNotScan =
-  //       g.processAll.toSet().difference(g.processScaned.toSet()).toList();
-  //   for (var idEmpScaned in g.idEmpScaneds) {
-  //     double moneyEmp = 0;
-  //     final String currentName = g.sqlEmployees
-  //         .firstWhere((emp) => emp.getEmpId == idEmpScaned)
-  //         .getEmpName;
-  //     var names = currentName.split(' ');
-  //     final String currentEmpShortName =
-  //         "${names[names.length - 2]} ${names.last}";
-  //     WorkSummary workSummary = WorkSummary(
-  //         shortName: 'shortName',
-  //         processDetailQtys: [
-  //           ProcessDetailQty(GxNo: 0, GxName: 'GxName', qty: 0)
-  //         ],
-  //         money: 0);
-  //     List<ProcessDetailQty> processDetailQtys = [];
-  //     for (int i = 0; i < g.sqlSumEmpQty.length; i++) {
-  //       if (idEmpScaned == g.sqlSumEmpQty[i].EmpId) {
-  //         final int GxNo = g.sqlSumEmpQty[i].getGxNo;
-  //         final int qty = g.sqlSumEmpQty[i].getSumEmpQty;
-
-  //         final String GxName = g.processDetail
-  //             .firstWhere(
-  //                 (element) => element.getNo == g.sqlSumEmpQty[i].getGxNo)
-  //             .getName;
-  //         final processDetailQty =
-  //             ProcessDetailQty(GxNo: GxNo, GxName: GxName, qty: qty);
-  //         processDetailQtys.add(processDetailQty);
-  //         moneyEmp += qty *
-  //             g.processDetail
-  //                 .firstWhere(
-  //                     (element) => element.getNo == processDetailQty.getGxNo)
-  //                 .getUnitPrice;
-  //         workSummary = WorkSummary(
-  //             shortName: currentEmpShortName,
-  //             processDetailQtys: processDetailQtys,
-  //             money: moneyEmp);
-  //       }
-  //     }
-  //     result.add(workSummary);
-  //   }
-  //   print('summaryDailyDataETS => ${result.length}');
-  //   return result;
-  // }
-
-  static Future<bool> loadDataSQL(String type) async {
-    print('loadDataSQL : $type');
-    g.isLoading = true;
-    switch (type) {
-      case 'production': //load production db
-        {
-          g.chartData.clear();
-          g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
-          g.chartUi = ChartUI.createChartUI(
-              g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-          g.sqlT01 =
-              await g.sqlProductionDB.getT01InspectionData(g.currentLine);
-        }
-        break;
-      case 'changeLine': // changeLine
-        {
-          if (g.screenMode == 'chartProduction') {
-          } else {
-            g.currentMoDetail = g.moDetails
-                .firstWhere((element) => element.getLine == g.currentLine);
-            g.processDetail =
-                await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-            g.currentIndexLine = g.linesETS.indexOf(g.currentLine);
-            g.sqlSumNoQty = await g.sqlETSDB
-                .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-            g.sqlCummulativeNoQty =
-                await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-            MyFuntions.summaryDataETS();
-          }
-        }
-        break;
-      case 'refresh': // load line data , setting
-        {
-          g.configs = await g.sqlApp.sellectConfigs();
-          g.configs.forEach((element) {
-            if (g.ip == element.getIp) {
-              g.config = element;
-            }
-          });
-          if (g.screenMode == 'chartProduction') {
-            //production
-            g.currentIndexLine = g.lines.indexOf(g.currentLine);
-            g.sqlT01 =
-                await g.sqlProductionDB.getT01InspectionData(g.currentLine);
-            g.chartData.clear();
-            g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
-            g.chartUi = ChartUI.createChartUI(
-                g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-          } else {
-            //ETS
-            // g.sqlSumEmpQty = a
-            g.sqlSumNoQty = await g.sqlETSDB
-                .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-            g.sqlCummulativeNoQty =
-                await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-            MyFuntions.summaryDataETS();
-          }
-        }
-        break;
-      default:
-    }
-    g.isLoading = false;
-    return (g.sqlSumEmpQty.isNotEmpty);
-  }
-
   static int setLineFollowIP(String ip) {
     int line = 1;
     switch (ip) {
@@ -281,49 +154,6 @@ class MyFuntions {
     }
   }
 
-  static List<ChartData> sqlT01ToChartData(List<SqlT01> dataInput) {
-    List<SqlT01> input = [...dataInput];
-    List<ChartData> result = [];
-    List<String> dates = [];
-    for (var element in input) {
-      dates.add(element.getX02);
-    }
-    dates = dates.toSet().toList();
-    for (var dateString in dates) {
-      num qty1st = 0;
-      num qty1stOK = 0;
-      num qty1stNOK = 0;
-      num qtyAfterRepaire = 0;
-      num qtyOKAfterRepaire = 0;
-      num rationDefect1st = 0;
-      num rationDefectAfterRepaire = 0;
-      for (var data in input) {
-        if (dateString == data.getX02) {
-          qty1st += data.getX06;
-          qty1stOK += data.getX07;
-          qtyAfterRepaire += data.getX08;
-          qtyOKAfterRepaire += data.getX09;
-        }
-        qty1stNOK = qty1st - qty1stOK;
-        rationDefect1st = double.parse((qty1stNOK / qty1st).toStringAsFixed(4));
-        rationDefectAfterRepaire = double.parse(
-            ((qtyAfterRepaire - qtyOKAfterRepaire) / qtyAfterRepaire)
-                .toStringAsFixed(4));
-      }
-      ChartData data = ChartData(
-          date: dateString,
-          qty1st: qty1st,
-          qty1stOK: qty1stOK,
-          qty1stNOK: qty1stNOK,
-          qtyAfterRepaire: qtyAfterRepaire,
-          qtyOKAfterRepaire: qtyOKAfterRepaire,
-          rationDefect1st: rationDefect1st,
-          rationDefectAfterRepaire: rationDefectAfterRepaire);
-      result.add(data);
-    }
-    return result;
-  }
-
   static String getLinkImage(String orgLink) {
     // https://drive.google.com/file/d/1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB/view?usp=drive_link
     // file ID : 1-3zgxOg_AyWoTkEu8F21WvNX-kcRwChB
@@ -411,44 +241,22 @@ class MyFuntions {
     return color;
   }
 
-  // static void createDataChartEtsWorkLayer() {
-  //   g.workSummary.forEach((element) {
-  //     element.getProcessDetailQtys.forEach((processDetailQty) {
-  //       g.processDetailQtys.add(processDetailQty);
-  //     });
-  //   });
-  //   g.processNotScan.forEach((element) {
-  //     g.processDetailQtys
-  //         .add(ProcessDetailQty(GxNo: element, GxName: 'GxName', qty: 0));
-  //   });
-  //   g.processDetailQtys.sort((a, b) => a.getGxNo.compareTo(b.getGxNo));
-  //   g.workLayerNames.clear();
-  //   for (int i = 1; i <= 9; i++) {
-  //     List<ProcessDetailQty> processDetailQtyLayer = [];
-  //     String layerName = '';
-  //     g.processDetailQtys.forEach((element) {
-  //       if ((element.getGxNo >= g.workLayers[i].getPperationBegin) &
-  //           (element.getGxNo <= g.workLayers[i].getOperationEnd)) {
-  //         processDetailQtyLayer.add(element);
-  //         layerName = g.workLayers[i].getWorkLayerName;
-  //       }
-  //     });
-
-  //     if (processDetailQtyLayer.length > 0) {
-  //       g.workLayerNames.add(layerName);
-  //       g.workLayerQtys.add(processDetailQtyLayer);
-  //     }
-  //   }
-  // }
-
   static Widget clockAppBar(BuildContext context) {
     return Container(
-      width: 120, height: g.appBarH,
+      width: 210, height: g.appBarH,
       color: Colors.transparent,
       // height: g.appBarH ,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Text(
+              DateFormat(g.dateFormatVi).format(
+                g.today,
+              ),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20)),
           DigitalClock(
             digitAnimationStyle: Curves.fastOutSlowIn,
             areaDecoration: BoxDecoration(color: Colors.transparent),
@@ -459,14 +267,14 @@ class MyFuntions {
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: g.fontSizeAppbar),
-            secondDigitTextStyle: Theme.of(context).textTheme.caption!.copyWith(
-                  color: Colors.tealAccent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                ),
+            secondDigitTextStyle: TextStyle(
+              color: Colors.greenAccent,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
             colon: Text(
               ":",
-              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+              style: TextStyle(
                   color: Colors.tealAccent,
                   fontWeight: FontWeight.bold,
                   fontSize: 17),
@@ -550,8 +358,7 @@ class MyFuntions {
   }
 
   static Widget showNotification() {
-    playAudio();
-
+    // playAudio();
     return FittedBox(
       child: Stack(
         children: [
@@ -559,7 +366,7 @@ class MyFuntions {
             padding: EdgeInsets.all(10),
             width: g.screenWidth,
             height: g.screenHeight - g.appBarH,
-            color: Colors.amberAccent[100],
+            color: Colors.lime[100],
             child: AutoSizeText(
               textAlign: TextAlign.start,
               softWrap: true,
@@ -576,8 +383,8 @@ class MyFuntions {
           ),
           Positioned(
             child: SizedBox(
-                width: 100,
-                height: 100,
+                width: 50,
+                height: 50,
                 child: Image.asset('assets/speaker.gif')),
             right: 0,
             top: 0,
@@ -612,6 +419,7 @@ class MyFuntions {
         result = true;
       }
     }
+
     print('checkThongBao : ' + result.toString());
     return result;
   }
@@ -632,24 +440,97 @@ class MyFuntions {
         ));
   }
 
-  static summaryDataETS() {
-    g.processDetail.forEach((process) {
-      try {
-        process.setQtyDaily = g.sqlSumNoQty
-            .where((element) => element.getGxNo == process.getNo)
-            .first
-            .getSumNoQty;
-      } catch (e) {
-        process.setQtyDaily = 0;
-      }
-      try {
-        process.setQtyTotal = g.sqlCummulativeNoQty
-            .where((element) => element.getGxNo == process.getNo)
-            .first
-            .getCummulativeQty;
-      } catch (e) {
-        process.setQtyTotal = 0;
-      }
-    });
+  static Future<void> selectT50InspectionData(int summary) async {
+    await g.sqlProductionDB
+        .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[0], summary)
+        .then((value) => {
+              if (value != null && value.length > 0)
+                {
+                  g.sqlT50InspectionDataDailys.clear(),
+                  g.sqlT50InspectionDataDailys = value
+                }
+            });
+    g.sqlProductionDB
+        .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[1], summary)
+        .then((value) => {
+              if (value != null && value.length > 0)
+                {
+                  g.sqlT50InspectionDataWeeklys.clear(),
+                  g.sqlT50InspectionDataWeeklys = value
+                }
+            });
+    await g.sqlProductionDB
+        .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[2], summary)
+        .then((value) => {
+              if (value != null && value.length > 0)
+                {
+                  g.sqlT50InspectionDataMonthlys.clear(),
+                  g.sqlT50InspectionDataMonthlys = value
+                }
+            });
+  }
+
+  static Future<void> selectT50InspectionDataOneByOne(int summary) async {
+    print('selectT50InspectionDataOneByOne:' + summary.toString());
+    if (g.isTVLine)
+      g.sqlT50InspectionDataDailys = await g.sqlProductionDB
+          .selectSqlT50InspectionData(
+              g.currentLine, g.rangeDays, g.timeTypes[0], 0);
+    else {
+      g.sqlT50InspectionDataDailys = await g.sqlProductionDB
+          .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[0], 0);
+      g.sqlT50InspectionDataWeeklys = await g.sqlProductionDB
+          .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[1], 0);
+      g.sqlT50InspectionDataMonthlys = await g.sqlProductionDB
+          .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[2], 0);
+      if (summary == 0) return;
+      g.sqlT50InspectionDataDailysSummaryAll = await g.sqlProductionDB
+          .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[0], 1);
+      g.sqlT50InspectionDataWeeklysSummaryAll = await g.sqlProductionDB
+          .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[1], 1);
+      g.sqlT50InspectionDataMonthlysSummaryAll = await g.sqlProductionDB
+          .selectSqlT50InspectionData(0, g.rangeDays, g.timeTypes[2], 1);
+    }
+    ;
+  }
+
+  static Future<void> sellectDataETS(String mo) async {
+    print('sellectDataETS:' + mo);
+    g.etsMoInfo = await g.sqlEtsDB.selectEtsMoInfo(mo);
+    g.etsMoQtys = await g.sqlEtsDB.selectEtsMoQty(mo);
+  }
+
+  static Widget logo() {
+    return Column(children: [
+      SizedBox(
+        height: 31,
+        child: Image.asset(
+          'assets/logo_white.png',
+        ),
+      ),
+      Text(
+        'Version ${g.version}',
+        style: TextStyle(fontSize: 6),
+      )
+    ]);
+  }
+
+  static Widget circleLine(int currentLine) {
+    return CircleAvatar(
+      maxRadius: g.appBarH / 2 - 2,
+      minRadius: g.appBarH / 2 - 2,
+      backgroundColor:
+          // g.isLoading
+          //     ? Colors.primaries[Random().nextInt(Colors.primaries.length)]
+          //     :
+          Colors.white,
+      child: Center(
+        child: Text(
+          currentLine.toString(),
+          style: const TextStyle(
+              color: Colors.blue, fontSize: 26, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 }

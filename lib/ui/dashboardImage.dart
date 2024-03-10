@@ -23,12 +23,7 @@ class _DashboardImageState extends State<DashboardImage> {
     // TODO: implement initState
     initImage(widget.linkImageDirectly);
     Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
-      DateTime time = DateTime.now();
-      if (time.hour == 16 && time.minute >= 55)
-        exit(0);
-      else {
-        g.configs = await g.sqlApp.sellectConfigs();
-      }
+      g.configs = await g.sqlApp.sellectConfigs();
     });
 
     super.initState();
@@ -37,57 +32,33 @@ class _DashboardImageState extends State<DashboardImage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: g.appBarH,
-          backgroundColor: Colors.blue,
-          elevation: 6.0,
-          leadingWidth: 95,
-          actions: [
-            MyFuntions.clockAppBar(context),
-            Text(
-              DateFormat(g.dateFormat2).format(
-                g.today,
-              ),
-              style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+      appBar: AppBar(
+        toolbarHeight: g.appBarH,
+        backgroundColor: Colors.blue,
+        elevation: 6.0,
+        leadingWidth: 95,
+        actions: [
+          MyFuntions.clockAppBar(context),
+          InkWell(
+            child: Icon(
+              Icons.refresh_sharp,
+              color: Colors.amberAccent,
             ),
-            InkWell(
-              child: Icon(
-                Icons.refresh_sharp,
-                color: Colors.amberAccent,
-              ),
-              onTap: () {
-                updateImmage();
-              },
-            )
-          ],
-          leading: Image.asset(
-            'assets/logo_white.png',
-          ),
-          centerTitle: true,
-          title: Text(
-            widget.title.toUpperCase(),
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
+            onTap: () {
+              updateImmage();
+            },
+          )
+        ],
+        leading: MyFuntions.logo(),
+        centerTitle: true,
+        title: Text(
+          widget.title.toUpperCase(),
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        body: Stack(
-          children: [
-            imageDashboard,
-            Positioned(
-                right: 2,
-                bottom: 2,
-                child: Text(
-                  'Version : ${g.version}',
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 6,
-                      fontWeight: FontWeight.normal),
-                ))
-          ],
-        ));
+      ),
+      body: imageDashboard,
+    );
   }
 
   updateImmage() async {

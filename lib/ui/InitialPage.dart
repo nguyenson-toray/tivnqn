@@ -7,16 +7,15 @@ import 'package:cron/cron.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:flu_wake_lock/flu_wake_lock.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
 import 'package:tivnqn/model/preparation/chartDataPInspection.dart';
 import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
 import 'package:tivnqn/myFuntions.dart';
-import 'package:tivnqn/ui/chartUI.dart';
+import 'package:tivnqn/ui/dashboardProduction.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
 import 'package:tivnqn/ui/dashboardPreparation.dart';
-import 'package:tivnqn/ui/dashboardProduction.dart';
+import 'package:tivnqn/ui/dashboardETS.dart';
 import 'package:youtube_player_flutter_quill/youtube_player_flutter_quill.dart';
 
 class InitialPgae extends StatefulWidget {
@@ -86,8 +85,8 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.sqlApp.sellectConfigs().then((value) => {
           if (value[0].getDoExercise == 1)
             {
-              controller.play(),
               setState(() {
+                controller.play();
                 isPlaying = true;
               })
             },
@@ -114,10 +113,7 @@ class _InitialPgaeState extends State<InitialPgae> {
       setState(() {
         isLoading = false;
         textLoading = '';
-        exceriseBegin = DateTime.parse(
-            "${g.todayString} " + "${g.configs[0].getDoExerciseTime}");
-        hour = exceriseBegin.hour;
-        minute = exceriseBegin.minute;
+        exceriseBegin = DateTime.parse("${g.todayString} " + "07:45:00");
         print('exceriseBegin :' + exceriseBegin.toString());
         if (g.config.getDoExercise == 0 ||
             DateTime.now().isAfter(exceriseBegin)) {
@@ -126,19 +122,13 @@ class _InitialPgaeState extends State<InitialPgae> {
             return;
           });
         } else {
-          setState(() {
-            showVideo = true;
-          });
-
-          // cron.schedule(Schedule.parse("${minute - 1} $hour * * * "), () async {
-          //// 30 2 * * * [command]This will run once a day, at 2:30 am.
+          showVideo = true;
           Timer.periodic(Duration(milliseconds: 200), (timer) {
             if (!isPlaying && playerIsReady) checkAndPlay();
             if (isPlaying) {
               timer.cancel();
             }
           });
-          // });
         }
       });
     } else {
@@ -182,8 +172,10 @@ class _InitialPgaeState extends State<InitialPgae> {
                   },
                 )
               : Container(),
-          Positioned(bottom: 5, right: 5, child: MyFuntions.getClock(context)),
-          isLoading ? MyFuntions.showLoading() : Container()
+          isLoading
+              ? MyFuntions.showLoading()
+              : Positioned(
+                  bottom: 5, right: 5, child: MyFuntions.getClock(context)),
         ],
       ),
     );
@@ -195,99 +187,90 @@ class _InitialPgaeState extends State<InitialPgae> {
     });
 
     String appBarTitle = '';
-
     await g.sqlProductionDB.initConnection();
-    await g.sqlETSDB.initConnection();
+    await g.sqlEtsDB.initConnection();
     print('g.ip : ${g.ip} ');
 
     switch (g.config.getSection) {
       case 'line1':
-        {
-          g.currentLine = 1;
-          goDashboardProduction();
-        }
-        break;
       case 'line2':
-        {
-          g.currentLine = 2;
-          goDashboardProduction();
-        }
-        break;
       case 'line3':
-        {
-          g.currentLine = 3;
-          goDashboardProduction();
-        }
-        break;
       case 'line4':
-        {
-          g.currentLine = 4;
-          goDashboardProduction();
-        }
-        break;
       case 'line5':
-        {
-          g.currentLine = 5;
-          goDashboardProduction();
-        }
-        break;
       case 'line6':
-        {
-          g.currentLine = 6;
-          goDashboardProduction();
-        }
-        break;
       case 'line7':
-        {
-          g.currentLine = 7;
-          goDashboardProduction();
-        }
-        break;
       case 'line8':
-        {
-          g.currentLine = 8;
-          goDashboardProduction();
-        }
       case 'line9':
-        {
-          g.currentLine = 9;
-          goDashboardProduction();
-        }
-        break;
       case 'line10':
-        {
-          g.currentLine = 10;
-          goDashboardProduction();
-        }
-        break;
       case 'line11':
         {
-          g.currentLine = 11;
-          goDashboardProduction();
+          print('---------------');
+          g.isTVLine = true;
+          g.selectAllLine = false;
+          g.rangeDays = 14;
+          g.currentLine =
+              int.parse(g.config.getSection.toString().split('line').last);
+          g.thongbao = await g.sqlApp.sellectThongBao();
+          if (g.config.getEtsMO != 'mo') {
+            g.currentMo = g.config.getEtsMO;
+            await MyFuntions.sellectDataETS(g.currentMo);
+          }
+
+          MyFuntions.selectT50InspectionDataOneByOne(0)
+              .then((value) => goDashboardProductionNew()); //no summary
+        }
+        break;
+      case 'control1':
+        {
+          g.currentLine = 0;
+          g.autochangeLine = false;
+
+          g.isTVLine = false;
+          g.isTVControl = true;
+          g.selectAllLine = true;
+          g.rangeDays = 7;
+          MyFuntions.selectT50InspectionDataOneByOne(1)
+              .then((value) => goDashboardProductionNew()); //  summary
+        }
+        break;
+      case 'control2':
+        {
+          g.currentLine = 1;
+          g.autochangeLine = true;
+          g.isTVLine = false;
+          g.isTVControl = true;
+          g.selectAllLine = false;
+          g.rangeDays = 7;
+          MyFuntions.selectT50InspectionDataOneByOne(0)
+              .then((value) => goDashboardProductionNew()); // no summary
         }
         break;
       case 'lineControl3':
         {
-          ;
-          g.currentIndexLine = 0;
+          // ETS
+          var section = g.configs
+              .where((element) => element.getEtsMO != 'no')
+              .first
+              .getSection;
+          g.currentLine = int.parse(section.split('line').last);
+          g.currentMo = g.configs
+              .where((element) => element.getEtsMO != 'no')
+              .first
+              .getEtsMO;
+
+          await MyFuntions.sellectDataETS(g.currentMo);
           g.isTVControl = true;
-          g.configs.forEach((element) {
-            if (element.getEtsMO != 'no') {
-              String section = element.getSection;
-              g.linesETS.add(int.parse(section.replaceFirst('line', '')));
-            }
-          });
-          g.currentLine = g.linesETS.first;
-          if (g.linesETS.length > 1) {
-            g.autochangeLine = true;
-          }
-          goDashboardProduction();
+          g.isTVLine = false;
+          goDashboardETS();
         }
+
         break;
       case 'preparation1':
         {
-          g.title = 'INSPECTION FABRIC';
-          g.pInspectionFabrics = await g.sqlApp.sellectPInspectionFabric();
+          g.title = 'INSPECTION & REAXATION FABRIC';
+          g.pRelaxationFabricTables =
+              await g.sqlApp.sellectPRelaxationFabricTable();
+
           g.pInspectionFabrics.forEach((element) {
             var a = element.planQty as num;
             var b = element.actualQty as num;
@@ -299,17 +282,6 @@ class _InitialPgaeState extends State<InitialPgae> {
             g.chartDataPInspection.add(temp);
           });
 
-          g.pRelaxationFabrics = await g.sqlApp.sellectPRelaxationFabric();
-          g.pRelaxationFabrics.forEach((element) {
-            var a = element.planQty as num;
-            var b = element.actualQty as num;
-            ChartDataPRelaxation temp = ChartDataPRelaxation(
-                name:
-                    '${element.kindOfFabric} - ${element.customer}\nArtNo: ${element.artNo} - LotNo: ${element.lotNo}\n🎨 ${element.color} #️⃣ Process:${element.actualQty}/${element.planQty}',
-                actual: element.actualQty as num,
-                remain: a - b);
-            g.chartDataPRelaxation.add(temp);
-          });
           goToPreparation();
         }
         break;
@@ -349,6 +321,7 @@ class _InitialPgaeState extends State<InitialPgae> {
           goToDashboardImage(appBarTitle, imgLinkOrg);
         }
         break;
+
       case 'planning':
         {
           appBarTitle = 'PRODUCTION PLANNING';
@@ -365,7 +338,16 @@ class _InitialPgaeState extends State<InitialPgae> {
         }
       default:
         {
-          exit(0);
+          // control1 summary
+          g.currentLine = 0;
+          g.autochangeLine = false;
+
+          g.isTVLine = false;
+          g.isTVControl = true;
+          g.selectAllLine = true;
+          g.rangeDays = 7;
+          MyFuntions.selectT50InspectionDataOneByOne(1)
+              .then((value) => goDashboardProductionNew()); //  summary
         }
     }
   }
@@ -389,31 +371,19 @@ class _InitialPgaeState extends State<InitialPgae> {
     );
   }
 
-  void goDashboardProduction() async {
-    print("------------------> goDashboardProduction");
-    g.thongbao = await g.sqlApp.sellectThongBao();
-    g.showThongBao = MyFuntions.checkThongBao();
-    g.sqlT01 = await g.sqlProductionDB.getT01InspectionData(g.currentLine);
-    g.chartData = MyFuntions.sqlT01ToChartData(g.sqlT01);
-
-    g.chartUi = ChartUI.createChartUI(
-        g.chartData, 'Sản lượng & tỉ lệ lỗi'.toUpperCase());
-    if (g.config.getEtsChart != 0) {
-      g.moDetails = await g.sqlETSDB.getAllMoDetails();
-      g.sqlEmployees = await g.sqlETSDB.getEmployees();
-      g.currentMoDetail =
-          g.moDetails.firstWhere((element) => element.getLine == g.currentLine);
-      g.processDetail =
-          await g.sqlETSDB.getProcessDetail(g.currentMoDetail.getCnid);
-      g.sqlSumNoQty = await g.sqlETSDB
-          .getSqlSumNoQty(g.currentMoDetail.getMo, g.pickedDate);
-      g.sqlCummulativeNoQty =
-          await g.sqlETSDB.getSqlCummNoQty(g.currentMoDetail.getMo);
-      MyFuntions.summaryDataETS();
-    }
+  Future<void> goDashboardProductionNew() async {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => DashboardProduction()),
+    );
+  }
+
+  void goDashboardETS() async {
+    print("------------------> goDashboardETS");
+    await MyFuntions.sellectDataETS(g.currentMo);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => DashboardETS()),
     );
   }
 }

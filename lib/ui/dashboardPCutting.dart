@@ -36,11 +36,7 @@ class _DashboardPCuttingState extends State<DashboardPCutting> {
     // TODO: implement initState
     refreshData();
     Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) {
-      DateTime time = DateTime.now();
-      if (time.hour == 16 && time.minute >= 55)
-        exit(0);
-      else
-        refreshData();
+      refreshData();
     });
     super.initState();
   }

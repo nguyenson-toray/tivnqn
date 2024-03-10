@@ -1,11 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:tivnqn/global.dart';
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
-import 'package:tivnqn/model/planning.dart';
-import 'package:tivnqn/model/sqlT01.dart';
-import 'package:tivnqn/model/sqlT01Full.dart';
+import 'package:tivnqn/model/sqlT50InspectionData.dart';
 
 class SqlProductionDB {
   var connection = ConnectToSqlServerDirectly();
@@ -52,76 +47,38 @@ class SqlProductionDB {
     return isConnected;
   }
 
-  Future<List<SqlT01>> getT01InspectionData(int line) async {
-    List<SqlT01> result = [];
-    final String query = '''SELECT X02, X06, X07, X08, X09
-FROM [Production].[dbo].[T01_1st inspection data]
-WHERE X01 = $line and [2nd] =1 AND ( X02 >= DATEADD (day,-${g.config.getProductionChartRangeDay}, getdate()) )
-ORDER BY X02 ASC
-    ''';
-    print('getT01InspectionData $line ');
-    print(query);
-    try {
-      var tempResult = [];
-      await connection.getRowsOfQueryResult(query).then((value) => {
-            if (value.runtimeType == String)
-              {
-                //error
-              }
-            else
-              {
-                tempResult = value.cast<Map<String, dynamic>>(),
-                for (var element in tempResult)
-                  {
-                    result.add(SqlT01(
-                        x02: element['X02'],
-                        x06: element['X06'],
-                        x07: element['X07'],
-                        x08: element['X08'],
-                        x09: element['X09']))
-                  }
-              }
-          });
-    } catch (e) {
-      print('getInspectionData --> Exception : $e');
-    }
-    return result;
-  }
-
-  Future<List<SqlT01Full>> getT01InspectionDataFull(int rangeDays) async {
-    List<SqlT01Full> result = [];
+  Future<List<SqlT50InspectionData>> selectSqlT50InspectionData(
+      int line, int range, String timeType, int summary) async {
+    String query = '''
+    USE Production 
+    EXEC [dbo].[selectT50InspectionData]
+    @line = ${line},
+    @range = ${range},
+    @timeType = '${timeType}',
+    @summary = ${summary}
+''';
+    List<SqlT50InspectionData> result = [];
     List<Map<String, dynamic>> tempResult = [];
-    late DateTime beginDate;
-    beginDate = DateTime.now().subtract(Duration(days: rangeDays));
-    late DateTime day;
-    final String query =
-        '''select * from [Production].[dbo].[T01_1st inspection data]''';
-    print(
-        'select all Table 01InspectionData   ( ${rangeDays.toString()} days : from ${DateFormat(g.dateFormat).format(
-      beginDate,
-    )} to today !!!');
+    print('Query selectSqlT50InspectionData : $query  ');
     try {
       var rowData;
       await connection.getRowsOfQueryResult(query).then((value) => {
             if (value.runtimeType == String)
-              {print('Query : $query => ERROR ')}
+              {print('=> ERROR ')}
             else
               {
                 tempResult = value.cast<Map<String, dynamic>>(),
                 for (var element in tempResult)
                   {
-                    rowData = SqlT01Full.fromMap(element),
-                    day = DateTime.parse(rowData.getX02.toString()),
-                    if (day.isAfter(beginDate))
-                      {
-                        result.add(rowData),
-                      }
+                    rowData = SqlT50InspectionData.fromMap(element),
+                    result.add(rowData),
                   }
               }
           });
     } catch (e) {
-      print('getInspectionData --> Exception : ' + e.toString());
+      print('selectSqlT50InspectionData --> Exception : ' + e.toString());
     }
+    print(' --> result.lenght : ' + result.length.toString());
     return result;
   }
 }

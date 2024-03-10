@@ -64,8 +64,6 @@ class _DashboardPlanningState extends State<DashboardPlanning> {
                 initData();
               })
             });
-
-        if (DateTime.now().hour == 16 && DateTime.now().minute >= 55) exit(0);
       }
     });
     // TODO: implement initState

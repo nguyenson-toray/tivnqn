@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  radio_group_v2
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

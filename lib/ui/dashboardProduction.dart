@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:radio_group_v2/radio_group_v2.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tivnqn/global.dart';
-import 'package:tivnqn/model/processDetail.dart';
 import 'package:tivnqn/myFuntions.dart';
-import 'package:tivnqn/ui/chartUI.dart';
+import 'package:tivnqn/ui/announcement.dart';
+import 'package:tivnqn/ui/dashboardETS.dart';
+import 'package:tivnqn/ui/inspectionDataChart.dart';
 
 class DashboardProduction extends StatefulWidget {
   const DashboardProduction({super.key});
@@ -17,440 +18,474 @@ class DashboardProduction extends StatefulWidget {
   State<DashboardProduction> createState() => _DashboardProductionState();
 }
 
-class _DashboardProductionState extends State<DashboardProduction>
-    with SingleTickerProviderStateMixin {
-  var leftCollumnW = g.screenWidth / 4 * 3 - 30 - 4;
-  var rightCollumnW = g.screenWidth / 4 + 30 - 3;
-  ChartSeriesController? chartControllerETS;
-  ChartSeriesController? chartSeriesControllerProduction;
-  Widget titleWidgetETS = Container();
-  late final AnimationController animationController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 2000))
-    ..repeat();
-  Legend myLegendETSDaily = const Legend(
-      itemPadding: 3,
-
-      // height: '40%',
-      textStyle: TextStyle(
-          fontSize: 11, fontWeight: FontWeight.normal, color: Colors.black),
-      position: LegendPosition.bottom,
-      isVisible: true,
-      overflowMode: LegendItemOverflowMode.wrap);
-  Legend myLegendETSTotal = const Legend(
-      itemPadding: 3,
-      // height: '40%',
-      textStyle: TextStyle(
-          fontSize: 11, fontWeight: FontWeight.normal, color: Colors.black),
-      position: LegendPosition.bottom,
-      isVisible: true,
-      overflowMode: LegendItemOverflowMode.wrap);
-  DataLabelSettings myDataLabelSettingsETSDaily = const DataLabelSettings(
-    labelAlignment: ChartDataLabelAlignment.auto,
-    labelPosition: ChartDataLabelPosition.inside,
-    alignment: ChartAlignment.center,
-    showZeroValue: true,
-    isVisible: true,
-    // textStyle: TextStyle(
-    //     // fontSize: 20,
-    //     fontWeight: FontWeight.bold,
-    //     color: Colors.black),
-  );
-  DataLabelSettings myDataLabelSettingsETSTotal = const DataLabelSettings(
-    labelAlignment: ChartDataLabelAlignment.auto,
-    labelPosition: ChartDataLabelPosition.inside,
-    alignment: ChartAlignment.center,
-    isVisible: false,
-    textStyle: TextStyle(
-        fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-  );
-  @override
-  void dispose() {
-    g.reloadType.dispose();
-    // animationController.dispose();
-    super.dispose();
-  }
-
+class _DashboardProductionState extends State<DashboardProduction> {
+  double explainColorH = 20;
+  double chartH = 220;
+  // double chartW = 300;
+  int playMinute = 5;
+  RadioGroupController radioLineController = RadioGroupController();
+  RadioGroupController radioInspectionTypeController = RadioGroupController();
+  ChartSeriesController? chartSeriesController;
+  final Cron cronGotoETS = Cron();
+  late Timer myTimer;
   @override
   void initState() {
+    // TODO: implement initState
     DateTime chartBeginTime =
         DateTime.parse("${g.todayString} " + g.config.getProductionChartBegin);
     DateTime chartEndTime = chartBeginTime
         .add(Duration(minutes: g.config.getProductionChartDurationMinute));
+    chartSeriesController?.updateDataSource(
+        updatedDataIndexes: List<int>.generate(
+            g.sqlT50InspectionDataDailys.length, (i) => i + 1));
 
-    g.reloadType.addListener(refreshDataUI);
-
-    if (g.isTVControl) {
-      g.screenMode = 'chartETS';
-    } else {
-      if (g.config.getEtsMO == 'no') {
-        g.screenMode = 'chartProduction';
-      } else {
-        if (DateTime.now().isBefore(chartEndTime)) {
-          g.screenMode = 'chartProduction';
-        } else {
-          g.screenMode = 'chartETS';
-        }
-      }
+    if (g.isTVLine &&
+        g.config.getEtsMO.toString().length == 10 &&
+        DateTime.now().isAfter(chartEndTime)) {
+      Future.delayed(Durations.short1)
+          .then((value) => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => DashboardETS()),
+              ));
     }
 
-    setTitle(g.screenMode);
-    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
-      DateTime time = DateTime.now();
-      if (time.hour == 16 && time.minute >= 55) {
-        exit(0);
-      } else {
-        setState(() {
-          g.reloadType.value = 'refresh';
-          g.reloadType.notifyListeners();
-        });
-        g.configs = await g.sqlApp.sellectConfigs();
-        g.thongbao = await g.sqlApp.sellectThongBao();
-        setState(() {
-          g.showThongBao = MyFuntions.checkThongBao();
-        });
-
-        setTitle(g.screenMode);
-      }
-    });
-    Timer.periodic(Duration(minutes: 5), (timer) async {
-      if (g.autochangeLine) {
-        setState(() {
-          g.currentIndexLine++;
-          if (g.currentIndexLine >= g.linesETS.length) {
-            g.currentIndexLine = 0;
+    if (g.autochangeLine)
+      Timer.periodic(Duration(minutes: playMinute), (timer) async {
+        increaseLineNumber();
+      });
+    myTimer = Timer.periodic(Duration(seconds: g.config.getReloadSeconds),
+        (timer) async {
+      g.configs = await g.sqlApp.sellectConfigs();
+      if (g.isTVLine) {
+        if (g.config.getEtsMO.toString().length == 10 &&
+            DateTime.now().isAfter(chartEndTime)) {
+          await MyFuntions.sellectDataETS(g.currentMo);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardETS()),
+          );
+        } else {
+          g.thongbao = await g.sqlApp.sellectThongBao();
+          if (MyFuntions.checkThongBao()) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Announcement()),
+            );
           }
-          g.currentLine = g.linesETS.elementAt(g.currentIndexLine);
-          g.reloadType.value = 'changeLine';
-          g.reloadType.notifyListeners();
-        });
+        }
       }
+
+      setState(() {
+        reloadDataUI();
+      });
     });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    myTimer.cancel();
+    cronGotoETS.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('g.screenMode : ${g.screenMode}');
     return Scaffold(
-        appBar: appBar(),
-        body: Stack(children: [
-          Container(
-              padding: EdgeInsets.all(3),
-              child: g.screenMode == 'chartProduction'
-                  ? g.chartData.length == 0
-                      ? MyFuntions.noData()
-                      : g.chartUi
-                  : etsChart()),
-          g.showThongBao
-              ? Positioned(
-                  left: 0, top: 0, child: MyFuntions.showNotification())
-              : Positioned(
-                  left: 2,
-                  bottom: 2,
-                  child: Text(
-                    'Version : ${g.version}',
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 6,
-                        fontWeight: FontWeight.normal),
-                  ))
-        ]));
-  }
-
-  appBar() {
-    return AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        elevation: 6.0,
-        leadingWidth: 95,
-        leading: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: CircleAvatar(
-            maxRadius: g.appBarH / 2 - 2,
-            minRadius: g.appBarH / 2 - 2,
-            backgroundColor:
-                // g.isLoading
-                //     ? Colors.primaries[Random().nextInt(Colors.primaries.length)]
-                //     :
-                Colors.white,
-            child: Center(
-              child: Text(
-                g.currentLine.toString(),
-                style: const TextStyle(
-                    color: Colors.blue,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  DateFormat(g.dateFormat2).format(
-                    g.today,
-                  ),
-                  style: TextStyle(
-                      fontSize: g.fontSizeAppbar,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                MyFuntions.clockAppBar(context)
-              ]),
-          (g.isTVControl && g.linesETS.length > 1)
-              ? actionWidgetAppbar()
-              : Container()
-        ],
-        title: g.titleAppBar);
-  }
-
-  etsChart() {
-    return Container(
-      color: Colors.black12,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: Colors.white,
+      appBar: appBar(),
+      body: Column(
         children: [
           Container(
-              color: Colors.white,
-              width: leftCollumnW,
-              child: SfCartesianChart(
-                  // legend: myLegendETSDaily,
-                  title: ChartTitle(text: '${'SẢN LƯỢNG HÔM NAY '}'),
-                  primaryXAxis: CategoryAxis(
-                    title: AxisTitle(
-                      text:
-                          'Công đoạn : 1..10 : Chuẩn bị           11..100: May',
-                    ),
-                    labelPosition: ChartDataLabelPosition.outside,
-                    labelStyle: TextStyle(
-                      // fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  series: <CartesianSeries<ProcessDetail, String>>[
-                    ColumnSeries<ProcessDetail, String>(
-                        dataLabelSettings: myDataLabelSettingsETSDaily,
-                        markerSettings: const MarkerSettings(isVisible: true),
-                        dataSource: g.processDetail,
-                        xValueMapper: (ProcessDetail data, _) =>
-                            data.getNo.toString(),
-                        yValueMapper: (ProcessDetail data, _) =>
-                            data.getQtyDaily,
-                        color: Color.fromRGBO(8, 142, 255, 1))
-                  ])),
+            padding: EdgeInsets.all(2),
+            alignment: Alignment.center,
+            width: g.screenWidth - explainColorH,
+            height: explainColorH,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    color: Colors.blueAccent[400], child: Text('Số lượng đạt')),
+                Container(
+                    color: Colors.redAccent[400], child: Text('Số lượng lỗi')),
+                Container(color: Colors.tealAccent, child: Text('Thông số')),
+                Container(color: Colors.orangeAccent, child: Text('Phụ kiện')),
+                Container(color: Colors.grey, child: Text('Nguy hiểm')),
+                Container(color: Colors.yellowAccent, child: Text('Vải')),
+                Container(
+                    color: Colors.lightBlueAccent, child: Text('Lỗi may')),
+                Container(
+                    color: Colors.greenAccent, child: Text('Ngoại quan, TP')),
+                Container(color: Colors.cyanAccent, child: Text('Phụ liệu')),
+                Container(color: Colors.purpleAccent, child: Text('Khác')),
+              ],
+            ),
+          ),
+          Divider(thickness: 1),
           Container(
-              color: Colors.white,
-              width: rightCollumnW,
-              child: SfCartesianChart(
-                  legend: myLegendETSTotal,
-                  title: ChartTitle(text: 'TỔNG SẢN LƯỢNG'),
-                  primaryXAxis: CategoryAxis(
-                    labelPosition: ChartDataLabelPosition.inside,
-                    labelStyle: TextStyle(
-                      // fontSize: 13,
-                      // fontWeight: FontWeight.bold,
-                      color: Colors.black,
+            alignment: Alignment.center,
+            width: g.screenWidth - explainColorH,
+            height: explainColorH,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: (g.screenWidth - explainColorH) / 3,
+                  child: Text(
+                    "Tổng số lượng đạt, lỗi & tỉ lệ lỗi chung".toUpperCase(),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  alignment: Alignment.center,
+                ),
+                Container(
+                  width: (g.screenWidth - explainColorH) / 3,
+                  child: Text(
+                    "Số lượng các nhóm lỗi".toUpperCase(),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  alignment: Alignment.center,
+                ),
+                g.isTVLine
+                    ? Container()
+                    : Container(
+                        width: (g.screenWidth - explainColorH) / 3,
+                        child: Text(
+                          "Tỉ lệ các nhóm lỗi".toUpperCase(),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        alignment: Alignment.center,
+                      )
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RotatedBox(
+                    quarterTurns: 3,
+                    child: Text(
+                      'KQ kiểm sơ cấp',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  series: <ChartSeries>[
-                    StackedBar100Series<ProcessDetail, String>(
-                        color: Colors.green,
-                        dataSource: g.processDetail,
-                        // dataLabelSettings: myDataLabelSettingsETSTotal,
-                        xValueMapper: (ProcessDetail data, _) =>
-                            data.getNo.toString() +
-                            '-' +
-                            data.getName +
-                            " : " +
-                            data.getQtyTotal.toString() +
-                            " pcs",
-                        yValueMapper: (ProcessDetail data, _) =>
-                            data.getQtyTotal,
-                        name: "Hoàn thành",
-                        width: 0.8,
-                        spacing: 0.2),
-                    StackedBar100Series<ProcessDetail, String>(
-                        color: Colors.black12,
-                        dataSource: g.processDetail,
-                        // dataLabelSettings: myDataLabelSettingsETSTotal,
-                        xValueMapper: (ProcessDetail data, _) =>
-                            data.getNo.toString() +
-                            '-' +
-                            data.getName +
-                            " : " +
-                            data.getQtyTotal.toString() +
-                            " pcs",
-                        yValueMapper: (ProcessDetail data, _) =>
-                            g.currentMoDetail.getQty - data.getQtyTotal,
-                        name: "Còn lại",
-                        width: 0.8,
-                        spacing: 0.2)
-                  ])),
+                  SizedBox(
+                    height: 100,
+                  ),
+                  g.isTVLine
+                      ? Container()
+                      : RotatedBox(
+                          quarterTurns: 3,
+                          child: Text(
+                            'KQ kiểm thứ cấp',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        )
+                ],
+              ),
+              Container(
+                  alignment: Alignment.centerLeft,
+                  color: Colors.black12,
+                  width: g.screenWidth - explainColorH,
+                  height: g.screenHeight - g.appBarH - explainColorH * 2 - 16,
+                  padding: EdgeInsets.all(2),
+                  // color: Colors.greenAccent,
+                  child: MasonryGridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 0,
+                      padding: const EdgeInsets.all(0),
+                      itemCount: g.isTVLine ? 2 : 6,
+                      crossAxisCount: g.isTVLine ? 2 : 3,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                            padding: EdgeInsets.all(1),
+                            height: g.isTVLine ? chartH * 2 : chartH,
+                            child: createUIChartAtIndex(
+                                index, g.timeType, g.selectAllLine));
+                      })),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Future<void> refreshDataUI() async {
-    print(
-        'refreshDataUI -isLoading : ${g.isLoading} - g.reloadType.value = ${g.reloadType.value} g.screenMode = ${g.screenMode}');
-    if (g.isLoading) return;
-    await MyFuntions.loadDataSQL(g.reloadType.value);
-    switch (g.reloadType.value) {
-      case 'production': //chart production
-        {
-          MyFuntions.loadDataSQL('production');
-          setState(() {
-            chartSeriesControllerProduction?.updateDataSource(
-                updatedDataIndexes:
-                    List<int>.generate(g.chartData.length, (i) => i + 1));
-          });
-        }
-        break;
-      case 'changeLine': //changeLine
-        {
-          MyFuntions.loadDataSQL('changeLine');
-        }
-        break;
-      case 'refresh': // refresh
-        {
-          MyFuntions.loadDataSQL('refresh');
-
-          setState(() {
-            if (g.screenMode == 'chartProduction') {
-              chartSeriesControllerProduction?.updateDataSource(
-                  updatedDataIndexes:
-                      List<int>.generate(g.chartData.length, (i) => i + 1));
-            } else {
-              MyFuntions.summaryDataETS();
-              chartControllerETS?.updateDataSource(
-                  updatedDataIndexes:
-                      List<int>.generate(g.processDetail.length, (i) => i + 1));
-            }
-          });
-        }
-        break;
-      default:
-    }
-    setState(() {
-      g.isLoading = false;
-    });
+  appBar() {
+    return AppBar(
+        toolbarHeight: g.appBarH,
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        elevation: 6.0,
+        leadingWidth: 95,
+        leading: MyFuntions.logo(),
+        title: g.isTVLine
+            ? Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: MyFuntions.circleLine(g.currentLine),
+              )
+            : Container(),
+        actions: g.isTVControl
+            ? controlFuntion()
+            : [
+                MyFuntions.clockAppBar(context),
+              ]);
   }
 
-  void setTitle(String screenMode) {
-    setState(() {
-      if (g.showThongBao) {
-        g.titleAppBar = Text('THÔNG BÁO',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: g.fontSizeAppbar));
-      } else {
-        switch (screenMode) {
-          case 'chartProduction':
-            g.titleAppBar = Text('SẢN LƯỢNG & TỈ LỆ LỖI',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: g.fontSizeAppbar));
+  Widget createUIChartAtIndex(int index, String timeType, bool sellectAllLine) {
+    Widget result = Container();
+    int inspectionType = 1;
+    if (index >= 3) inspectionType = 2;
+    switch (index) {
+      case 0:
+      case 3:
+        switch (timeType) {
+          case 'Daily':
+            sellectAllLine
+                ? result = InspectionDataChart.createChartDailyQty(
+                    g.sqlT50InspectionDataDailysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    true)
+                : result = InspectionDataChart.createChartDailyQty(
+                    g.sqlT50InspectionDataDailys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    true);
+
             break;
-          case 'chartETS':
-            g.titleAppBar = Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text('${g.currentMoDetail.getStyle.trim()}',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: g.fontSizeAppbar)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(' ${g.currentMoDetail.getDesc.trim()}',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 12)),
-                          Text(' - ${g.currentMoDetail.getQty.toString()} Pcs',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 12)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
+          case 'Weekly':
+            sellectAllLine
+                ? result = InspectionDataChart.createChartDailyQty(
+                    g.sqlT50InspectionDataWeeklysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    false)
+                : result = InspectionDataChart.createChartDailyQty(
+                    g.sqlT50InspectionDataWeeklys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    false);
+            break;
+          case 'Monthly':
+            sellectAllLine
+                ? result = InspectionDataChart.createChartDailyQty(
+                    g.sqlT50InspectionDataMonthlysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    false)
+                : result = InspectionDataChart.createChartDailyQty(
+                    g.sqlT50InspectionDataMonthlys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    false);
             break;
           default:
         }
-      }
-    });
+
+        break;
+      case 1:
+      case 4:
+        switch (timeType) {
+          case 'Daily':
+            sellectAllLine
+                ? result = InspectionDataChart.createChartDailyDefectQty(
+                    g.sqlT50InspectionDataDailysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    true)
+                : result = InspectionDataChart.createChartDailyDefectQty(
+                    g.sqlT50InspectionDataDailys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    true);
+            break;
+          case 'Weekly':
+            sellectAllLine
+                ? result = InspectionDataChart.createChartDailyDefectQty(
+                    g.sqlT50InspectionDataWeeklysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    false)
+                : result = InspectionDataChart.createChartDailyDefectQty(
+                    g.sqlT50InspectionDataWeeklys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    false);
+            break;
+          case 'Monthly':
+            sellectAllLine
+                ? result = InspectionDataChart.createChartDailyDefectQty(
+                    g.sqlT50InspectionDataMonthlysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    false)
+                : result = InspectionDataChart.createChartDailyDefectQty(
+                    g.sqlT50InspectionDataMonthlys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    false);
+            break;
+          default:
+        }
+
+        break;
+      case 2:
+      case 5:
+        switch (timeType) {
+          case 'Daily':
+            g.selectAllLine
+                ? result = InspectionDataChart.createChartDailyDefectRatio(
+                    g.sqlT50InspectionDataDailysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    true)
+                : result = InspectionDataChart.createChartDailyDefectRatio(
+                    g.sqlT50InspectionDataDailys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    true);
+            break;
+          case 'Weekly':
+            g.selectAllLine
+                ? result = InspectionDataChart.createChartDailyDefectRatio(
+                    g.sqlT50InspectionDataWeeklysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    false)
+                : result = InspectionDataChart.createChartDailyDefectRatio(
+                    g.sqlT50InspectionDataWeeklys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    false);
+            break;
+          case 'Monthly':
+            g.selectAllLine
+                ? result = InspectionDataChart.createChartDailyDefectRatio(
+                    g.sqlT50InspectionDataMonthlysSummaryAll
+                        .where((element) =>
+                            element.getInspectionType == inspectionType)
+                        .toList(),
+                    false)
+                : result = InspectionDataChart.createChartDailyDefectRatio(
+                    g.sqlT50InspectionDataMonthlys
+                        .where((element) =>
+                            element.getInspectionType == inspectionType &&
+                            element.getLine == g.currentLine)
+                        .toList(),
+                    false);
+            break;
+          default:
+        }
+
+        break;
+
+      default:
+        result = Container();
+    }
+    return result;
   }
 
-  actionWidgetAppbar() {
-    return Row(
-      children: [
-        InkWell(
-            onTap: () {
+  void increaseLineNumber() {
+    g.currentLine++;
+    if (g.currentLine > g.lines.last) {
+      g.currentLine = 1;
+    }
+    radioLineController.selectAt(g.lines.indexOf(g.currentLine));
+  }
+
+  Future<void> reloadDataUI() async {
+    print('************** reloadDataUI - line ${g.currentLine}');
+    MyFuntions.selectT50InspectionDataOneByOne(g.isTVLine ? 0 : 1);
+    chartSeriesController?.updateDataSource(
+        updatedDataIndexes: List<int>.generate(
+            g.sqlT50InspectionDataDailys.length, (i) => i + 1));
+  }
+
+  List<Widget> controlFuntion() {
+    return [
+      !g.selectAllLine
+          ? RadioGroup(
+              onChanged: (value) {
+                setState(() {
+                  g.currentLine = int.parse(value.toString());
+                });
+              },
+              controller: radioLineController,
+              values: g.lines,
+              indexOfDefault: g.lines.indexOf(g.currentLine),
+              orientation: RadioGroupOrientation.Horizontal,
+              decoration: RadioGroupDecoration(
+                spacing: 2.0,
+                labelStyle: TextStyle(color: Colors.white, fontSize: 15),
+                activeColor: Colors.white,
+              ),
+            )
+          : Container(),
+      RadioGroup(
+        onChanged: (value) {
+          setState(() {
+            g.timeType = value.toString();
+          });
+        },
+        controller: radioInspectionTypeController,
+        values: g.timeTypes,
+        indexOfDefault: g.timeTypes.indexOf(g.timeType),
+        orientation: RadioGroupOrientation.Horizontal,
+        decoration: RadioGroupDecoration(
+          spacing: 2.0,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 8),
+          activeColor: Colors.amber,
+        ),
+      ),
+      Row(
+        children: [
+          Checkbox(
+            value: g.selectAllLine,
+            onChanged: (value) {
               setState(() {
-                g.currentIndexLine--;
-                if (g.currentIndexLine < 0) {
-                  g.currentIndexLine = g.linesETS.length - 1;
-                }
-                g.currentLine = g.linesETS.elementAt(g.currentIndexLine);
-                g.reloadType.value = 'changeLine';
-                g.reloadType.notifyListeners();
+                g.autochangeLine = !g.autochangeLine;
+                g.selectAllLine = !g.selectAllLine;
+                if (g.currentLine == 0) g.currentLine = 1;
               });
             },
-            child: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-              size: 40,
-            )),
-        InkWell(
-            onTap: () {
-              setState(() {
-                g.currentIndexLine++;
-                if (g.currentIndexLine >= g.linesETS.length) {
-                  g.currentIndexLine = 0;
-                }
-                g.currentLine = g.linesETS.elementAt(g.currentIndexLine);
-                g.reloadType.value = 'changeLine';
-                g.reloadType.notifyListeners();
-              });
-            },
-            child: const Icon(
-              Icons.arrow_forward,
-              color: Colors.white,
-              size: 40,
-            )),
-        Switch(
-          value: g.autochangeLine,
-          onChanged: (value) {
-            setState(() {
-              g.autochangeLine = value;
-            });
-          },
-        ),
-        const Text(
-          '''Auto Change Line 
-After5 Minutes''',
-          style: TextStyle(color: Colors.white, fontSize: 10),
-        ),
-      ],
-    );
+          ),
+          Text(
+            '''All
+Line ''',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    ];
   }
 }
