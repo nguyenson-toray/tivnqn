@@ -11,6 +11,7 @@ import 'package:tivnqn/model/preparation/.chartDataPCutting.dart';
 import 'package:tivnqn/model/preparation/chartDataPInspection.dart';
 import 'package:tivnqn/model/preparation/chartDataPRelaxation.dart';
 import 'package:tivnqn/myFuntions.dart';
+import 'package:tivnqn/ui/announcement.dart';
 import 'package:tivnqn/ui/dashboardProduction.dart';
 import 'package:tivnqn/ui/dashboardImage.dart';
 import 'package:tivnqn/ui/dashboardPlanning.dart';
@@ -97,7 +98,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.73';
+        g.ip = '192.168.1.79';
       });
     }
     isConnectedSqlAppTiqn = await g.sqlApp.initConnection();
@@ -205,17 +206,24 @@ class _InitialPgaeState extends State<InitialPgae> {
       case 'line11':
         {
           print('---------------');
+          g.thongbao = await g.sqlApp.sellectThongBao();
           g.isTVLine = true;
           g.selectAllLine = false;
-          g.rangeDays = 14;
+          g.rangeDays = g.config.getProductionChartRangeDay;
           g.currentLine =
               int.parse(g.config.getSection.toString().split('line').last);
-          g.thongbao = await g.sqlApp.sellectThongBao();
+
           if (g.config.getEtsMO != 'mo') {
             g.currentMo = g.config.getEtsMO;
             await MyFuntions.sellectDataETS(g.currentMo);
           }
-
+          if (g.config.getAnnouncementOnly == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Announcement()),
+            );
+            break;
+          }
           MyFuntions.selectT50InspectionDataOneByOne(0)
               .then((value) => goDashboardProductionNew()); //no summary
         }

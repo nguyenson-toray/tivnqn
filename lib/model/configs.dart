@@ -9,11 +9,11 @@ class Configs {
   String? imageLink;
   int? doExercise;
   int? reloadSeconds;
-  int? productionChart;
+  int? announcementOnly;
+
   String? productionChartBegin;
   int? productionChartDurationMinute;
   int? productionChartRangeDay;
-  int? etsChart;
   String? etsMO;
   int? get getId => this.id;
 
@@ -42,12 +42,10 @@ class Configs {
   get getReloadSeconds => this.reloadSeconds;
 
   set setReloadSeconds(reloadSeconds) => this.reloadSeconds = reloadSeconds;
+  get getAnnouncementOnly => this.announcementOnly;
 
-  get getProductionChart => this.productionChart;
-
-  set setProductionChart(productionChart) =>
-      this.productionChart = productionChart;
-
+  set setAnnouncementOnly(announcementOnly) =>
+      this.announcementOnly = announcementOnly;
   get getProductionChartBegin => this.productionChartBegin;
 
   set setProductionChartBegin(productionChartBegin) =>
@@ -63,10 +61,6 @@ class Configs {
   set setProductionChartRangeDay(productionChartRangeDay) =>
       this.productionChartRangeDay = productionChartRangeDay;
 
-  get getEtsChart => this.etsChart;
-
-  set setEtsChart(etsChart) => this.etsChart = etsChart;
-
   get getEtsMO => this.etsMO;
 
   set setEtsMO(etsMO) => this.etsMO = etsMO;
@@ -78,11 +72,10 @@ class Configs {
     this.imageLink,
     this.doExercise,
     this.reloadSeconds,
-    this.productionChart,
+    this.announcementOnly,
     this.productionChartBegin,
     this.productionChartDurationMinute,
     this.productionChartRangeDay,
-    this.etsChart,
     this.etsMO,
   });
 
@@ -95,6 +88,7 @@ class Configs {
     int? doExercise,
     String? doExerciseTime,
     int? reloadSeconds,
+    int? announcementOnly,
     int? productionChart,
     String? productionChartBegin,
     int? productionChartDurationMinute,
@@ -111,33 +105,14 @@ class Configs {
       mac: mac ?? this.mac,
       imageLink: imageLink ?? this.imageLink,
       reloadSeconds: reloadSeconds ?? this.reloadSeconds,
-      productionChart: productionChart ?? this.productionChart,
+      announcementOnly: announcementOnly ?? this.announcementOnly,
       productionChartBegin: productionChartBegin ?? this.productionChartBegin,
       productionChartDurationMinute:
           productionChartDurationMinute ?? this.productionChartDurationMinute,
       productionChartRangeDay:
           productionChartRangeDay ?? this.productionChartRangeDay,
-      etsChart: etsChart ?? this.etsChart,
       etsMO: etsMO ?? this.etsMO,
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'section': section,
-      'ip': ip,
-      'mac': mac,
-      'imageLink': imageLink,
-      'doExercise': doExercise,
-      'reloadSeconds': reloadSeconds,
-      'productionChart': productionChart,
-      'productionChartBegin': productionChartBegin,
-      'productionChartDurationMinute': productionChartDurationMinute,
-      'productionChartRangeDay': productionChartRangeDay,
-      'etsChart': etsChart,
-      'etsMO': etsMO,
-    };
   }
 
   factory Configs.fromMap(Map<String, dynamic> map) {
@@ -150,8 +125,9 @@ class Configs {
       doExercise: map['doExercise'] != null ? map['doExercise'] as int : null,
       reloadSeconds:
           map['reloadSeconds'] != null ? map['reloadSeconds'] as int : null,
-      productionChart:
-          map['productionChart'] != null ? map['productionChart'] as int : null,
+      announcementOnly: map['announcementOnly'] != null
+          ? map['announcementOnly'] as int
+          : null,
       productionChartBegin: map['productionChartBegin'] != null
           ? map['productionChartBegin'] as String
           : null,
@@ -162,54 +138,7 @@ class Configs {
       productionChartRangeDay: map['productionChartRangeDay'] != null
           ? map['productionChartRangeDay'] as int
           : null,
-      etsChart: map['etsChart'] != null ? map['etsChart'] as int : null,
       etsMO: map['etsMO'] != null ? map['etsMO'] as String : null,
     );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Configs.fromJson(String source) =>
-      Configs.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'Configs(id: $id, section: $section, ip: $ip, mac: $mac, imageLink: $imageLink, doExercise: $doExercise, reloadSeconds: $reloadSeconds, productionChart: $productionChart, productionChartBegin: $productionChartBegin, productionChartDurationMinute: $productionChartDurationMinute, productionChartRangeDay: $productionChartRangeDay, etsChart: $etsChart, etsMO: $etsMO)';
-  }
-
-  @override
-  bool operator ==(covariant Configs other) {
-    if (identical(this, other)) return true;
-
-    return other.id == id &&
-        other.section == section &&
-        other.ip == ip &&
-        other.mac == mac &&
-        other.imageLink == imageLink &&
-        other.doExercise == doExercise &&
-        other.reloadSeconds == reloadSeconds &&
-        other.productionChart == productionChart &&
-        other.productionChartBegin == productionChartBegin &&
-        other.productionChartDurationMinute == productionChartDurationMinute &&
-        other.productionChartRangeDay == productionChartRangeDay &&
-        other.etsChart == etsChart &&
-        other.etsMO == etsMO;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        section.hashCode ^
-        ip.hashCode ^
-        mac.hashCode ^
-        imageLink.hashCode ^
-        doExercise.hashCode ^
-        reloadSeconds.hashCode ^
-        productionChart.hashCode ^
-        productionChartBegin.hashCode ^
-        productionChartDurationMinute.hashCode ^
-        productionChartRangeDay.hashCode ^
-        etsChart.hashCode ^
-        etsMO.hashCode;
   }
 }
