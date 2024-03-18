@@ -43,7 +43,9 @@ class g {
   static bool autochangeLine = false;
   static bool isLoading = false;
   static List<int> lines = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  static List<int> lineETS = [3, 8];
   static int currentLine = 0;
+  static int currentLineETS = 3;
   static bool selectAllLine = true;
   static String timeType = 'Daily';
   static List<String> timeTypes = ['Daily', 'Weekly', 'Monthly'];
@@ -53,6 +55,7 @@ class g {
   static EtsMoInfo etsMoInfo =
       EtsMoInfo(mo: 'ZDCODE', style: 'STYLE_NO', qty: 0, desc: 'XM');
   static String currentMo = '';
+  static List<String> etsMOs = [];
 
   static var sqlApp = SqlApp();
   static List<PCutting> pCuttings = [];

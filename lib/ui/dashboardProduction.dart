@@ -421,6 +421,7 @@ class _DashboardProductionState extends State<DashboardProduction> {
       g.currentLine = 1;
     }
     radioLineController.selectAt(g.lines.indexOf(g.currentLine));
+    reloadDataUI();
   }
 
   Future<void> reloadDataUI() async {

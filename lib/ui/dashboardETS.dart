@@ -53,9 +53,11 @@ class _DashboardETSState extends State<DashboardETS> {
   );
   ChartSeriesController? chartControllerETS;
   late Timer myTimer;
+  int index = 0;
   @override
   void initState() {
     // TODO: implement initState
+    index = g.etsMOs.indexOf(g.currentMo);
     myTimer = Timer.periodic(Duration(seconds: g.config.getReloadSeconds),
         (timer) async {
       setState(() {});
@@ -72,6 +74,18 @@ class _DashboardETSState extends State<DashboardETS> {
         }
       }
     });
+    if (g.autochangeLine) {
+      Timer.periodic(Duration(minutes: 5), (timer) async {
+        index == g.etsMOs.length - 1 ? index = 0 : index++;
+
+        setState(() {
+          g.currentMo = g.etsMOs.elementAt(index);
+          g.currentLine = g.lineETS.elementAt(index);
+          MyFuntions.sellectDataETS(g.currentMo);
+        });
+      });
+    }
+
     super.initState();
   }
 
@@ -188,7 +202,15 @@ class _DashboardETSState extends State<DashboardETS> {
       actions: g.isTVControl
           ? [
               InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    index == 0 ? index = g.etsMOs.length - 1 : index--;
+                    g.currentMo = g.etsMOs.elementAt(index);
+                    g.currentLine = g.lineETS.elementAt(index);
+                    print(g.currentMo);
+                    setState(() {
+                      MyFuntions.sellectDataETS(g.currentMo);
+                    });
+                  },
                   child: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
@@ -196,7 +218,12 @@ class _DashboardETSState extends State<DashboardETS> {
                   )),
               InkWell(
                   onTap: () {
-                    setState(() {});
+                    index == g.etsMOs.length - 1 ? index = 0 : index++;
+                    g.currentMo = g.etsMOs.elementAt(index);
+                    g.currentLine = g.lineETS.elementAt(index);
+                    setState(() {
+                      MyFuntions.sellectDataETS(g.currentMo);
+                    });
                   },
                   child: const Icon(
                     Icons.arrow_forward,
@@ -213,7 +240,7 @@ class _DashboardETSState extends State<DashboardETS> {
               ),
               const Text(
                 '''Auto Change Line 
-After5 Minutes''',
+  After 5 Minutes''',
                 style: TextStyle(color: Colors.white, fontSize: 10),
               ),
             ]

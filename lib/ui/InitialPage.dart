@@ -98,7 +98,7 @@ class _InitialPgaeState extends State<InitialPgae> {
     g.ip = (await NetworkInfo().getWifiIP())!;
     if (kDebugMode) {
       setState(() {
-        g.ip = '192.168.1.79';
+        g.ip = '192.168.1.66';
       });
     }
     isConnectedSqlAppTiqn = await g.sqlApp.initConnection();
@@ -260,15 +260,19 @@ class _InitialPgaeState extends State<InitialPgae> {
               .where((element) => element.getEtsMO != 'no')
               .first
               .getSection;
-          g.currentLine = int.parse(section.split('line').last);
-          g.currentMo = g.configs
-              .where((element) => element.getEtsMO != 'no')
-              .first
-              .getEtsMO;
 
+          g.configs.forEach((element) {
+            if (element.getEtsMO != 'no') {
+              g.lineETS.add(int.parse(section.split('line').last));
+              g.etsMOs.add(element.getEtsMO);
+            }
+          });
+          g.currentMo = g.etsMOs.first;
+          g.currentLine = g.lineETS.first;
           await MyFuntions.sellectDataETS(g.currentMo);
           g.isTVControl = true;
           g.isTVLine = false;
+          g.autochangeLine = true;
           goDashboardETS();
         }
 

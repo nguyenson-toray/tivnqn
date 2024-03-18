@@ -21,16 +21,23 @@ class _AnnouncementState extends State<Announcement> {
   @override
   void initState() {
     AssetsAudioPlayer.newPlayer().open(Audio("assets/notification_sound.wav"),
-        autoStart: true, volume: 1.0);
-    myTimer = Timer.periodic(Duration(minutes: g.thongbao.getThoiluongPhut),
-        (Timer timer) async {
-      Navigator.pop(context);
+        autoStart: true, volume: 0.7);
+    if (g.config.getAnnouncementOnly != 1)
+      Timer.periodic(Duration(minutes: g.thongbao.getThoiluongPhut),
+          (Timer timer) async {
+        Navigator.pop(context);
+      });
+    Timer.periodic(Duration(seconds: g.config.getReloadSeconds), (timer) async {
+      getAnnouncement();
     });
-    // cron.schedule(Schedule.parse('/${g.thongbao.getThoiluongPhut} * * * *'), () async {
-    //    Navigator.pop(context);
-    // });
     // TODO: implement initState
     super.initState();
+  }
+
+  getAnnouncement() {
+    setState(() async {
+      g.thongbao = await g.sqlApp.sellectThongBao();
+    });
   }
 
   @override
